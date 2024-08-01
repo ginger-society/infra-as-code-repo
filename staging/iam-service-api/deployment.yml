@@ -1,0 +1,35 @@
+# deployment.yml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: iam-service-api-deployment
+  labels:
+    app: iam-service-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: iam-service-api
+  template:
+    metadata:
+      labels:
+        app: iam-service-api
+    spec:
+      containers:
+      - name: iam-service-api
+        image: gingersociety/iam-service-api:latest
+        ports:
+        - containerPort: 8000
+        env:
+        - name: DATABASE_URL
+          value: "postgresql://user:pass@server:25060/iam-db"
+        - name: REDIS_URI
+          value: "redis://redis-service-staging:6379"
+        - name: ROCKET_SECRET_KEY
+          value: "some_secret_key"
+        - name: ROCKET_ADDRESS
+          value: "0.0.0.0"
+        - name: ROCKET_PORT
+          value: "8000"
+        - name: JWT_SECRET
+          value: "jwt_secret"
