@@ -1,3 +1,31 @@
+# This is the repo for API services deployed on api.gingersociety.org
+
+
+## There is only one env as of now : staging
+
+This is deployed on api-staging.gingersociety.org
+
+Common code related to this env is available in staging directory
+There are few apps deployed
+
+1. **example-app**
+
+    This is a sample hello world service
+
+    Available on api-staging.gingersociety.org/test/*
+2. **iam-service-api**
+
+    This is the deployment for IAM service apis
+
+    Available on api-staging.gingersociety.org/iam-service/*
+3. **metadata-service-api**
+
+    This is the deployment for Metadata service apis
+
+    Available on api-staging.gingersociety.org/metadata-service/*
+
+
+## Notes we took while creating this repo
 
 deploy your app and service and map the service in ingress file
 
