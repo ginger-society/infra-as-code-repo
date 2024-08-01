@@ -1,4 +1,4 @@
-# This is the repo for API services deployed on api.gingersociety.org
+# This is the repo for API services deployed on api-*.gingersociety.org
 
 
 ## There is only one env as of now : staging
