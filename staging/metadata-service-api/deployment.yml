@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: metadata-service-api
-        image: gingersociety/metadata-service-be:latest
+        image: gingersociety/metadata-service-api-stage:latest
         ports:
         - containerPort: 8000
         env:
