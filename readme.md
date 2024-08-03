@@ -17,12 +17,12 @@ There are few apps deployed
 
     This is the deployment for IAM service apis
 
-    Available on api-staging.gingersociety.org/iam-service/*
+    Available on api-staging.gingersociety.org/iam/*
 3. **metadata-service-api**
 
     This is the deployment for Metadata service apis
 
-    Available on api-staging.gingersociety.org/metadata-service/*
+    Available on api-staging.gingersociety.org/metadata/*
 
 
 ## Notes we took while creating this repo
@@ -51,3 +51,22 @@ helm install cert-manager -n cert-manager --version v1.15.2 jetstack/cert-manage
 
 then add issuer
 kubectl apply -f issuer.yaml
+
+
+# Rust helpers
+
+```sh
+docker build --platform linux/amd64 -t rust-cli-builder:latest -f Dockerfile.build  .
+
+```
+
+while using rust-helpers , please add .env file in your project root with 
+
+```env
+
+AWS_ACCESS_KEY_ID=ID
+AWS_SECRET_ACCESS_KEY=ACCESS_TOKEN
+AWS_DEFAULT_REGION=region
+GINGER_TOKEN=API_TOKEN
+
+```

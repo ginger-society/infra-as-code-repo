@@ -14,11 +14,25 @@ spec:
     - host: api-staging.gingersociety.org
       http:
         paths:
-          - path: /
+          - path: /example
             pathType: Prefix
             backend:
                 service:
                   name: example-service 
+                  port:
+                    number: 80
+          - path: /iam
+            pathType: Prefix
+            backend:
+                service:
+                  name: iam-service-api-service
+                  port:
+                    number: 80
+          - path: /metadata
+            pathType: Prefix
+            backend:
+                service:
+                  name: metadata-service-api-service
                   port:
                     number: 80
   ingressClassName: nginx
