@@ -1,0 +1,10 @@
+# Second stage: Create the minimal runtime image
+FROM debian:bullseye-slim
+
+# Install necessary dependencies
+RUN apt-get update && apt-get install -y \
+    libssl1.1 \
+    libpq5 \
+    libgcc1 \
+    libc6 \
+    && rm -rf /var/lib/apt/lists/*
