@@ -17,13 +17,13 @@ jobs:
       run: echo "${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}" | docker login -u "${{ secrets.DOCKER_HUB_USERNAME }}" --password-stdin
 
     - name: Build Docker image
-      run: docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/rust-rocket-api-builder:latest . --build-arg GINGER_TOKEN=${{ secrets.GINGER_TOKEN }} -f Dockerfile.builder
+      run: docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/rust-rocket-api-builder:latest . --build-arg GINGER_TOKEN=${{ secrets.GINGER_TOKEN }} -f pipeline-images/rust-rocket-api/Dockerfile.builder
 
     - name: Push Docker image
       run: docker push ${{ secrets.DOCKER_HUB_USERNAME }}/rust-rocket-api-builder:latest
 
     - name: Build Docker image
-      run: docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/rust-rocket-api-runner:latest . --build-arg GINGER_TOKEN=${{ secrets.GINGER_TOKEN }} -f Dockerfile.runner
+      run: docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/rust-rocket-api-runner:latest . --build-arg GINGER_TOKEN=${{ secrets.GINGER_TOKEN }} -f pipeline-images/rust-rocket-api/Dockerfile.runner
 
     - name: Push Docker image
       run: docker push ${{ secrets.DOCKER_HUB_USERNAME }}/rust-rocket-api-runner:latest
