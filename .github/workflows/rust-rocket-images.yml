@@ -16,14 +16,20 @@ jobs:
     - name: Log in to Docker Hub
       run: echo "${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}" | docker login -u "${{ secrets.DOCKER_HUB_USERNAME }}" --password-stdin
 
-    - name: Build Docker image
+    - name: Build Rocket rust builder Docker image
       run: docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/rust-rocket-api-builder:latest . --build-arg GINGER_TOKEN=${{ secrets.GINGER_TOKEN }} -f pipeline-images/rust-rocket-api/Dockerfile.builder
 
-    - name: Push Docker image
+    - name: Push Rocket rust builder Docker image
       run: docker push ${{ secrets.DOCKER_HUB_USERNAME }}/rust-rocket-api-builder:latest
 
-    - name: Build Docker image
+    - name: Build Rocket rust runner Docker image
       run: docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/rust-rocket-api-runner:latest . --build-arg GINGER_TOKEN=${{ secrets.GINGER_TOKEN }} -f pipeline-images/rust-rocket-api/Dockerfile.runner
 
-    - name: Push Docker image
+    - name: Push Rocket rust runner Docker image
       run: docker push ${{ secrets.DOCKER_HUB_USERNAME }}/rust-rocket-api-runner:latest
+
+    - name: Build Rocket vite builder Docker image
+      run: docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/vite-react-builder:latest . --build-arg GINGER_TOKEN=${{ secrets.GINGER_TOKEN }} -f pipeline-images/vite-react/Dockerfile.runner
+
+    - name: Push Rocket rust runner Docker image
+      run: docker push ${{ secrets.DOCKER_HUB_USERNAME }}/vite-react-builder:latest
