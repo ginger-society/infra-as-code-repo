@@ -18,3 +18,4 @@ RUN curl "https://ginger-auth-binaries.s3.ap-south-1.amazonaws.com/0.1.0/x86_64-
 
 
 RUN chmod u+x /usr/local/bin/ginger-connector
+RUN chmod u+x /usr/local/bin/ginger-auth
