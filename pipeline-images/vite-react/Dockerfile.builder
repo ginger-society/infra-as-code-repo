@@ -18,9 +18,11 @@ RUN apt install -y nodejs
 # Install yarn globally
 RUN npm install -g yarn
 
-RUN curl "https://ginger-connector-binaries.s3.ap-south-1.amazonaws.com/0.1.0/x86_64-unknown-linux-gnu/ginger-connector" -o "ginger-connector"
-
+RUN curl "https://ginger-connector-binaries.s3.ap-south-1.amazonaws.com/0.7.0-nightly.0/x86_64-unknown-linux-gnu/ginger-connector" -o "ginger-connector"
 RUN chmod u+x ginger-connector
+
+RUN curl "https://ginger-auth-binaries.s3.ap-south-1.amazonaws.com/0.1.0/x86_64-unknown-linux-gnu/ginger-connector" -o "ginger-auth"
+RUN chmod u+x ginger-auth
 
 # Install Java
 RUN apt install -y default-jdk
