@@ -1,14 +1,30 @@
 #!/bin/bash
 
-# Check if both arguments (binary name and version) are provided
-if [ "$#" -ne 2 ]; then
-    echo "Usage: $0 <binary_name> <version>"
+# Check if the argument is provided
+if [ "$#" -ne 1 ]; then
+    echo "Usage: $0 <org>/<package_name>:<version>"
     exit 1
 fi
 
-# Binary name and version from arguments
-binary_name=$1
-version=$2
+# Extract the organization, package name, and version from the argument
+input="$1"
+org_pkg_version=$(echo "$input" | awk -F':' '{print $1}')
+version=$(echo "$input" | awk -F':' '{print $2}')
+
+# Split org and package name
+org=$(echo "$org_pkg_version" | awk -F'/' '{print $1}')
+pkg_name=$(echo "$org_pkg_version" | awk -F'/' '{print $2}')
+
+# If version is 'latest', fetch it from the API
+if [ "$version" == "latest" ]; then
+    # Call the version API
+    version=$(curl -s "https://api-staging.gingersociety.org/metadata/version/$org/$pkg_name")
+
+    if [ -z "$version" ]; then
+        echo "Error: Could not retrieve the latest version for $org/$pkg_name"
+        exit 1
+    fi
+fi
 
 # Function to detect the operating system
 detect_os() {
@@ -54,7 +70,7 @@ if [ "$arch" == "unknown" ] || [ "$os" == "unknown" ]; then
 fi
 
 # Format the URL
-url="https://$binary_name-binaries.s3.ap-south-1.amazonaws.com/$version/$arch-$os/$binary_name"
+url="https://$pkg_name-binaries.s3.ap-south-1.amazonaws.com/$version/$arch-$os/$pkg_name"
 
 # Output the formatted URL
 echo "Download URL: $url"
@@ -82,18 +98,18 @@ if [ ! -d "$dest_dir" ] || [ ! -w "$dest_dir" ]; then
     exit 1
 fi
 
-# Download the binary using curl or wget
+# Download the binary using curl
 echo "Downloading the binary..."
-curl -L "$url" -o "$dest_dir/$binary_name" --fail
+curl -L "$url" -o "$dest_dir/$pkg_name" --fail
 
 # Make the binary executable (skip this for Windows)
 if [ "$os" != "pc-windows-gnu" ]; then
-    chmod +x "$dest_dir/$binary_name"
+    chmod +x "$dest_dir/$pkg_name"
 fi
 
 # Confirm download and installation
-if [ -f "$dest_dir/$binary_name" ]; then
-    echo "Binary successfully downloaded and installed to $dest_dir/$binary_name"
+if [ -f "$dest_dir/$pkg_name" ]; then
+    echo "Binary successfully downloaded and installed to $dest_dir/$pkg_name"
 else
     echo "Failed to download the binary."
     exit 1
