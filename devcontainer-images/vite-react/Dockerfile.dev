@@ -6,7 +6,7 @@ WORKDIR /workspace
 RUN apt update
 
 # Install necessary packages
-RUN apt install git zsh curl nano make gcc wget build-essential procps -y
+RUN apt install git zsh curl nano make gcc wget build-essential procps unzip -y
 
 # Install Oh My Zsh
 RUN sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" -y

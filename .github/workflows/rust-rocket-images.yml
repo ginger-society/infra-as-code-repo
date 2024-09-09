@@ -33,3 +33,9 @@ jobs:
 
     - name: Push Rocket vite builder Docker image
       run: docker push ${{ secrets.DOCKER_HUB_USERNAME }}/vite-react-builder:latest
+
+    - name: Build Rocket vite dev container Docker image
+      run: docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/vite-react-dev:latest . -f devcontainer-images/vite-react/Dockerfile.dev
+
+    - name: Push Rocket vite builder Docker image
+      run: docker push ${{ secrets.DOCKER_HUB_USERNAME }}/vite-react-dev:latest
