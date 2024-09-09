@@ -70,3 +70,9 @@ AWS_DEFAULT_REGION=region
 GINGER_TOKEN=API_TOKEN
 
 ```
+
+To use the installed use the following command
+
+```sh
+sudo bash -c "$(curl -fsSL https://raw.githubusercontent.com/ginger-society/infra-as-code-repo/main/rust-helpers/installer.sh)" -- ginger-society/ginger-connector:latest
+```
