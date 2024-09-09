@@ -81,3 +81,4 @@ To install all the apps ( mac and linux )
 ```sh
 sudo bash -c "$(curl -fsSL https://raw.githubusercontent.com/ginger-society/infra-as-code-repo/main/rust-helpers/install-all-clis.sh)"
 ```
+

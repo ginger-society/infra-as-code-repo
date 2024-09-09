@@ -53,6 +53,9 @@ detect_arch() {
         arm64)
             echo "aarch64"
             ;;
+        aarch64)
+            echo "aarch64"
+            ;;
         *)
             echo "unknown"
             ;;
