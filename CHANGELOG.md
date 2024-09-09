@@ -1,4 +1,11 @@
+## 0.3.0-nightly.0 - 2024-09-09
+chore:
+ - [dc29cbc500](dc29cbc500a72ca4967bc03e8bef67adae20f53e) (Ginger Society Admin) chore: version bump to 0.3.0-nightly.0
+	
 ## 0.2.0-nightly.0 - 2024-09-09
+first
+ - [af7df1df94](af7df1df942b114a4a00e6323cc3b7eb4a889592) (py-react) first commit
+	
 chore:
  - [a52e337f1e](a52e337f1e1250e2f24e2508c8ae4e758978dc20) (Ginger Society Admin) chore: version bump to 0.2.0-nightly.0
 	
@@ -53,7 +60,4 @@ fix:
  - [e672d8fd28](e672d8fd28b35fab74b8de1132791c45f83371a6) (Ginger Society Admin) fix: pipeline
 	
  - [a8389487af](a8389487afe80a2a87d306bc9a3b868e1dda48de) (Ginger Society Admin) fix: folder name correction
-	
-first
- - [af7df1df94](af7df1df942b114a4a00e6323cc3b7eb4a889592) (py-react) first commit
 	
