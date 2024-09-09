@@ -12,10 +12,5 @@ RUN apt install -y default-jdk
 # Install OpenAPI Generator CLI globally
 RUN npm install @openapitools/openapi-generator-cli -g
 
-RUN curl "https://ginger-connector-binaries.s3.ap-south-1.amazonaws.com/0.7.0-nightly.0/x86_64-unknown-linux-gnu/ginger-connector" -o "/usr/local/bin/ginger-connector"
+RUN bash -c "$(curl -fsSL https://raw.githubusercontent.com/ginger-society/infra-as-code-repo/main/rust-helpers/install-all-clis.sh)"
 
-RUN curl "https://ginger-auth-binaries.s3.ap-south-1.amazonaws.com/0.1.0/x86_64-unknown-linux-gnu/ginger-auth" -o "/usr/local/bin/ginger-auth"
-
-
-RUN chmod u+x /usr/local/bin/ginger-connector
-RUN chmod u+x /usr/local/bin/ginger-auth

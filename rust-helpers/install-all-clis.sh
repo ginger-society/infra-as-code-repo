@@ -10,3 +10,4 @@ bash -c "$(curl -fsSL https://raw.githubusercontent.com/ginger-society/infra-as-
 
 
 bash -c "$(curl -fsSL https://raw.githubusercontent.com/ginger-society/infra-as-code-repo/main/rust-helpers/installer.sh)" -- ginger-society/ginger-db:latest
+
