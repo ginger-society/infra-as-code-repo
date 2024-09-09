@@ -80,5 +80,18 @@ To install all the apps ( mac and linux )
 
 ```sh
 sudo bash -c "$(curl -fsSL https://raw.githubusercontent.com/ginger-society/infra-as-code-repo/main/rust-helpers/install-all-clis.sh)"
+
+```
+
+apart from building x86 imgae of the dev container images , you also need to build arm image if you are building it on mac
+
+```sh
+docker build -t gingersociety/vite-react-dev . -f devcontainer-images/vite-react/Dockerfile.dev
+
+```
+
+```sh
+docker push gingersociety/vite-react-dev
+
 ```
 
