@@ -30,6 +30,3 @@ RUN npm install @openapitools/openapi-generator-cli -g
 RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
 RUN unzip awscliv2.zip
 RUN ./aws/install
-
-# Verify OpenAPI Generator installation
-RUN openapi-generator-cli version
