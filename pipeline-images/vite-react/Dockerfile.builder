@@ -12,8 +12,8 @@ WORKDIR /app
 RUN apt update && apt install -y curl nano make gcc wget build-essential procps
 
 # Install Node.js
-RUN curl -fsSL https://deb.nodesource.com/setup_current.x | bash -
-RUN apt install -y nodejs
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
+RUN apt install -y nodejs=20.11.0-1nodesource1
 
 # Install yarn globally
 RUN npm install -g yarn
