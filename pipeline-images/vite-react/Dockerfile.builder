@@ -28,7 +28,7 @@ RUN bash -c "$(curl -fsSL https://raw.githubusercontent.com/ginger-society/infra
 RUN apt install -y default-jdk
 
 # Install OpenAPI Generator CLI globally
-RUN pnpm add -g @openapitools/openapi-generator-cli
+RUN npm add -g @openapitools/openapi-generator-cli
 
 # Install AWS CLI
 RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
