@@ -1,3 +1,21 @@
+## 0.6.0-nightly.0 - 2024-09-23
+feat:
+ - [cdba17f0d0](cdba17f0d08b4f80736d9bbdf90fd2e2014bc013) (Ginger Society Admin) feat: changed yatn to pnpm
+	
+ - [eadf11c548](eadf11c548641e96280f58739fa957421202863a) (Ginger Society Admin) feat: fixing node version to 20
+	
+ - [47b3baa885](47b3baa885e14874726dd41d8b55850c2e5cf46c) (Ginger Society Admin) feat: reverting version check comand
+	
+chore:
+ - [54d8332e06](54d8332e0632b4ea8e750c6f7c0865ab17782982) (Ginger Society Admin) chore: remobed openapi cli version comand
+	
+fix:
+ - [270175a2d4](270175a2d42289940a79608a1f31c437c94c78aa) (Ginger Society Admin) fix: minor
+	
+## 0.5.0-nightly.0 - 2024-09-09
+chore:
+ - [f655939ff4](f655939ff4810699437c160d6471557d2a29b651) (Ginger Society Admin) chore: version bump to 0.5.0-nightly.0
+	
 ## 0.4.0-nightly.0 - 2024-09-09
 chore:
  - [851ee9ccfe](851ee9ccfe081451741baee4dffbecf7f75bee24) (Ginger Society Admin) chore: version bump to 0.4.0-nightly.0
@@ -7,19 +25,17 @@ chore:
  - [dc29cbc500](dc29cbc500a72ca4967bc03e8bef67adae20f53e) (Ginger Society Admin) chore: version bump to 0.3.0-nightly.0
 	
 ## 0.2.0-nightly.0 - 2024-09-09
+chore:
+ - [a52e337f1e](a52e337f1e1250e2f24e2508c8ae4e758978dc20) (Ginger Society Admin) chore: version bump to 0.2.0-nightly.0
+	
+ - [9db78cf567](9db78cf5673613e0a55fa33226c254e20bc54c83) (Ginger Society Admin) chore: cleanup
+	
+ - [08d6fdfac6](08d6fdfac6f17d8d948fcf01028c3cd30e51cf1c) (Ginger Society Admin) chore: minor copy change in readme
+	
+ - [f90527bdf3](f90527bdf3af6e6e42502c040ceb4ed02118e713) (Ginger Society Admin) chore: refactored
+	
 first
  - [af7df1df94](af7df1df942b114a4a00e6323cc3b7eb4a889592) (py-react) first commit
-	
-fix:
- - [e306d11813](e306d11813dbfbcb3ad2e03cd999b2821eda5682) (Ginger Society Admin) fix: typo
-	
- - [2bfe3abd46](2bfe3abd466b3374da0353d1dd3c8c0fa798b2d4) (Ginger Society Admin) fix: permission error for ginger-auth executable
-	
- - [448bef1c98](448bef1c98aaee65cdec46192a828d787fc4e1ad) (Ginger Society Admin) fix: pipeline
-	
- - [e672d8fd28](e672d8fd28b35fab74b8de1132791c45f83371a6) (Ginger Society Admin) fix: pipeline
-	
- - [a8389487af](a8389487afe80a2a87d306bc9a3b868e1dda48de) (Ginger Society Admin) fix: folder name correction
 	
 feat:
  - [84d492aeb3](84d492aeb34550886a9984f02ef56f8a75c89e30) (Ginger Society Admin) feat: added changelot and releaser in git
@@ -56,12 +72,14 @@ feat:
 	
  - [0b0d5cf119](0b0d5cf119a88894a5b6084c810191638b2b2fcc) (Ginger Society Admin) feat: added metadata app
 	
-chore:
- - [a52e337f1e](a52e337f1e1250e2f24e2508c8ae4e758978dc20) (Ginger Society Admin) chore: version bump to 0.2.0-nightly.0
+fix:
+ - [e306d11813](e306d11813dbfbcb3ad2e03cd999b2821eda5682) (Ginger Society Admin) fix: typo
 	
- - [9db78cf567](9db78cf5673613e0a55fa33226c254e20bc54c83) (Ginger Society Admin) chore: cleanup
+ - [2bfe3abd46](2bfe3abd466b3374da0353d1dd3c8c0fa798b2d4) (Ginger Society Admin) fix: permission error for ginger-auth executable
 	
- - [08d6fdfac6](08d6fdfac6f17d8d948fcf01028c3cd30e51cf1c) (Ginger Society Admin) chore: minor copy change in readme
+ - [448bef1c98](448bef1c98aaee65cdec46192a828d787fc4e1ad) (Ginger Society Admin) fix: pipeline
 	
- - [f90527bdf3](f90527bdf3af6e6e42502c040ceb4ed02118e713) (Ginger Society Admin) chore: refactored
+ - [e672d8fd28](e672d8fd28b35fab74b8de1132791c45f83371a6) (Ginger Society Admin) fix: pipeline
+	
+ - [a8389487af](a8389487afe80a2a87d306bc9a3b868e1dda48de) (Ginger Society Admin) fix: folder name correction
 	
