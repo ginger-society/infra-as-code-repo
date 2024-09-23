@@ -7,6 +7,8 @@ feat:
  - [47b3baa885](47b3baa885e14874726dd41d8b55850c2e5cf46c) (Ginger Society Admin) feat: reverting version check comand
 	
 chore:
+ - [53c481b568](53c481b568d879af2135a2e3176c0d18fa0af174) (Ginger Society Admin) chore: version bump to 0.6.0-nightly.0
+	
  - [54d8332e06](54d8332e0632b4ea8e750c6f7c0865ab17782982) (Ginger Society Admin) chore: remobed openapi cli version comand
 	
 fix:
@@ -25,6 +27,17 @@ chore:
  - [dc29cbc500](dc29cbc500a72ca4967bc03e8bef67adae20f53e) (Ginger Society Admin) chore: version bump to 0.3.0-nightly.0
 	
 ## 0.2.0-nightly.0 - 2024-09-09
+fix:
+ - [e306d11813](e306d11813dbfbcb3ad2e03cd999b2821eda5682) (Ginger Society Admin) fix: typo
+	
+ - [2bfe3abd46](2bfe3abd466b3374da0353d1dd3c8c0fa798b2d4) (Ginger Society Admin) fix: permission error for ginger-auth executable
+	
+ - [448bef1c98](448bef1c98aaee65cdec46192a828d787fc4e1ad) (Ginger Society Admin) fix: pipeline
+	
+ - [e672d8fd28](e672d8fd28b35fab74b8de1132791c45f83371a6) (Ginger Society Admin) fix: pipeline
+	
+ - [a8389487af](a8389487afe80a2a87d306bc9a3b868e1dda48de) (Ginger Society Admin) fix: folder name correction
+	
 chore:
  - [a52e337f1e](a52e337f1e1250e2f24e2508c8ae4e758978dc20) (Ginger Society Admin) chore: version bump to 0.2.0-nightly.0
 	
@@ -71,15 +84,4 @@ feat:
  - [04e6d73266](04e6d732660cd41e6a3f7b6f7833d0f2f58ce1a8) (Ginger Society Admin) feat: added iam service
 	
  - [0b0d5cf119](0b0d5cf119a88894a5b6084c810191638b2b2fcc) (Ginger Society Admin) feat: added metadata app
-	
-fix:
- - [e306d11813](e306d11813dbfbcb3ad2e03cd999b2821eda5682) (Ginger Society Admin) fix: typo
-	
- - [2bfe3abd46](2bfe3abd466b3374da0353d1dd3c8c0fa798b2d4) (Ginger Society Admin) fix: permission error for ginger-auth executable
-	
- - [448bef1c98](448bef1c98aaee65cdec46192a828d787fc4e1ad) (Ginger Society Admin) fix: pipeline
-	
- - [e672d8fd28](e672d8fd28b35fab74b8de1132791c45f83371a6) (Ginger Society Admin) fix: pipeline
-	
- - [a8389487af](a8389487afe80a2a87d306bc9a3b868e1dda48de) (Ginger Society Admin) fix: folder name correction
 	
