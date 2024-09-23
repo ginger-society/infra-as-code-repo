@@ -1,0 +1,7 @@
+dir = "."
+lang = "Rust"
+organization_id = "ginger-society"
+
+[services]
+
+[portals_refs]
