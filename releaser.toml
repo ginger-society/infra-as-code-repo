@@ -1,7 +1,7 @@
 references = []
 
 [settings]
-git_url_prefix = ""
+git_url_prefix = "https://github.com/ginger-society/infra-as-code-repo"
 take_snapshots = true
 
 [version]
