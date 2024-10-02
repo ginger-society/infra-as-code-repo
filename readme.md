@@ -95,3 +95,6 @@ docker push gingersociety/vite-react-dev
 
 ```
 
+
+Notes
+kubectl port-forward rabbitmq-something 15672:15672

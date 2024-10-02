@@ -5,6 +5,10 @@ metadata:
   namespace: default
   annotations:
       cert-manager.io/issuer: letsencrypt-nginx
+      nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"  # 1 hour timeout
+      nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"  # 1 hour timeout
+      nginx.ingress.kubernetes.io/proxy-connect-timeout: "60"  # 60 seconds
+      nginx.ingress.kubernetes.io/enable-websocket: "true"    # WebSocket support
 spec:
   tls:
     - hosts:
@@ -33,6 +37,13 @@ spec:
             backend:
                 service:
                   name: metadata-service-api-service
+                  port:
+                    number: 80
+          - path: /notification
+            pathType: Prefix
+            backend:
+                service:
+                  name: notification-service-service
                   port:
                     number: 80
   ingressClassName: nginx

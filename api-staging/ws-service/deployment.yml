@@ -1,0 +1,25 @@
+# deployment.yml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: notification-service-deployment
+  labels:
+    app: notification-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: notification-service
+  template:
+    metadata:
+      labels:
+        app: notification-service
+    spec:
+      containers:
+      - name: notification-service
+        image: gingersociety/notification-service-stage:latest
+        ports:
+        - containerPort: 3030
+        env:
+        - name: AMPQ_URI
+          value: "amqp://user:password@rabbitmq-service:5672/%2f"
