@@ -22,7 +22,7 @@ RUN npm install -g pnpm
 RUN pnpm -v && node -v
 
 # Install necessary CLIs using the provided script
-RUN bash -c "$(curl -fsSL https://raw.githubusercontent.com/ginger-society/infra-as-code-repo/main/rust-helpers/install-all-clis.sh)"
+RUN bash -c "$(curl -fsSL https://raw.githubusercontent.com/ginger-society/infra-as-code-repo/main/rust-helpers/install-pipeline-clis.sh)"
 
 # Install Java
 RUN apt install -y default-jdk
