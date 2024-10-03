@@ -1,0 +1,92 @@
+{
+  "services": [
+    {
+      "identifier": "@ginger-society/dev-portal",
+      "version": "0.15.0-nightly.0"
+    },
+    {
+      "identifier": "@ginger-society/IAMService",
+      "version": "0.5.0-nightly.0"
+    },
+    {
+      "identifier": "@ginger-society/schema-gen-service",
+      "version": "0.10.0-nightly.0"
+    },
+    {
+      "identifier": "@ginger-society/iam-frontend-users",
+      "version": "0.3.0-nightly.0"
+    },
+    {
+      "identifier": "@ginger-society/homepage",
+      "version": "0.2.0-nightly.0"
+    },
+    {
+      "identifier": "@ginger-society/NotificationService",
+      "version": "0.1.0"
+    },
+    {
+      "identifier": "@ginger-society/docs",
+      "version": "0.4.0-nightly.0"
+    },
+    {
+      "identifier": "@ginger-society/MetadataService",
+      "version": "0.6.0-nightly.0"
+    }
+  ],
+  "packages": [
+    {
+      "identifier": "@ginger-society/ginger-releaser",
+      "version": "8.17.3"
+    },
+    {
+      "identifier": "@ginger-society/ginger-scaffolder",
+      "version": "0.7.0-nightly.0"
+    },
+    {
+      "identifier": "@ginger-society/ginger-auth",
+      "version": "0.1.0"
+    },
+    {
+      "identifier": "@ginger-society/ginger-connector",
+      "version": "0.9.0-nightly.0"
+    },
+    {
+      "identifier": "@ginger-society/ginger-db",
+      "version": "0.10.0-nightly.0"
+    },
+    {
+      "identifier": "@ginger-society/ginger-dj",
+      "version": "5.3.13"
+    },
+    {
+      "identifier": "@ginger-society/ginger-book",
+      "version": "4.5.0"
+    },
+    {
+      "identifier": "@ginger-society/ginger-ui",
+      "version": "0.43.0"
+    },
+    {
+      "identifier": "@ginger-society/ginger-shared-rs",
+      "version": "0.19.0-nightly.0"
+    }
+  ],
+  "databases": [
+    {
+      "name": "@ginger-society/metadata",
+      "version": "0.5.0-nightly.0"
+    },
+    {
+      "name": "@ginger-society/estonia",
+      "version": "0.5.0-nightly.0"
+    },
+    {
+      "name": "@ginger-society/changi",
+      "version": "0.5.0-nightly.0"
+    },
+    {
+      "name": "@ginger-society/IAM",
+      "version": "0.5.0-nightly.0"
+    }
+  ]
+}
