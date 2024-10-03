@@ -18,3 +18,39 @@ icon = "FaGithub"
 internal = true
 label = "Browse Repo"
 link = "https://github.com/ginger-society/infra-as-code-repo"
+
+[[links]]
+icon = "FaDigitalOcean"
+internal = true
+label = "Digital Ocean Control Panel"
+link = "https://cloud.digitalocean.com/projects/9836618e-ca0c-46bc-8554-d75cd3cb507c/resources?i=db896d"
+
+[[links]]
+icon = "FaAws"
+internal = true
+label = "AWS Control Panel"
+link = "https://ap-south-1.console.aws.amazon.com/console/home?region=ap-south-1"
+
+[[links]]
+icon = "FaDocker"
+internal = true
+label = "Docker hub images"
+link = "https://hub.docker.com/u/gingersociety"
+
+[[links]]
+icon = "FaNpm"
+internal = true
+label = "NPM Packages"
+link = "https://www.npmjs.com/~ginger-society"
+
+[[links]]
+icon = "FaPython"
+internal = true
+label = "Python Packages"
+link = "https://pypi.org/user/ginger-society/"
+
+[[links]]
+icon = "FaRust"
+internal = true
+label = "Rust Crates"
+link = "https://crates.io/users/ginger-society"
