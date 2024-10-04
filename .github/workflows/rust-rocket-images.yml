@@ -13,6 +13,13 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
 
+    - name: Install ginger-apps
+      run: bash -c "$(curl -fsSL https://raw.githubusercontent.com/ginger-society/infra-as-code-repo/main/rust-helpers/install-pipeline-clis.sh)"
+
+    - name: Authenticate with ginger-auth
+      id: ginger-auth
+      run: ginger-auth token-login ${{ secrets.GINGER_TOKEN }}
+
     - name: Log in to Docker Hub
       run: echo "${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}" | docker login -u "${{ secrets.DOCKER_HUB_USERNAME }}" --password-stdin
 
@@ -45,3 +52,6 @@ jobs:
 
     - name: Push Rocket dev Docker image
       run: docker push ${{ secrets.DOCKER_HUB_USERNAME }}/rust-rocket-api-dev:latest
+
+    - name: trigger system wide check
+      run: ginger-connector system-check ${{secrets.GH_TOKEN}}
