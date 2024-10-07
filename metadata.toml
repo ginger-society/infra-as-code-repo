@@ -14,6 +14,12 @@ label = "Digital Ocean Control Panel"
 link = "https://cloud.digitalocean.com/projects/9836618e-ca0c-46bc-8554-d75cd3cb507c/resources?i=db896d"
 
 [[links]]
+icon = "FaGoogle"
+internal = true
+label = "Google Cloud Control Panel"
+link = "https://console.cloud.google.com/run?referrer=search&project=gingersocietyorg"
+
+[[links]]
 icon = "FaAws"
 internal = true
 label = "AWS Control Panel"
