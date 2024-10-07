@@ -1,5 +1,17 @@
+## 0.27.0-nightly.0 - 2024-10-07
+feat:
+ - [5689a0b2a1](https://github.com/ginger-society/infra-as-code-repo5689a0b2a1fc51167a3cd3d0733b3f3dfbb53ce8) (Ginger Society Admin) feat: added google console link
+	
+ - [e08efbd51f](https://github.com/ginger-society/infra-as-code-repoe08efbd51f90dd141c2697ce30c9e73fa160bdb4) (Ginger Society Admin) feat: updated pipeline since the api token age has been revised to 20 minutes
+	
+ - [a577f6bd53](https://github.com/ginger-society/infra-as-code-repoa577f6bd536702671eeadfb3ae679f39c1cd896f) (Ginger Society Admin) feat: fixing ginger auth expiration issue in pipeline
+	
+ - [3b7ca13139](https://github.com/ginger-society/infra-as-code-repo3b7ca131395891b77190a52348e29b6aada6b1a0) (Ginger Society Admin) feat: updated pipeline to trigger system wide check
+	
 ## 0.24.0-nightly.0 - 2024-10-03
 chore:
+ - [e215966126](https://github.com/ginger-society/infra-as-code-repoe2159661260ff524b5964c0e67ef095f187b497f) (Ginger Society Admin) chore: version bump to 0.24.0-nightly.0
+	
  - [246b4b2ab7](https://github.com/ginger-society/infra-as-code-repo246b4b2ab7fc76e66cdbccb409b982640d150d9b) (Ginger Society) chore: Rename readme.md to README.md
 ## 0.23.0-nightly.0 - 2024-10-03
 chore:
@@ -10,20 +22,20 @@ chore:
  - [95634cbef1](https://github.com/ginger-society/infra-as-code-repo95634cbef194c6a83aa1f88d03ddf2575c70326f) (Ginger Society Admin) chore: version bump to 0.22.0-nightly.0
 	
 ## 0.21.0-nightly.0 - 2024-10-03
-chore:
- - [c9e858651b](https://github.com/ginger-society/infra-as-code-repoc9e858651beaaa3be5309b4de7ace78af7ca0d44) (Ginger Society Admin) chore: version bump to 0.21.0-nightly.0
-	
 feat:
  - [866c40cc36](https://github.com/ginger-society/infra-as-code-repo866c40cc367fdbce418825b0c626c394a43fd54f) (Ginger Society Admin) feat: updated docker images to use only pipeline essential dockerfile
 	
  - [ffe2b06dbe](https://github.com/ginger-society/infra-as-code-repoffe2b06dbe2927a825ef93494a6ac34b27f58ecc) (Ginger Society Admin) feat: added rabbit mq deployment and service and addded pipeline cli installer script
 	
-## 0.15.0-nightly.0 - 2024-09-24
-feat:
- - [cd8bf4ded4](https://github.com/ginger-society/infra-as-code-repocd8bf4ded465a8e1cb4a186571ad39ebfadb61f9) (Ginger Society Admin) feat: updated metadata
+chore:
+ - [c9e858651b](https://github.com/ginger-society/infra-as-code-repoc9e858651beaaa3be5309b4de7ace78af7ca0d44) (Ginger Society Admin) chore: version bump to 0.21.0-nightly.0
 	
+## 0.15.0-nightly.0 - 2024-09-24
 chore:
  - [7be0f233b2](https://github.com/ginger-society/infra-as-code-repo7be0f233b2e600b985b8ea894ea5966d3b9494c5) (Ginger Society Admin) chore: version bump to 0.15.0-nightly.0
+	
+feat:
+ - [cd8bf4ded4](https://github.com/ginger-society/infra-as-code-repocd8bf4ded465a8e1cb4a186571ad39ebfadb61f9) (Ginger Society Admin) feat: updated metadata
 	
 ## 0.14.0-nightly.0 - 2024-09-24
 chore:
@@ -50,6 +62,9 @@ chore:
  - [3a9342df6e](https://github.com/ginger-society/infra-as-code-repo3a9342df6e37804d2d21e49a15bc5d3d1f71004e) (Ginger Society Admin) chore: version bump to 0.7.0-nightly.0
 	
 ## 0.6.0-nightly.0 - 2024-09-23
+fix:
+ - [270175a2d4](https://github.com/ginger-society/infra-as-code-repo270175a2d42289940a79608a1f31c437c94c78aa) (Ginger Society Admin) fix: minor
+	
 feat:
  - [cdba17f0d0](https://github.com/ginger-society/infra-as-code-repocdba17f0d08b4f80736d9bbdf90fd2e2014bc013) (Ginger Society Admin) feat: changed yatn to pnpm
 	
@@ -61,9 +76,6 @@ chore:
  - [53c481b568](https://github.com/ginger-society/infra-as-code-repo53c481b568d879af2135a2e3176c0d18fa0af174) (Ginger Society Admin) chore: version bump to 0.6.0-nightly.0
 	
  - [54d8332e06](https://github.com/ginger-society/infra-as-code-repo54d8332e0632b4ea8e750c6f7c0865ab17782982) (Ginger Society Admin) chore: remobed openapi cli version comand
-	
-fix:
- - [270175a2d4](https://github.com/ginger-society/infra-as-code-repo270175a2d42289940a79608a1f31c437c94c78aa) (Ginger Society Admin) fix: minor
 	
 ## 0.5.0-nightly.0 - 2024-09-09
 chore:
