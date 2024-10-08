@@ -1,4 +1,4 @@
-lang = "Rust"
+lang = "Shell"
 package_type = "library"
 
 [[links]]
