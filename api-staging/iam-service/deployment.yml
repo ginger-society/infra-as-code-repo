@@ -32,4 +32,6 @@ spec:
         - name: ROCKET_PORT
           value: "8000"
         - name: JWT_SECRET
-          value: "secret"
+          value: "1234"
+        - name: ISC_SECRET
+          value: "ISC secret"

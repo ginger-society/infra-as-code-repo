@@ -23,3 +23,9 @@ spec:
         env:
         - name: AMPQ_URI
           value: "amqp://user:password@rabbitmq-service:5672/%2f"
+        - name: AWS_ACCESS_KEY_ID
+          value: "key_id"
+        - name: AWS_SECRET_ACCESS_KEY
+          value: "value_id"
+        - name: AWS_REGION
+          value: "ap-south-1"

@@ -1,100 +1,144 @@
-# This is the repo for API services deployed on api-*.gingersociety.org
+# Welcome to [Your Company Name] 🎉
 
+Welcome aboard! We're excited to have you join the team as a Full Stack Engineer. This document will walk you through your initial setup and provide an overview of our tech stack, tools, and processes to help you hit the ground running. Let's dive in!
 
-## There is only one env as of now : staging
+## Table of Contents
 
-This is deployed on api-staging.gingersociety.org
+1. [Getting Access](#getting-access)
+2. [Setting Up Your Development Environment](#setting-up-your-development-environment)
+3. [Tech Stack Overview](#tech-stack-overview)
+4. [Working with Repositories](#working-with-repositories)
+5. [Deployment and Environments](#deployment-and-environments)
+6. [Common Tools and Practices](#common-tools-and-practices)
+7. [Company Culture and Communication](#company-culture-and-communication)
+8. [Additional Resources](#additional-resources)
 
-Common code related to this env is available in staging directory
-There are few apps deployed
+---
 
-1. **example-app**
+### 1. Getting Access
 
-    This is a sample hello world service
+To get started, you'll need access to the following:
 
-    Available on api-staging.gingersociety.org/test/*
-2. **iam-service-api**
+- **GitHub:** Our code is hosted here. Please send your GitHub username to your manager for repo access.
+- **Docker Hub:** We use Docker Hub for container images. Share your Docker ID for team access.
+- **GCP, AWS, and DigitalOcean:** We use multiple cloud providers, so reach out for access to our resources as needed.
+- **Slack (or preferred team communication tool):** For company and team communication.
+- **Documentation tools (Confluence, Notion, etc.):** Request access if needed.
 
-    This is the deployment for IAM service apis
+---
 
-    Available on api-staging.gingersociety.org/iam/*
-3. **metadata-service-api**
+### 2. Setting Up Your Development Environment
 
-    This is the deployment for Metadata service apis
+#### 2.1 Clone the Repositories
 
-    Available on api-staging.gingersociety.org/metadata/*
+1. **Clone the main repository** (and any additional ones as directed by your manager).
+   ```bash
+   git clone https://github.com/[YourCompany]/[MainRepo].git
+   ```
 
+2. **Install Dependencies:**
+   - **npm:** Run `npm install` where applicable for frontend projects.
+   - **Docker:** Pull Docker images or build them locally.
 
-## Notes we took while creating this repo
+#### 2.2 Set Up Docker
 
-deploy your app and service and map the service in ingress file
+We use Docker extensively for development, staging, and production environments.
 
-https://artifacthub.io/packages/helm/ingress-nginx/ingress-nginx
+- Ensure Docker is installed and running.
+- **Pull development images:**
+  ```bash
+  docker-compose up --build
+  ```
 
-helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+#### 2.3 Configure Environment Variables
 
+1. **Environment Files:** Copy `.env.example` to `.env` and update any secrets.
+2. **Secrets Management:** We use [GCP Secret Manager/AWS Secrets Manager] (depending on your stack) to securely store and access sensitive information.
 
-helm install ingress-nginx ingress-nginx/ingress-nginx -n ingress-nginx -f nginx-value.yaml 
+---
 
-then add ignress
-kubectl apply -f ingress.yaml
+### 3. Tech Stack Overview
 
+#### Backend
 
-https://artifacthub.io/packages/helm/cert-manager/cert-manager
+- **Languages:** Rust, Python
+- **Database:** PostgreSQL for relational data, Redis for caching
+- **Message Broker:** RabbitMQ for queueing
+- **Cloud Services:** GCP (primary), AWS (for SES, S3), DigitalOcean (for backup or specific services)
 
-kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.15.2/cert-manager.crds.yaml
+#### Frontend
 
-Add the Jetstack Helm repository
-$ helm repo add jetstack https://charts.jetstack.io --force-update
+- **Framework:** ReactJS
+- **Package Manager:** npm (pnpm or Yarn if preferred by the team)
 
-helm install cert-manager -n cert-manager --version v1.15.2 jetstack/cert-manager -f cert-manager-values.yaml
+#### DevOps
 
-then add issuer
-kubectl apply -f issuer.yaml
+- **Containerization:** Docker
+- **CI/CD:** GitHub Actions for automated testing and deployment
+- **Orchestration:** Kubernetes for managing our containerized applications
 
+---
 
-# Rust helpers
+### 4. Working with Repositories
 
-```sh
-docker build --platform linux/amd64 -t rust-cli-builder:latest -f Dockerfile.build  .
+We follow a **feature-branch workflow**:
 
-```
+1. **Create a branch** for new features or bug fixes:
+   ```bash
+   git checkout -b feature/your-feature-name
+   ```
 
-while using rust-helpers , please add .env file in your project root with 
+2. **Push your changes** and open a **Pull Request (PR)** on GitHub.
+3. **PR Reviews:** All PRs require at least one review. Make sure your PR includes meaningful commits and messages.
 
-```env
+---
 
-AWS_ACCESS_KEY_ID=ID
-AWS_SECRET_ACCESS_KEY=ACCESS_TOKEN
-AWS_DEFAULT_REGION=region
-GINGER_TOKEN=API_TOKEN
+### 5. Deployment and Environments
 
-```
+- **Development:** Local environment with Docker and Docker Compose.
+- **Staging:** Managed with Kubernetes and deployed to our staging cluster in GCP.
+- **Production:** Kubernetes cluster in GCP, with automated deployments via GitHub Actions.
 
-To use the installed use the following command
+#### Deployment Process
 
-```sh
-sudo bash -c "$(curl -fsSL https://raw.githubusercontent.com/ginger-society/infra-as-code-repo/main/rust-helpers/installer.sh)" -- ginger-society/ginger-connector:latest
-```
-To install all the apps ( mac and linux )
+1. Merge changes to the `main` branch for deployment.
+2. **CI/CD Pipeline:** GitHub Actions will automatically build, test, and deploy the application to the specified environment.
 
-```sh
-sudo bash -c "$(curl -fsSL https://raw.githubusercontent.com/ginger-society/infra-as-code-repo/main/rust-helpers/install-all-clis.sh)"
+---
 
-```
+### 6. Common Tools and Practices
 
-apart from building x86 imgae of the dev container images , you also need to build arm image if you are building it on mac
+#### Docker and Docker Compose
 
-```sh
-docker build -t gingersociety/vite-react-dev . -f devcontainer-images/vite-react/Dockerfile.dev
+- **Docker Hub:** All public/private images are available at [Your Docker Hub URL].
+- Run `docker-compose up` for local development setup.
 
-```
+#### Kubernetes
 
-```sh
-docker push gingersociety/vite-react-dev
+We use Kubernetes clusters for production and staging environments, with resources managed by Helm charts. You'll need access to `kubectl` to monitor the clusters.
 
-```
+#### Database Management
 
+- **PostgreSQL:** Access databases through [pgAdmin/other preferred tools]. Make sure to follow our migration guidelines when updating schemas.
+- **Redis:** Used primarily for caching. Access via CLI or Redis GUI if needed.
 
-Notes
-kubectl port-forward rabbitmq-something 15672:15672
+#### Message Queues and Email
+
+- **RabbitMQ:** Used for handling async tasks. Use the RabbitMQ dashboard for monitoring.
+- **SES:** For email functionality. Credentials are available in your environment configuration.
+
+---
+
+### 7. Company Culture and Communication
+
+- **Daily Standups:** We have quick standups to check in on daily progress and blockers.
+- **Slack Channels:** Use specific channels for queries (#frontend, #backend, etc.)
+- **Documentation:** Update documentation when you work on new features or processes.
+
+---
+
+### 8. Additional Resources
+
+- **API Documentation:** Refer to [API documentation URL] for REST and GraphQL endpoint details.
+- **Code Style Guides:** Refer to our [JavaScript/Rust/Python] guidelines in the repo.
+- **Onboarding Checklist:** Complete the onboarding checklist available in [Project Management Tool/Notion].

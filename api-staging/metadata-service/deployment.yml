@@ -24,7 +24,7 @@ spec:
         - name: DATABASE_URL
           value: "postgresql://user:pass@server:port/db"
         - name: REDIS_URI
-          value: "redis://redis-service:6379"
+          value: "redis://redis-service-staging:6379"
         - name: ROCKET_SECRET_KEY
           value: "secret"
         - name: ROCKET_ADDRESS
@@ -32,4 +32,6 @@ spec:
         - name: ROCKET_PORT
           value: "8000"
         - name: JWT_SECRET
-          value: "secret"
+          value: "1234"
+        - name: ISC_SECRET
+          value: "ISC secret"
