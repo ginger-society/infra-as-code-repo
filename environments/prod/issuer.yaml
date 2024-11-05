@@ -1,0 +1,16 @@
+# issuer.yaml
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: letsencrypt-nginx-prod
+  namespace: default
+spec:
+  acme:
+    email: hello@gingersociety.org
+    server: https://acme-v02.api.letsencrypt.org/directory
+    privateKeySecretRef:
+      name: letsencrypt-nginx-private-key-prod
+    solvers:
+      - http01:
+          ingress:
+            class: nginx

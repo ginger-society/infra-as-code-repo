@@ -52,6 +52,11 @@ helm install cert-manager -n cert-manager --version v1.15.2 jetstack/cert-manage
 then add issuer
 kubectl apply -f issuer.yaml
 
+In case of ssl not working , please use : 
+```sh
+kubectl logs -n ingress-nginx -l app.kubernetes.io/name=ingress-nginx
+```
+
 
 # Rust helpers
 

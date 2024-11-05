@@ -1,0 +1,16 @@
+#!/bin/bash
+
+# Define the path to the kubeconfig
+KUBECONFIG_PATH="./k8-config.yaml"
+
+# Check the first argument to determine whether to use kubectl or helm
+if [ "$1" = "kubectl" ]; then
+    shift
+    exec kubectl "$@" --kubeconfig="$KUBECONFIG_PATH"
+elif [ "$1" = "helm" ]; then
+    shift
+    exec helm "$@" --kubeconfig="$KUBECONFIG_PATH"
+else
+    echo "Usage: $0 {kubectl|helm} <args>"
+    exit 1
+fi
