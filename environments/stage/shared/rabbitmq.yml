@@ -24,6 +24,16 @@ spec:
           value: user
         - name: RABBITMQ_DEFAULT_PASS
           value: password
+
+      # Sidecar container for Prometheus RabbitMQ exporter
+      - name: rabbitmq-exporter
+        image: kbudde/rabbitmq-exporter
+        ports:
+        - containerPort: 9419  # Prometheus metrics port
+        env:
+        - name: RABBITMQ_URL
+          value: "http://user:password@localhost:15672" # Use the correct credentials here
+
 ---
 apiVersion: v1
 kind: Service
@@ -36,6 +46,9 @@ spec:
     - name: amqp
       port: 5672
       targetPort: 5672
+    - name: metrics
+      port: 9419
+      targetPort: 9419  # Port for Prometheus metrics
   selector:
     app: rabbitmq
 
