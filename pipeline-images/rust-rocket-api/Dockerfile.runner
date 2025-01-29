@@ -1,5 +1,5 @@
 # Second stage: Create the minimal runtime image
-FROM debian:bullseye-slim
+FROM debian:buster-slim
 
 # Install necessary dependencies
 RUN apt-get update && apt-get install -y \
