@@ -18,7 +18,7 @@ pkg_name=$(echo "$org_pkg_version" | awk -F'/' '{print $2}')
 # If version is 'latest', fetch it from the API
 if [ "$version" == "latest" ]; then
     # Call the version API
-    version=$(curl -s "https://api-staging.gingersociety.org/metadata/version/$org/$pkg_name")
+    version=$(curl -s "https://api.gingersociety.org/metadata/version/$org/$pkg_name")
 
     if [ -z "$version" ]; then
         echo "Error: Could not retrieve the latest version for $org/$pkg_name"
