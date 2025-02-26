@@ -5,16 +5,11 @@ metadata:
   name: ingress-prod
   namespace: default
   annotations:
-      cert-manager.io/issuer: letsencrypt-nginx-prod
       nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"  # 1 hour timeout
       nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"  # 1 hour timeout
       nginx.ingress.kubernetes.io/proxy-connect-timeout: "60"  # 60 seconds
       nginx.ingress.kubernetes.io/enable-websocket: "true"    # WebSocket support
 spec:
-  tls:
-    - hosts:
-      - api.gingersociety.org
-      secretName: letsencrypt-nginx-prod
   rules:
     - host: api.gingersociety.org
       http:
