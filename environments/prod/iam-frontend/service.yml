@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: iam-frontend-service
+  labels:
+    app: iam-frontend-app
+spec:
+  selector:
+    app: iam-frontend-app
+  ports:
+    - protocol: TCP
+      name: http
+      port: 80
+      targetPort: 80

@@ -21,4 +21,14 @@ spec:
                   name: example-service 
                   port:
                     number: 80
+    - host: iam.gingersociety.org
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+                service:
+                  name: iam-frontend-service
+                  port:
+                    number: 80
   ingressClassName: nginx
