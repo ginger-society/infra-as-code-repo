@@ -1,0 +1,42 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: build-and-push-example-service
+spec:
+  params:
+    - name: IMAGE_TAG
+      type: string
+      default: "latest"
+    - name: REGISTRY
+      type: string
+      default: "docker.io/your-docker-username"
+  workspaces:
+    - name: source
+      optional: true  # No PVC required
+  steps:
+    - name: clone-repo
+      image: alpine
+      script: |
+        #!/bin/sh
+        apk add --no-cache git
+        mkdir -p /workspace/source
+        git clone https://github.com/ginger-society/infra-as-code-repo.git /workspace/source
+
+    - name: build-and-push
+      image: quay.io/buildah/stable
+      securityContext:
+        privileged: true
+      script: |
+        #!/bin/sh
+        set -e
+        echo "Building and pushing image using Buildah..."
+        
+        cd /workspace/source/pipeline-images/example-service
+
+        buildah bud --format docker -t $(params.REGISTRY)/example-service:$(params.IMAGE_TAG) .
+
+        echo "Logging in to Docker Hub..."
+        buildah login -u "$DOCKERHUB_USERNAME" -p "$DOCKERHUB_PASSWORD" docker.io
+
+        echo "Pushing the image..."
+        buildah push $(params.REGISTRY)/example-service:$(params.IMAGE_TAG) docker://$(params.REGISTRY)/example-service:$(params.IMAGE_TAG)

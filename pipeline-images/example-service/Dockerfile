@@ -1,5 +1,5 @@
 # Use the Nginx base image
-FROM nginx:alpine
+FROM docker.io/library/nginx:alpine
 
 # Copy your index.html to the Nginx html directory
 COPY index.html /usr/share/nginx/html/example/index.html

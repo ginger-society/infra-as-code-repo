@@ -1,0 +1,72 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: db-migrations
+spec:
+  params:
+    - name: DB_HOST
+      type: string
+    - name: DB_PORT
+      type: string
+    - name: DB_USERNAME
+      type: string
+    - name: DB_PASSWORD
+      type: string
+    - name: DB_NAME_ONE
+      type: string
+    - name: DB_NAME_TWO
+      type: string
+  workspaces:
+    - name: source
+  steps:
+    - name: checkout-repo
+      image: alpine
+      script: |
+        #!/bin/sh
+        apk add --no-cache git
+        rm -rf $(workspaces.source.path)/*  # Delete existing files
+        git clone https://github.com/ginger-society/ginger-society-db.git $(workspaces.source.path)
+
+    - name: migrate-iam-db
+      image: gingersociety/db-compose-migrator:latest
+      env:
+        - name: DB_HOST
+          value: "$(params.DB_HOST)"
+        - name: DB_PORT
+          value: "$(params.DB_PORT)"
+        - name: DB_USERNAME
+          value: "$(params.DB_USERNAME)"
+        - name: DB_PASSWORD
+          value: "$(params.DB_PASSWORD)"
+        - name: DB_NAME
+          value: "$(params.DB_NAME_ONE)"
+      script: |
+        #!/bin/sh
+        echo "Starting migration for IAM DB"
+        cp $(workspaces.source.path)/IAM/models.py /app/src/models.py
+        cp $(workspaces.source.path)/IAM/admin.py /app/src/admin.py
+        rm -rf /app/src/migrations  # Remove existing folder
+        cp -r $(workspaces.source.path)/IAM/migrations /app/src/
+        /bin/bash migrate.sh
+
+    - name: migrate-metadata-db
+      image: gingersociety/db-compose-migrator:latest
+      env:
+        - name: DB_HOST
+          value: "$(params.DB_HOST)"
+        - name: DB_PORT
+          value: "$(params.DB_PORT)"
+        - name: DB_USERNAME
+          value: "$(params.DB_USERNAME)"
+        - name: DB_PASSWORD
+          value: "$(params.DB_PASSWORD)"
+        - name: DB_NAME
+          value: "$(params.DB_NAME_TWO)"
+      script: |
+        #!/bin/sh
+        echo "Starting migration for metadata DB"
+        cp $(workspaces.source.path)/metadata/models.py /app/src/models.py
+        cp $(workspaces.source.path)/metadata/admin.py /app/src/admin.py
+        rm -rf /app/src/migrations  # Remove existing folder
+        cp -r $(workspaces.source.path)/metadata/migrations /app/src/
+        /bin/bash migrate.sh
