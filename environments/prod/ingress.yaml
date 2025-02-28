@@ -51,4 +51,15 @@ spec:
                   name: tekton-dashboard-proxy
                   port:
                     number: 9097
+
+    - host: k8-prod-dashboard.gingersociety.org
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+                service:
+                  name: kubernetes-dashboard-proxy
+                  port:
+                    number: 80
   ingressClassName: nginx

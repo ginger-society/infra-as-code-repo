@@ -36,7 +36,7 @@ spec:
         buildah bud --format docker -t $(params.REGISTRY)/example-service:$(params.IMAGE_TAG) .
 
         echo "Logging in to Docker Hub..."
-        buildah login -u "$DOCKERHUB_USERNAME" -p "$DOCKERHUB_PASSWORD" docker.io
+        buildah login -u gingersociety -p PAT_HERE
 
         echo "Pushing the image..."
         buildah push $(params.REGISTRY)/example-service:$(params.IMAGE_TAG) docker://$(params.REGISTRY)/example-service:$(params.IMAGE_TAG)
