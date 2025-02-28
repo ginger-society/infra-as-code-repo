@@ -31,4 +31,24 @@ spec:
                   name: iam-frontend-service
                   port:
                     number: 80
+    - host: pgadmin.gingersociety.org
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+                service:
+                  name: my-pgadmin-pgadmin4
+                  port:
+                    number: 80
+    - host: tekton.gingersociety.org
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+                service:
+                  name: tekton-dashboard-proxy
+                  port:
+                    number: 9097
   ingressClassName: nginx
