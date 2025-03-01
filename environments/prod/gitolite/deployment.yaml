@@ -14,7 +14,8 @@ spec:
     spec:
       containers:
         - name: gitolite
-          image: gingersociety/gitolite
+          image: gingersociety/gitolite:latest
+          imagePullPolicy: Always
           ports:
             - containerPort: 22
           env:

@@ -12,6 +12,7 @@ RUN mkdir -p /keys /nfs/kubeconfigs
 
 # Set the working directory
 WORKDIR /var/lib/git
+COPY create-tekton-task-run.sh /var/lib/git/trigger-tekton-task.sh
 
 # Add the Gitolite post-receive hook
 RUN mkdir -p /var/lib/git/.gitolite/hooks/common && \
@@ -20,5 +21,4 @@ RUN mkdir -p /var/lib/git/.gitolite/hooks/common && \
     chmod +x /var/lib/git/.gitolite/hooks/common/post-receive
 
 # Add the Tekton trigger script
-COPY trigger-tekton-task.sh /var/lib/git/trigger-tekton-task.sh
 RUN chmod +x /var/lib/git/trigger-tekton-task.sh
