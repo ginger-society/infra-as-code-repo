@@ -1,0 +1,26 @@
+apiVersion: tekton.dev/v1beta1
+kind: TaskRun
+metadata:
+  name: clone-repo-run-23
+spec:
+  taskRef:
+    name: hello-world
+  workspaces:
+    - name: source
+      emptyDir: {}  # Temporary in-memory storage
+    - name: ssh-credentials
+      secret:
+        secretName: ssh-private-key  # Reference to your SSH private key secret
+    - name: ssh-config
+      emptyDir: {}  # Shared space for SSH setup (fixes the error)
+  params:
+    - name: GL_USER
+      value: "git"
+    - name: GL_REPO
+      value: "testing"
+    - name: GL_REFNAME
+      value: "refs/heads/main"
+    - name: GL_OLDREV
+      value: ""
+    - name: GL_NEWREV
+      value: ""

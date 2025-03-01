@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: gitolite
-          image: jgiannuzzi/gitolite
+          image: gingersociety/gitolite
           ports:
             - containerPort: 22
           env:
@@ -29,6 +29,9 @@ spec:
             - mountPath: /var/lib/git
               subPath: repositories
               name: gitolite-storage
+            - name: gitolite-storage
+              mountPath: /keys
+              subPath: kubeconfigs
       volumes:
         - name: gitolite-storage
           persistentVolumeClaim:

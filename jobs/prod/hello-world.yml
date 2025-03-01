@@ -1,0 +1,62 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: hello-world
+spec:
+  params:
+    - name: GL_USER
+      type: string
+    - name: GL_REPO
+      type: string
+    - name: GL_REFNAME
+      type: string
+    - name: GL_OLDREV
+      type: string
+    - name: GL_NEWREV
+      type: string
+  workspaces:
+    - name: source
+    - name: ssh-credentials  # Store SSH keys
+    - name: ssh-config  # Store SSH setup
+  steps:
+    - name: setup-ssh
+      image: alpine
+      script: |
+        #!/bin/sh
+        set -e  # Exit on error
+
+        apk add --no-cache openssh-client  # Install SSH tools
+
+        mkdir -p /workspace/ssh-config/.ssh
+        cp /workspace/ssh-credentials/id_ed25519 /workspace/ssh-config/.ssh/id_ed25519
+        chmod 600 /workspace/ssh-config/.ssh/id_ed25519
+
+        # Configure SSH to disable strict host key checking
+        echo "Host source.gingersociety.org" >> /workspace/ssh-config/.ssh/config
+        echo "    User git" >> /workspace/ssh-config/.ssh/config
+        echo "    HostName source.gingersociety.org" >> /workspace/ssh-config/.ssh/config
+        echo "    Port 3333" >> /workspace/ssh-config/.ssh/config
+        echo "    IdentityFile ~/.ssh/id_ed25519" >> /workspace/ssh-config/.ssh/config
+        echo "    StrictHostKeyChecking no" >> /workspace/ssh-config/.ssh/config
+        echo "    UserKnownHostsFile=/dev/null" >> /workspace/ssh-config/.ssh/config
+
+        # Add host to known_hosts (to prevent manual intervention)
+        ssh-keyscan -p 3333 -H source.gingersociety.org > /workspace/ssh-config/.ssh/known_hosts
+
+        # Ensure SSH config is applied
+        chmod 600 /workspace/ssh-config/.ssh/config
+        chmod 644 /workspace/ssh-config/.ssh/known_hosts
+
+        echo "SSH setup completed successfully."
+
+
+    - name: clone-repo
+      image: gingersociety/secure-git-task-runner
+      workingDir: /workspace/source
+      script: |
+        #!/bin/sh
+        export HOME=/workspace/ssh-config  # Use shared SSH config
+
+        git clone git@source.gingersociety.org:$(params.GL_REPO) .
+        echo "Repository cloned successfully."
+        ls -la .
