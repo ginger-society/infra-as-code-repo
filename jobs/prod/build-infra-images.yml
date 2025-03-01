@@ -2,6 +2,11 @@ apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: build-and-push-example-service
+  annotations:
+    x-gingersociety-allowed-branches: |
+      - main
+      - develop
+      - feature/*
 spec:
   params:
     - name: IMAGE_TAG
