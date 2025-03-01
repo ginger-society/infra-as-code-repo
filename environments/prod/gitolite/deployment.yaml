@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gitolite
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gitolite
+  template:
+    metadata:
+      labels:
+        app: gitolite
+    spec:
+      containers:
+        - name: gitolite
+          image: jgiannuzzi/gitolite
+          ports:
+            - containerPort: 22
+          env:
+            - name: SSH_KEY
+              value: ""  # Replace this
+            - name: SSH_KEY_NAME
+              value: "dc0102"  # Replace this
+          volumeMounts:
+            - mountPath: /etc/ssh/keys
+              subPath: sshkeys
+              name: gitolite-storage
+            - mountPath: /var/lib/git
+              subPath: repositories
+              name: gitolite-storage
+      volumes:
+        - name: gitolite-storage
+          persistentVolumeClaim:
+            claimName: gitolite-pvc
