@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gitweb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gitweb
+  template:
+    metadata:
+      labels:
+        app: gitweb
+    spec:
+      containers:
+        - name: gitweb
+          image: mlan/gitweb:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - mountPath: /var/lib/git
+              subPath: repositories
+              name: gitolite-storage
+      volumes:
+        - name: gitolite-storage
+          persistentVolumeClaim:
+            claimName: gitolite-pvc

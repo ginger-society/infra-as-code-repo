@@ -41,6 +41,27 @@ spec:
                   name: my-pgadmin-pgadmin4
                   port:
                     number: 80
+    - host: source.gingersociety.org
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+                service:
+                  name: gitweb-service
+                  port:
+                    number: 80
+
+    - host: npm.gingersociety.org
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+                service:
+                  name: verdaccio-service
+                  port:
+                    number: 80        
     - host: tekton.gingersociety.org
       http:
         paths:

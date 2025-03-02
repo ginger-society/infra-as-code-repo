@@ -1,0 +1,16 @@
+# example-app/service.yml
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: gitweb-service
+  labels:
+    app: gitweb
+spec:
+  selector:
+    app: gitweb
+  ports:
+    - protocol: TCP
+      name: http
+      port: 80
+      targetPort: 80
