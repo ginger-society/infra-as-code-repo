@@ -1,0 +1,15 @@
+apiVersion: tekton.dev/v1beta1
+kind: TaskRun
+metadata:
+  name: build-and-push-example-service-run-9
+spec:
+  taskRef:
+    name: build-and-push-example-service
+  params:
+    - name: IMAGE_TAG
+      value: "v1.0.0"
+    - name: REGISTRY
+      value: "docker.io/gingersociety"
+  workspaces:
+    - name: source
+      emptyDir: {}  # Creates a temporary directory

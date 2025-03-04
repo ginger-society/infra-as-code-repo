@@ -1,0 +1,23 @@
+apiVersion: tekton.dev/v1beta1
+kind: TaskRun
+metadata:
+  name: hello-task-run-30
+spec:
+  taskRef:
+    name: db-migrations
+  params:
+    - name: DB_HOST
+      value: "dc01-pg-db-1-postgresql"
+    - name: DB_PORT
+      value: "5432"
+    - name: DB_USERNAME
+      value: "postgres"
+    - name: DB_PASSWORD
+      value: "pass"
+    - name: DB_NAME_ONE
+      value: "iam"
+    - name: DB_NAME_TWO
+      value: "metadata"
+  workspaces:
+    - name: source
+      emptyDir: {}  # Creates a temporary workspace
