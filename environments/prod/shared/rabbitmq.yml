@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rabbitmq
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rabbitmq
+  template:
+    metadata:
+      labels:
+        app: rabbitmq
+    spec:
+      containers:
+      - name: rabbitmq
+        image: rabbitmq:4-management
+        ports:
+        - containerPort: 5672 # RabbitMQ service port
+        - containerPort: 15672 # RabbitMQ management UI port
+        env:
+        - name: RABBITMQ_DEFAULT_USER
+          value: user
+        - name: RABBITMQ_DEFAULT_PASS
+          value: password
+
+      # Sidecar container for Prometheus RabbitMQ exporter
+      - name: rabbitmq-exporter
+        image: kbudde/rabbitmq-exporter
+        ports:
+        - containerPort: 9419  # Prometheus metrics port
+        env:
+        - name: RABBITMQ_URL
+          value: "http://user:password@localhost:15672" # Use the correct credentials here
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rabbitmq-service
+  namespace: default
+spec:
+  type: ClusterIP
+  ports:
+    - name: amqp
+      port: 5672
+      targetPort: 5672
+    - name: metrics
+      port: 9419
+      targetPort: 9419  # Port for Prometheus metrics
+  selector:
+    app: rabbitmq
+

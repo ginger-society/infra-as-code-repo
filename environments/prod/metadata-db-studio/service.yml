@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: metadata-db-studio-service
+  labels:
+    app: metadata-db-runtime
+spec:
+  selector:
+    app: metadata-db-runtime
+  ports:
+    - protocol: TCP
+      name: http
+      port: 80
+      targetPort: 8000

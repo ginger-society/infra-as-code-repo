@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: metadata-db-runtime
+  labels:
+    app: metadata-db-runtime
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: metadata-db-runtime
+  template:
+    metadata:
+      labels:
+        app: metadata-db-runtime
+    spec:
+      containers:
+        - name: metadata-db-runtime
+          image: gingersociety/metadata-db-runtime-prod:latest
+          ports:
+            - containerPort: 8000
+          env:
+            - name: HOST
+              value: "metadata-db.gingersociety.org"
+            - name: APP_ID
+              value: "metadata-db-runtime"
+            - name: DB_NAME
+              value: "metadata"
+            - name: DB_USERNAME
+              value: "postgres"
+            - name: DB_PASSWORD
+              value: "pass"
+            - name: DB_HOST
+              value: "dc01-pg-db-1-postgresql"
+            - name: DB_PORT
+              value: "5432"

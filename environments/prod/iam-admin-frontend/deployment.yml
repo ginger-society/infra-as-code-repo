@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: iam-admin-frontend-deploy
+  labels:
+    app: iam-admin-frontend-app
+spec:
+  selector:
+    matchLabels:
+      app: iam-admin-frontend-app
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: iam-admin-frontend-app
+    spec:
+      containers:
+      - name: iam-admin-frontend-app
+        image: gingersociety/iam-admin-prod-fe  # Use Apache2 image
+        ports:
+        - containerPort: 80  # Apache defaults to port 80

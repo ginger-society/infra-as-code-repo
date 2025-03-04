@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ginger-db-test-env
+  labels:
+    app: ginger-db-test-env
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ginger-db-test-env
+  template:
+    metadata:
+      labels:
+        app: ginger-db-test-env
+    spec:
+      containers:
+        - name: ginger-db-test-env
+          image: gingersociety/db-compose-runtime-prod:latest
+          ports:
+            - containerPort: 8000
+          env:
+            - name: HOST
+              value: "db-compose-test-env.gingersociety.org"
+            - name: APP_ID
+              value: "db-compose-test-env"

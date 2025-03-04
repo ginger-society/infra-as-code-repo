@@ -36,6 +36,21 @@ spec:
                   name: metadata-service-api-service
                   port:
                     number: 80
+
+          - path: /iam-admin
+            pathType: Prefix
+            backend:
+                service:
+                  name: iam-admin-service-api-service
+                  port:
+                    number: 80
+          - path: /notification
+            pathType: Prefix
+            backend:
+                service:
+                  name: notification-service-service
+                  port:
+                    number: 80
     - host: iam.gingersociety.org
       http:
         paths:
@@ -44,6 +59,16 @@ spec:
             backend:
                 service:
                   name: iam-frontend-service
+                  port:
+                    number: 80
+    - host: iam-admin.gingersociety.org
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+                service:
+                  name: iam-admin-frontend-service
                   port:
                     number: 80
     - host: pgadmin.gingersociety.org
@@ -133,6 +158,26 @@ spec:
             backend:
                 service:
                   name: iam-db-studio-service
+                  port:
+                    number: 80
+    - host: metadata-db.gingersociety.org
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+                service:
+                  name: metadata-db-studio-service
+                  port:
+                    number: 80
+    - host: db-compose-test-env.gingersociety.org
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+                service:
+                  name: ginger-db-test-env-service
                   port:
                     number: 80
     - host: dev-portal.gingersociety.org
