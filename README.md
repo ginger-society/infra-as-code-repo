@@ -142,3 +142,45 @@ We use Kubernetes clusters for production and staging environments, with resourc
 - **API Documentation:** Refer to [API documentation URL] for REST and GraphQL endpoint details.
 - **Code Style Guides:** Refer to our [JavaScript/Rust/Python] guidelines in the repo.
 - **Onboarding Checklist:** Complete the onboarding checklist available in [Project Management Tool/Notion].
+
+
+
+---- Notes----
+
+
+kubectl scale statefulset dc01-pg-db-1-postgresql --replicas=1
+for installing tekton: 
+
+
+
+
+nginx proxy for the gitloite 
+stream {
+    server {
+        listen 3333;
+        proxy_pass 192.168.49.2:31163;
+    }
+
+    server {
+        listen 5000;
+        proxy_pass 192.168.49.2:32638;
+        proxy_connect_timeout 10s;
+        proxy_timeout 300s;
+    }
+}
+in .ssh/config
+
+Host source.gingersociety.org
+    User git
+    HostName source.gingersociety.org
+    Port 3333
+    IdentityFile ~/.ssh/id_ed25519
+
+---- for creating private key inside the secret : 
+
+kubectl create secret generic ssh-private-key --from-file=id_ed25519=runner-private-key
+
+
+
+kubectl delete pod --field-selector=status.phase==Failed
+kubectl delete pod --field-selector=status.phase==Succeeded

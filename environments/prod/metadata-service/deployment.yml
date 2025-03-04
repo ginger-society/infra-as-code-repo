@@ -1,0 +1,37 @@
+# deployment.yml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: metadata-service-api-deployment
+  labels:
+    app: metadata-service-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: metadata-service-api
+  template:
+    metadata:
+      labels:
+        app: metadata-service-api
+    spec:
+      containers:
+      - name: metadata-service-api
+        image: gingersociety/metadata-service-api-stage:latest
+        ports:
+        - containerPort: 8000
+        env:
+        - name: DATABASE_URL
+          value: "postgresql://postgres:pass@dc01-pg-db-1-postgresql:5432/metadata"
+        - name: REDIS_URI
+          value: "redis://redis-service:6379"
+        - name: ROCKET_SECRET_KEY
+          value: "secret"
+        - name: ROCKET_ADDRESS
+          value: "0.0.0.0"
+        - name: ROCKET_PORT
+          value: "8000"
+        - name: JWT_SECRET
+          value: "1234"
+        - name: ISC_SECRET
+          value: "supersecret"

@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: iam-db-runtime
+  labels:
+    app: iam-db-runtime
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: iam-db-runtime
+  template:
+    metadata:
+      labels:
+        app: iam-db-runtime
+    spec:
+      containers:
+        - name: iam-db-runtime
+          image: gingersociety/iam-db-runtime-prod:latest
+          ports:
+            - containerPort: 8000
+          env:
+            - name: HOST
+              value: "iam-db.gingersociety.org"
+            - name: APP_ID
+              value: "iam-db-runtime"
+            - name: DB_NAME
+              value: "iam"
+            - name: DB_USERNAME
+              value: "postgres"
+            - name: DB_PASSWORD
+              value: "pass"
+            - name: DB_HOST
+              value: "dc01-pg-db-1-postgresql"
+            - name: DB_PORT
+              value: "5432"

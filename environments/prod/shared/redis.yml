@@ -1,0 +1,42 @@
+# redis.yml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis-api
+  template:
+    metadata:
+      labels:
+        app: redis-api
+    spec:
+      containers:
+      - name: redis-api
+        image: redis:6.2
+        ports:
+        - containerPort: 6379
+      - name: redis-exporter
+        image: oliver006/redis_exporter:latest
+        args: 
+          - "--redis.addr=redis://localhost:6379" # Address to connect to Redis
+        ports:
+        - containerPort: 9121 # Redis Exporter port for Prometheus
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-service
+spec:
+  type: ClusterIP
+  ports:
+  - name: redis
+    port: 6379
+    targetPort: 6379
+  - name: metrics
+    port: 9121
+    targetPort: 9121 # Redis exporter metrics port
+  selector:
+    app: redis-api

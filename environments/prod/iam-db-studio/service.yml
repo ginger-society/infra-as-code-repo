@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: iam-db-studio-service
+  labels:
+    app: iam-db-runtime
+spec:
+  selector:
+    app: iam-db-runtime
+  ports:
+    - protocol: TCP
+      name: http
+      port: 80
+      targetPort: 8000

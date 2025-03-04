@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: filebrowser
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: filebrowser
+  template:
+    metadata:
+      labels:
+        app: filebrowser
+    spec:
+      containers:
+        - name: filebrowser
+          image: filebrowser/filebrowser:latest
+          args: ["--baseurl", "/ftp"]  # Add this line
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - mountPath: /srv
+              name: package-storage
+      volumes:
+        - name: package-storage
+          persistentVolumeClaim:
+            claimName: pypiserver-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: filebrowser
+spec:
+  selector:
+    app: filebrowser
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+  type: ClusterIP

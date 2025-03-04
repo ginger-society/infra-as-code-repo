@@ -9,6 +9,7 @@ metadata:
       nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"  # 1 hour timeout
       nginx.ingress.kubernetes.io/proxy-connect-timeout: "60"  # 60 seconds
       nginx.ingress.kubernetes.io/enable-websocket: "true"    # WebSocket support
+      nginx.ingress.kubernetes.io/proxy-body-size: "0"
 spec:
   rules:
     - host: api.gingersociety.org
@@ -19,6 +20,20 @@ spec:
             backend:
                 service:
                   name: example-service 
+                  port:
+                    number: 80
+          - path: /iam
+            pathType: Prefix
+            backend:
+                service:
+                  name: iam-service-api-service
+                  port:
+                    number: 80
+          - path: /metadata
+            pathType: Prefix
+            backend:
+                service:
+                  name: metadata-service-api-service
                   port:
                     number: 80
     - host: iam.gingersociety.org
@@ -61,7 +76,34 @@ spec:
                 service:
                   name: verdaccio-service
                   port:
-                    number: 80        
+                    number: 80   
+    - host: docker.gingersociety.org
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+                service:
+                  name: registry-ui
+                  port:
+                    number: 80      
+    - host: pip.gingersociety.org
+      http:
+        paths: 
+          - path: /simple
+            pathType: Prefix
+            backend:
+                service:
+                  name: pypiserver
+                  port:
+                    number: 80  
+          - path: /ftp
+            pathType: Prefix
+            backend:
+                service:
+                  name: filebrowser
+                  port:
+                    number: 80  
     - host: tekton.gingersociety.org
       http:
         paths:
@@ -81,6 +123,26 @@ spec:
             backend:
                 service:
                   name: kubernetes-dashboard-proxy
+                  port:
+                    number: 80
+    - host: iam-db.gingersociety.org
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+                service:
+                  name: iam-db-studio-service
+                  port:
+                    number: 80
+    - host: dev-portal.gingersociety.org
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+                service:
+                  name: dev-portal-frontend-service
                   port:
                     number: 80
   ingressClassName: nginx

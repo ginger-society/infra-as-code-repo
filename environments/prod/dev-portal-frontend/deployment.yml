@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dev-portal-frontend-deploy
+  labels:
+    app: dev-portal-frontend-app
+spec:
+  selector:
+    matchLabels:
+      app: dev-portal-frontend-app
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: dev-portal-frontend-app
+    spec:
+      containers:
+      - name: dev-portal-frontend-app
+        image: gingersociety/dev-portal-prod-fe  # Use Apache2 image
+        ports:
+        - containerPort: 80  # Apache defaults to port 80
