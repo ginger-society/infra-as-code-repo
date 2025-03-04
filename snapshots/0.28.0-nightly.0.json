@@ -1,0 +1,80 @@
+{
+  "services": [
+    {
+      "identifier": "@ginger-society/NotificationService",
+      "version": "0.1.0"
+    },
+    {
+      "identifier": "@ginger-society/homepage",
+      "version": "0.5.0-nightly.0"
+    },
+    {
+      "identifier": "@ginger-society/schema-gen-service",
+      "version": "0.11.0-nightly.0"
+    }
+  ],
+  "packages": [
+    {
+      "identifier": "@ginger-society/ginger-connector",
+      "version": "0.9.0-nightly.0"
+    },
+    {
+      "identifier": "@ginger-society/ginger-dj",
+      "version": "6.1.1"
+    },
+    {
+      "identifier": "@ginger-society/ginger-book",
+      "version": "4.7.0"
+    },
+    {
+      "identifier": "@ginger-society/ginger-releaser",
+      "version": "8.27.1"
+    },
+    {
+      "identifier": "@ginger-society/ginger-auth",
+      "version": "0.1.0"
+    },
+    {
+      "identifier": "@ginger-society/ginger-scaffolder",
+      "version": "0.7.0-nightly.0"
+    },
+    {
+      "identifier": "@ginger-society/ginger-ui",
+      "version": "0.73.0"
+    },
+    {
+      "identifier": "@ginger-society/ginger-ui-uml",
+      "version": "0.3.0-nightly.0"
+    },
+    {
+      "identifier": "@ginger-society/ginger-infra",
+      "version": "0.3.0-nightly.0"
+    },
+    {
+      "identifier": "@ginger-society/ginger-shared-rs",
+      "version": "0.42.0-nightly.0"
+    },
+    {
+      "identifier": "@ginger-society/ginger-db",
+      "version": "0.10.0-nightly.0"
+    }
+  ],
+  "databases": [
+    {
+      "name": "@ginger-society/estonia",
+      "version": "0.6.29-nightly.0"
+    },
+    {
+      "name": "@ginger-society/changi",
+      "version": "0.6.29-nightly.0"
+    },
+    {
+      "name": "@ginger-society/metadata",
+      "version": "0.6.29-nightly.0"
+    },
+    {
+      "name": "@ginger-society/IAM",
+      "version": "0.6.29-nightly.0"
+    }
+  ]
+}
