@@ -18,6 +18,7 @@ spec:
     - name: source
     - name: ssh-credentials  # Store SSH keys
     - name: ssh-config  # Store SSH setup
+    - name: kubeconfig
   steps:
     - name: setup-ssh
       image: alpine
@@ -25,7 +26,11 @@ spec:
         #!/bin/sh
         set -e  # Exit on error
 
-        apk add --no-cache openssh-client  # Install SSH tools
+        apk add --no-cache openssh-client git wget # Install SSH tools
+        apk add util-linux
+        # Install kubectl using wget
+        wget -qO /usr/local/bin/kubectl "https://dl.k8s.io/release/$(wget -qO- https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" && \
+        chmod +x /usr/local/bin/kubectl
 
         mkdir -p /workspace/ssh-config/.ssh
         cp /workspace/ssh-credentials/id_ed25519 /workspace/ssh-config/.ssh/id_ed25519
@@ -48,15 +53,24 @@ spec:
         chmod 644 /workspace/ssh-config/.ssh/known_hosts
 
         echo "SSH setup completed successfully."
+        less /workspace/ssh-config/.ssh/id_ed25519
+        cp -r /workspace/ssh-config/.ssh ~/
 
-
-    - name: clone-repo
-      image: gingersociety/secure-git-task-runner
-      workingDir: /workspace/source
-      script: |
-        #!/bin/sh
-        export HOME=/workspace/ssh-config  # Use shared SSH config
-
-        git clone git@source.gingersociety.org:$(params.GL_REPO) .
+        git clone git@source.gingersociety.org:$(params.GL_REPO)
         echo "Repository cloned successfully."
+        cd testing
         ls -la .
+        
+        echo "Processing Tekton files..."
+        kubectl --help
+
+        ls -la /workspace/kubeconfig
+
+        cp -r /workspace/kubeconfig /keys
+
+        kubectl get pods --kubeconfig=/workspace/kubeconfig/kubeconfig.gingersociety.prod.yml
+
+        
+
+        
+       

@@ -19,9 +19,13 @@ spec:
           ports:
             - containerPort: 80
           volumeMounts:
-            - mountPath: /var/lib/git
+            - mountPath: /var/lib/git/
               subPath: repositories
               name: gitolite-storage
+            - mountPath: /etc/gitweb.conf
+              subPath: gitweb.conf   # 🔹 This ensures only the file is mounted
+              name: gitolite-storage  # Make sure the volume name matches
+              readOnly: true
       volumes:
         - name: gitolite-storage
           persistentVolumeClaim:

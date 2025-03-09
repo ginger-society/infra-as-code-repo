@@ -1,7 +1,7 @@
 apiVersion: tekton.dev/v1beta1
 kind: TaskRun
 metadata:
-  name: clone-repo-run-24
+  name: clone-repo-run-39
 spec:
   taskRef:
     name: hello-world
@@ -12,7 +12,11 @@ spec:
       secret:
         secretName: ssh-private-key  # Reference to your SSH private key secret
     - name: ssh-config
-      emptyDir: {}  # Shared space for SSH setup (fixes the error)
+      emptyDir: {}  # Shared space for SSH setup
+    - name: kubeconfig  # Mount kubeconfig from existing PVC
+      persistentVolumeClaim:
+        claimName: gitolite-pvc
+      subPath: kubeconfigs  # Use the 'kubeconfigs' sub-directory
   params:
     - name: GL_USER
       value: "git"
