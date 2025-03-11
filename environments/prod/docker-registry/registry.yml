@@ -28,7 +28,7 @@ spec:
           image: registry:2
           env:
             - name: REGISTRY_HTTP_SECRET
-              value: ""
+              value: "o43g2kjgn2iuhv2k4jn2f23f290qfghsdg"
             - name: REGISTRY_STORAGE_DELETE_ENABLED
               value: "true"
             - name: REGISTRY_HTTP_ADDR
@@ -68,41 +68,3 @@ spec:
       port: 5000
       targetPort: 5000
   type: NodePort
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: registry-ui
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: registry-ui
-  template:
-    metadata:
-      labels:
-        app: registry-ui
-    spec:
-      containers:
-        - name: registry-ui
-          image: jc21/registry-ui
-          env:
-            - name: NODE_ENV
-              value: "production"
-            - name: REGISTRY_HOST
-              value: "registry:5000"
-          ports:
-            - containerPort: 80
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: registry-ui
-spec:
-  selector:
-    app: registry-ui
-  ports:
-    - protocol: TCP
-      port: 80
-      targetPort: 80
-  type: ClusterIP

@@ -15,7 +15,7 @@ spec:
     - name: GL_NEWREV
       type: string
   workspaces:
-    - name: source
+    - name: source # for source code
     - name: ssh-credentials  # Store SSH keys
     - name: ssh-config  # Store SSH setup
     - name: kubeconfig
@@ -26,7 +26,7 @@ spec:
         #!/bin/sh
         set -e  # Exit on error
 
-        apk add --no-cache openssh-client git wget # Install SSH tools
+        apk add --no-cache openssh-client git wget jq # Install SSH tools
         apk add util-linux
         # Install kubectl using wget
         wget -qO /usr/local/bin/kubectl "https://dl.k8s.io/release/$(wget -qO- https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" && \
@@ -55,20 +55,93 @@ spec:
         echo "SSH setup completed successfully."
         less /workspace/ssh-config/.ssh/id_ed25519
         cp -r /workspace/ssh-config/.ssh ~/
-
-        git clone git@source.gingersociety.org:$(params.GL_REPO)
+        git config --global init.defaultBranch main
+        git clone git@source.gingersociety.org:$(params.GL_REPO) /workspace/source/$(params.GL_REPO)
         echo "Repository cloned successfully."
-        cd testing
-        ls -la .
+        cd /workspace/source/$(params.GL_REPO)
+        ls -la .tekton
         
-        echo "Processing Tekton files..."
-        kubectl --help
-
-        ls -la /workspace/kubeconfig
-
         cp -r /workspace/kubeconfig /keys
 
-        kubectl get pods --kubeconfig=/workspace/kubeconfig/kubeconfig.gingersociety.prod.yml
+
+        echo "🔹 Processing Tekton tasks..."
+        NAMESPACE="tasks-$(params.GL_REPO)"
+        echo "📌 Using namespace: $NAMESPACE"
+
+        echo "🔹 Setting KUBECONFIG..."
+        export KUBECONFIG=/workspace/kubeconfig/kubeconfig.gingersociety.prod.yml
+
+        # Ensure namespace exists
+        kubectl get namespace "$NAMESPACE" >/dev/null 2>&1 || kubectl create namespace "$NAMESPACE"
+
+
+       
+
+        EXISTING_TASKS=$(ls /workspace/source/$(params.GL_REPO)/.tekton | grep -E '\.yml$' | sed 's/.yml$//')
+        CURRENT_TASKS=$(kubectl get tasks -n "$NAMESPACE" -o=jsonpath='{.items[*].metadata.name}')
+
+        for task in $CURRENT_TASKS; do
+          if ! echo "$EXISTING_TASKS" | grep -q "$task"; then
+            echo "🗑 Deleting stale task: $task"
+            kubectl delete task "$task" -n "$NAMESPACE"
+          fi
+        done
+        echo "✅ Stale tasks removed."
+
+        # Apply all YAML files in .tekton from the shared workspace
+        for file in /workspace/source/$(params.GL_REPO)/.tekton/*.yml; do
+          if [ -f "$file" ]; then
+            echo "📌 Applying: $file"
+            kubectl apply -f "$file" -n "$NAMESPACE"
+            # Extract the task name from the applied file using kubectl
+            TASK_NAME=$(kubectl get -f "$file" -o jsonpath='{.metadata.name}')
+            echo "TASK_NAME : ${TASK_NAME}"
+            # Wait briefly to ensure task registration
+            sleep 2
+
+            # Retrieve the trigger branch annotation from the applied task
+            TRIGGER_BRANCHES=$(kubectl get task "$TASK_NAME" -n "$NAMESPACE" -o jsonpath='{.metadata.annotations.x-ginger-task-trigger-branch}')
+            
+            echo "🔍 Task: $TASK_NAME | Retrieved trigger branches: $TRIGGER_BRANCHES"
+            CURRENT_BRANCH="$(params.GL_REFNAME)"  # Get the current branch reference
+            
+            # Check if the branch exists in the trigger list
+            if echo "$TRIGGER_BRANCHES" | jq -e ".[] | select(. == \"$CURRENT_BRANCH\")" > /dev/null; then
+              echo "🚀 Branch $CURRENT_BRANCH matches trigger list. Creating TaskRun for $TASK_NAME..."
+
+              # Generate TaskRun YAML dynamically
+              cat <<EOF > "/workspace/source/taskrun-$TASK_NAME.yaml"
+          apiVersion: tekton.dev/v1beta1
+          kind: TaskRun
+          metadata:
+            generateName: ${TASK_NAME}-run-
+            namespace: $NAMESPACE
+          spec:
+            taskRef:
+              name: $TASK_NAME
+            workspaces:
+              - name: source
+                emptyDir: {}  # Temporary in-memory storage
+              - name: ssh-credentials
+                secret:
+                  secretName: ssh-private-key  # Reference to your SSH private key secret
+              - name: ssh-config
+                emptyDir: {}  # Shared space for SSH setup
+              - name: kubeconfig  # Mount kubeconfig from existing PVC
+                persistentVolumeClaim:
+                  claimName: task-pvc
+                subPath: kubeconfigs  # Use the 'kubeconfigs' sub-directory
+        EOF
+
+              # Apply the TaskRun
+              less /workspace/source/taskrun-$TASK_NAME.yaml
+              kubectl create -f "/workspace/source/taskrun-$TASK_NAME.yaml"
+            else
+              echo "⚠️ Branch $CURRENT_BRANCH is NOT in the trigger list for $TASK_NAME. Skipping TaskRun."
+            fi
+          fi
+        done
+        echo "✅ Tekton tasks applied."
 
         
 

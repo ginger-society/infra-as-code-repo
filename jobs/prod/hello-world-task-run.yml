@@ -1,7 +1,7 @@
 apiVersion: tekton.dev/v1beta1
 kind: TaskRun
 metadata:
-  name: clone-repo-run-39
+  generateName: trigger-run-
 spec:
   taskRef:
     name: hello-world
@@ -21,7 +21,7 @@ spec:
     - name: GL_USER
       value: "git"
     - name: GL_REPO
-      value: "testing"
+      value: "academy-database"
     - name: GL_REFNAME
       value: "refs/heads/main"
     - name: GL_OLDREV

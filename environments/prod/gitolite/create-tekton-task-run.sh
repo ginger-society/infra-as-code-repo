@@ -31,6 +31,10 @@ spec:
         secretName: ssh-private-key  # Reference to your SSH private key secret
     - name: ssh-config
       emptyDir: {}  # Shared space for SSH setup (fixes the error)
+    - name: kubeconfig  # Mount kubeconfig from existing PVC
+      persistentVolumeClaim:
+        claimName: gitolite-pvc
+      subPath: kubeconfigs  # Use the 'kubeconfigs' sub-directory
   params:
     - name: GL_USER
       value: "${GL_USER}"
