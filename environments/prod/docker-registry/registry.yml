@@ -28,7 +28,7 @@ spec:
           image: registry:2
           env:
             - name: REGISTRY_HTTP_SECRET
-              value: "o43g2kjgn2iuhv2k4jn2f23f290qfghsdg"
+              value: ""
             - name: REGISTRY_STORAGE_DELETE_ENABLED
               value: "true"
             - name: REGISTRY_HTTP_ADDR

@@ -102,7 +102,7 @@ spec:
                   name: verdaccio-service
                   port:
                     number: 80   
-    - host: docker.gingersociety.org
+    - host: docker-ui.gingersociety.org
       http:
         paths:
           - path: /
