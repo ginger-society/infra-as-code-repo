@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: task-pv
+  namespace: tasks-academy-database
+spec:
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs-storage-class  # Add this line
+  nfs:
+    path: /srv/nfs/gitolite
+    server: 192.168.49.1
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: buildah-cache
+  namespace: tasks-academy-database
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 20Gi  # Adjust size as needed
+  storageClassName: standard  # Change if using a different storage class

@@ -21,40 +21,12 @@ spec:
     - name: kubeconfig
   steps:
     - name: setup-ssh
-      image: alpine
+      image: containers.gingersociety.org/secure-git-task-runner:latest
       script: |
         #!/bin/sh
-        set -e  # Exit on error
 
-        apk add --no-cache openssh-client git wget jq # Install SSH tools
-        apk add util-linux
-        # Install kubectl using wget
-        wget -qO /usr/local/bin/kubectl "https://dl.k8s.io/release/$(wget -qO- https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" && \
-        chmod +x /usr/local/bin/kubectl
-
-        mkdir -p /workspace/ssh-config/.ssh
-        cp /workspace/ssh-credentials/id_ed25519 /workspace/ssh-config/.ssh/id_ed25519
-        chmod 600 /workspace/ssh-config/.ssh/id_ed25519
-
-        # Configure SSH to disable strict host key checking
-        echo "Host source.gingersociety.org" >> /workspace/ssh-config/.ssh/config
-        echo "    User git" >> /workspace/ssh-config/.ssh/config
-        echo "    HostName source.gingersociety.org" >> /workspace/ssh-config/.ssh/config
-        echo "    Port 3333" >> /workspace/ssh-config/.ssh/config
-        echo "    IdentityFile ~/.ssh/id_ed25519" >> /workspace/ssh-config/.ssh/config
-        echo "    StrictHostKeyChecking no" >> /workspace/ssh-config/.ssh/config
-        echo "    UserKnownHostsFile=/dev/null" >> /workspace/ssh-config/.ssh/config
-
-        # Add host to known_hosts (to prevent manual intervention)
-        ssh-keyscan -p 3333 -H source.gingersociety.org > /workspace/ssh-config/.ssh/known_hosts
-
-        # Ensure SSH config is applied
-        chmod 600 /workspace/ssh-config/.ssh/config
-        chmod 644 /workspace/ssh-config/.ssh/known_hosts
-
-        echo "SSH setup completed successfully."
-        less /workspace/ssh-config/.ssh/id_ed25519
-        cp -r /workspace/ssh-config/.ssh ~/
+        /usr/local/bin/configurator.sh
+        
         git config --global init.defaultBranch main
         git clone git@source.gingersociety.org:$(params.GL_REPO) /workspace/source/$(params.GL_REPO)
         echo "Repository cloned successfully."
@@ -127,6 +99,9 @@ spec:
                   secretName: ssh-private-key  # Reference to your SSH private key secret
               - name: ssh-config
                 emptyDir: {}  # Shared space for SSH setup
+              - name: buildah-cache
+                persistentVolumeClaim:
+                  claimName: buildah-cache
               - name: kubeconfig  # Mount kubeconfig from existing PVC
                 persistentVolumeClaim:
                   claimName: task-pvc

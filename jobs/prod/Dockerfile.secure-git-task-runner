@@ -1,28 +1,14 @@
 FROM alpine:latest
 
 # Install required packages
-RUN apk add --no-cache bash git openssh-client wget
+RUN apk add --no-cache openssh-client git wget jq # Install SSH tools
+RUN apk add util-linux
+# Install kubectl using wget
+RUN wget -qO /usr/local/bin/kubectl "https://dl.k8s.io/release/$(wget -qO- https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" && chmod +x /usr/local/bin/kubectl
 
-# Install kubectl
-RUN wget -qO /usr/local/bin/kubectl "https://dl.k8s.io/release/$(wget -qO- https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" && \
-    chmod +x /usr/local/bin/kubectl
+# Copy startup script to a persistent location
+COPY configurator.sh /usr/local/bin/configurator.sh
+RUN chmod +x /usr/local/bin/configurator.sh
 
-# Ensure required directories exist
-RUN mkdir -p /root/.ssh
-
-# Configure known_hosts to trust Gitolite server
-RUN ssh-keyscan -H source.gingersociety.org >> /root/.ssh/known_hosts
-
-# Add SSH config for source.gingersociety.org
-RUN echo "Host source.gingersociety.org" >> /root/.ssh/config && \
-    echo "    User git" >> /root/.ssh/config && \
-    echo "    HostName source.gingersociety.org" >> /root/.ssh/config && \
-    echo "    Port 3333" >> /root/.ssh/config && \
-    echo "    IdentityFile ~/.ssh/id_ed25519" >> /root/.ssh/config && \
-    chmod 600 /root/.ssh/config
-
-# Set the working directory
-WORKDIR /workspace/source
-
-# The private key will be mounted as a secret at runtime
-VOLUME ["/root/.ssh"]
+# Run the configurator script at startup
+CMD ["/bin/sh", "/usr/local/bin/configurator.sh"]

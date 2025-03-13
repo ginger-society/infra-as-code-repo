@@ -1,0 +1,5 @@
+FROM quay.io/buildah/stable:latest
+
+# Copy startup script to a persistent location
+COPY configure_buildah_cache.sh /usr/local/bin/configure_buildah_cache.sh
+RUN chmod +x /usr/local/bin/configure_buildah_cache.sh

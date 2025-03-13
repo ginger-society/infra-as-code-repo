@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: coder-test-deployment
+  labels:
+    app: coder-test
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: coder-test
+  template:
+    metadata:
+      labels:
+        app: coder-test
+    spec:
+      containers:
+        - name: coder-test
+          image: containers.gingersociety.org/coder-test-image
+          ports:
+            - containerPort: 8080
+          env:
+            - name: PASSWORD
+              value: "your-secure-password" # Change this to a secure value
+          volumeMounts:
+            - name: coder-data
+              mountPath: /home/coder
+      volumes:
+        - name: coder-data
+          emptyDir: {}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: coder-test-service
+spec:
+  selector:
+    app: coder-test
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
+  type: ClusterIP
