@@ -112,6 +112,16 @@ spec:
                   name: registry-ui
                   port:
                     number: 80      
+    - host: longhorn.gingersociety.org
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+                service:
+                  name: longhorn-dashboard-proxy
+                  port:
+                    number: 80   
     - host: pip.gingersociety.org
       http:
         paths: 
@@ -127,6 +137,23 @@ spec:
             backend:
                 service:
                   name: filebrowser
+                  port:
+                    number: 80  
+    - host: images.gingersociety.org
+      http:
+        paths: 
+          - path: /ftp
+            pathType: Prefix
+            backend:
+                service:
+                  name: filebrowser-static-images-service
+                  port:
+                    number: 80
+          - path: /
+            pathType: Prefix
+            backend:
+                service:
+                  name: static-image-service
                   port:
                     number: 80  
     - host: tekton.gingersociety.org

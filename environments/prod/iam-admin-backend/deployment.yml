@@ -15,6 +15,20 @@ spec:
       labels:
         app: iam-admin-service-api
     spec:
+      initContainers:
+        - name: wait-for-db
+          image: postgres:latest
+          command:
+          - "sh"
+          - "-c"
+          - |
+            echo "Checking PostgreSQL readiness..."
+            until pg_isready -h dc01-pg-db-1-postgresql.default.svc.cluster.local -p 5432 -U postgres; do 
+              echo "Waiting for DB to be ready..."
+              sleep 5; 
+            done
+            echo "Database is ready!"
+
       containers:
       - name: iam-admin-service-api
         image: gingersociety/iam-admin-service-api-stage:latest

@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: filebrowser-static-images
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: filebrowser-static-images
+  template:
+    metadata:
+      labels:
+        app: filebrowser-static-images
+    spec:
+      containers:
+        - name: filebrowser-static-images
+          image: filebrowser/filebrowser:latest
+          args: ["--baseurl", "/ftp"]
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - mountPath: /srv
+              name: static-images-storage
+      volumes:
+        - name: static-images-storage
+          persistentVolumeClaim:
+            claimName: images
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: filebrowser-static-images-service
+spec:
+  selector:
+    app: filebrowser-static-images
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+  type: ClusterIP
