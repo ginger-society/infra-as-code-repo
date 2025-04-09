@@ -41,6 +41,11 @@ RUN openapi-generator-cli version
 
 RUN curl -fsSL https://code-server.dev/install.sh | sh
 
+# Install sudo
+RUN apt install sudo -y
+
+# Add coder to sudoers
+RUN echo "coder ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
 RUN useradd -m -s /bin/zsh coder && \
     mkdir -p /home/coder/.config/code-server && \

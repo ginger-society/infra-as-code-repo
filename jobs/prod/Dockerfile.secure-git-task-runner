@@ -6,9 +6,11 @@ RUN apk add util-linux
 # Install kubectl using wget
 RUN wget -qO /usr/local/bin/kubectl "https://dl.k8s.io/release/$(wget -qO- https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" && chmod +x /usr/local/bin/kubectl
 
+RUN apk add --no-cache bash
+
 # Copy startup script to a persistent location
 COPY configurator.sh /usr/local/bin/configurator.sh
 RUN chmod +x /usr/local/bin/configurator.sh
 
 # Run the configurator script at startup
-CMD ["/bin/sh", "/usr/local/bin/configurator.sh"]
+CMD ["/bin/bash", "/usr/local/bin/configurator.sh"]

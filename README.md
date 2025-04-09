@@ -184,3 +184,14 @@ kubectl create secret generic ssh-private-key --from-file=id_ed25519=runner-priv
 
 kubectl delete pod --field-selector=status.phase==Failed
 kubectl delete pod --field-selector=status.phase==Succeeded
+
+
+kubectl create secret generic pg-credentials \
+  --from-literal=password='your_postgres_password'
+
+kubectl create secret generic aws-creds \
+  --from-literal=access_key='your_aws_access_key' \
+  --from-literal=secret_key='your_aws_secret_key'
+
+
+kubectl create secret generic pipeline-secrets-secret   --from-env-file=secrets.env   -n tasks-rackmint-provisioner-service

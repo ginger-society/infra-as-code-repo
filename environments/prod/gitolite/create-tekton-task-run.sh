@@ -21,6 +21,7 @@ kind: TaskRun
 metadata:
   name: hello-world-run-${UUID}
 spec:
+  serviceAccountName: tekton-registry-access
   taskRef:
     name: hello-world
   workspaces:

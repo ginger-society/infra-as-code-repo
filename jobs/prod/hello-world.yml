@@ -46,6 +46,107 @@ spec:
         # Ensure namespace exists
         kubectl get namespace "$NAMESPACE" >/dev/null 2>&1 || kubectl create namespace "$NAMESPACE"
 
+        DOCKER_REGISTRY="containers.gingersociety.org"
+        DOCKER_USERNAME="myuser"
+        DOCKER_PASSWORD="mypassword"
+        DOCKER_EMAIL="admin@gingersociety.org"
+        RUNNER_KEY="/workspace/ssh-credentials/id_ed25519"
+        ENV_FILE="secrets.env"
+
+        echo "📝 Creating secrets.env file..."
+        cat <<EOF > "$ENV_FILE"
+        GINGER_TOKEN=token
+        DOCKER_USERNAME=myuser
+        DOCKER_PASSWORD=mypassword
+        EOF
+
+
+        echo "🔧 Target namespace: $NAMESPACE"
+        kubectl get ns "$NAMESPACE" >/dev/null 2>&1 || kubectl create namespace "$NAMESPACE"
+
+        echo "📦 Creating PVC: buildah-cache..."
+        cat <<EOF | kubectl apply -f -
+        apiVersion: v1
+        kind: PersistentVolumeClaim
+        metadata:
+          name: buildah-cache
+          namespace: $NAMESPACE
+        spec:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 4Gi
+          storageClassName: standard
+        EOF
+
+        echo "🗄️ Creating PV: ${NAMESPACE}-pv..."
+        cat <<EOF | kubectl apply -f -
+        apiVersion: v1
+        kind: PersistentVolume
+        metadata:
+          name: ${NAMESPACE}-pv
+        spec:
+          capacity:
+            storage: 10Gi
+          accessModes:
+            - ReadWriteMany
+          persistentVolumeReclaimPolicy: Retain
+          storageClassName: nfs-storage-class 
+          nfs:
+            path: /srv/nfs/gitolite
+            server: 192.168.49.1
+        EOF
+
+        echo "📦 Creating PVC: ${NAMESPACE}-pvc..."
+        cat <<EOF | kubectl apply -f -
+        apiVersion: v1
+        kind: PersistentVolumeClaim
+        metadata:
+          name: ${NAMESPACE}-pvc
+          namespace: $NAMESPACE
+        spec:
+          volumeName: ${NAMESPACE}-pv
+          accessModes:
+            - ReadWriteMany
+          resources:
+            requests:
+              storage: 10Gi
+          storageClassName: nfs-storage-class
+        EOF
+
+        echo "👤 Creating ServiceAccount: tekton-registry-access..."
+        cat <<EOF | kubectl apply -f -
+        apiVersion: v1
+        kind: ServiceAccount
+        metadata:
+          name: tekton-registry-access
+          namespace: $NAMESPACE
+        secrets:
+          - name: regcred
+        imagePullSecrets:
+          - name: regcred
+        EOF
+
+        echo "🔐 Creating Docker registry secret: regcred..."
+        kubectl create secret docker-registry regcred \
+          --docker-server="$DOCKER_REGISTRY" \
+          --docker-username="$DOCKER_USERNAME" \
+          --docker-password="$DOCKER_PASSWORD" \
+          --docker-email="$DOCKER_EMAIL" \
+          -n "$NAMESPACE" --dry-run=client -o yaml | kubectl apply -f -
+
+        echo "🔐 Creating pipeline secrets from $ENV_FILE..."
+        kubectl create secret generic pipeline-secrets-secret \
+          --from-env-file="$ENV_FILE" \
+          -n "$NAMESPACE" --dry-run=client -o yaml | kubectl apply -f -
+
+        echo "🔐 Creating SSH private key secret from $RUNNER_KEY..."
+        kubectl create secret generic ssh-private-key \
+          --from-file=id_ed25519="$RUNNER_KEY" \
+          -n "$NAMESPACE" --dry-run=client -o yaml | kubectl apply -f -
+
+        echo "✅ All resources created for namespace: $NAMESPACE"
 
        
 
@@ -89,6 +190,7 @@ spec:
             generateName: ${TASK_NAME}-run-
             namespace: $NAMESPACE
           spec:
+            serviceAccountName: tekton-registry-access
             taskRef:
               name: $TASK_NAME
             workspaces:
@@ -104,8 +206,11 @@ spec:
                   claimName: buildah-cache
               - name: kubeconfig  # Mount kubeconfig from existing PVC
                 persistentVolumeClaim:
-                  claimName: task-pvc
+                  claimName: $NAMESPACE-pvc
                 subPath: kubeconfigs  # Use the 'kubeconfigs' sub-directory
+              - name: pipeline-secrets
+                secret:
+                  secretName: pipeline-secrets-secret
         EOF
 
               # Apply the TaskRun

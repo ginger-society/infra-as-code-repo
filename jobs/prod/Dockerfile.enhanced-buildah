@@ -1,5 +1,13 @@
 FROM quay.io/buildah/stable:latest
 
-# Copy startup script to a persistent location
-COPY configure_buildah_cache.sh /usr/local/bin/configure_buildah_cache.sh
-RUN chmod +x /usr/local/bin/configure_buildah_cache.sh
+# Set environment variables for Buildah configuration
+ENV XDG_RUNTIME_DIR=/workspace/buildah-cache \
+    CONTAINERS_STORAGE=/workspace/buildah-cache \
+    CONTAINERS_STORAGE_CONF=/workspace/buildah-cache/storage.conf
+
+# Copy setup script
+COPY configurator_buildah.sh /usr/local/bin/configurator_buildah.sh
+RUN chmod +x /usr/local/bin/configurator_buildah.sh
+
+# Default command
+CMD ["/bin/bash", "/usr/local/bin/configurator_buildah.sh"]
