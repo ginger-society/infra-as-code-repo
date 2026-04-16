@@ -78,7 +78,7 @@ spec:
             pathType: Prefix
             backend:
                 service:
-                  name: my-pgadmin-pgadmin4
+                  name: pgadmin-pgadmin4
                   port:
                     number: 80
     - host: source.gingersociety.org
