@@ -13,6 +13,7 @@ primary:
       cpu: 1
 
   configuration: |-
+    listen_addresses = '*'
     max_connections = 40
     shared_buffers = 128MB
     max_wal_size = 512MB
