@@ -1,6 +1,3 @@
-service:
-  type: NodePort
-
 resources:
   requests:
     memory: 128Mi
@@ -9,6 +6,14 @@ resources:
     memory: 256Mi
     cpu: 200m
 
-persistence:
-  enabled: true
-  size: 1Gi
+livenessProbe:
+  initialDelaySeconds: 60
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 6
+
+readinessProbe:
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 6
