@@ -35,7 +35,7 @@ spec:
             # ✅ Build DATABASE_URL dynamically
             - name: DATABASE_URL
               value: >-
-                postgresql://postgres:$(POSTGRES_PASSWORD)@pg-postgresql:5432/iam
+                postgresql://postgres:$(POSTGRES_PASSWORD)@pg-postgresql:5432/iam-db
 
             - name: POSTGRES_PASSWORD
               valueFrom:
