@@ -16,4 +16,5 @@ update it :
   kubectl delete secret platform-secrets
 
   kubectl create secret generic platform-secrets \
-    --from-literal=JWT_SECRET=1234
+    --from-literal=JWT_SECRET=1234 \
+    --from-literal=ANOTHER_KEY=value
