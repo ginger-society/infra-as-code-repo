@@ -1,10 +1,7 @@
-# deployment.yml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: iam-service-api-deployment
-  labels:
-    app: iam-service-api
 spec:
   replicas: 1
   selector:
@@ -15,38 +12,64 @@ spec:
       labels:
         app: iam-service-api
     spec:
+
       initContainers:
         - name: wait-for-db
           image: postgres:latest
           command:
-          - "sh"
-          - "-c"
-          - |
-            echo "Checking PostgreSQL readiness..."
-            until pg_isready -h dc01-pg-db-1-postgresql.default.svc.cluster.local -p 5432 -U postgres; do 
-              echo "Waiting for DB to be ready..."
-              sleep 5; 
-            done
-            echo "Database is ready!"
-
+            - sh
+            - -c
+            - |
+              until pg_isready -h pg-postgresql -p 5432 -U postgres; do 
+                echo "Waiting for DB..."
+                sleep 5
+              done
 
       containers:
-      - name: iam-service-api
-        image: gingersociety/iam-service-api-stage:latest
-        ports:
-        - containerPort: 8000
-        env:
-        - name: DATABASE_URL
-          value: "postgresql://postgres:pass@dc01-pg-db-1-postgresql:5432/iam"
-        - name: REDIS_URI
-          value: "redis://redis-service:6379"
-        - name: ROCKET_SECRET_KEY
-          value: "supersecret"
-        - name: ROCKET_ADDRESS
-          value: "0.0.0.0"
-        - name: ROCKET_PORT
-          value: "8000"
-        - name: JWT_SECRET
-          value: "1234"
-        - name: ISC_SECRET
-          value: "verysecure"
+        - name: iam-service-api
+          image: gingersociety/iam-service-api-stage:latest
+          ports:
+            - containerPort: 8000
+
+          env:
+            # ✅ Build DATABASE_URL dynamically
+            - name: DATABASE_URL
+              value: >-
+                postgresql://postgres:$(POSTGRES_PASSWORD)@pg-postgresql:5432/iam
+
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: pg-postgresql
+                  key: postgres-password
+
+            # Redis stays simple
+            - name: REDIS_URI
+              value: "redis://redis-service:6379"
+
+            # ✅ Platform secret
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: platform-secrets
+                  key: JWT_SECRET
+
+            # ✅ App-specific secrets
+            - name: ISC_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: iam-service-api-secrets
+                  key: ISC_SECRET
+
+            - name: ROCKET_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: iam-service-api-secrets
+                  key: ROCKET_SECRET_KEY
+
+            # Static config
+            - name: ROCKET_ADDRESS
+              value: "0.0.0.0"
+
+            - name: ROCKET_PORT
+              value: "8000"
