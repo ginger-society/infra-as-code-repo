@@ -2,19 +2,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: redis-api
+  name: redis-cache
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: redis-api
+      app: redis-cache
   template:
     metadata:
       labels:
-        app: redis-api
+        app: redis-cache
     spec:
       containers:
-      - name: redis-api
+      - name: redis-cache
         image: redis:6.2
         ports:
         - containerPort: 6379
@@ -39,4 +39,4 @@ spec:
     port: 9121
     targetPort: 9121 # Redis exporter metrics port
   selector:
-    app: redis-api
+    app: redis-cache
