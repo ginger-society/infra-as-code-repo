@@ -49,6 +49,9 @@ spec:
     - name: metrics
       port: 9419
       targetPort: 9419  # Port for Prometheus metrics
+    - name: management
+      port: 15672
+      targetPort: 15672  # Port for RabbitMQ management UI
   selector:
     app: rabbitmq
 

@@ -1,0 +1,12 @@
+rabbitmq:
+  image: rabbitmq:4-management
+
+  auth:
+    username: user
+    password: password
+
+  service:
+    type: ClusterIP
+    amqpPort: 5672
+    managementPort: 15672
+    metricsPort: 9419
