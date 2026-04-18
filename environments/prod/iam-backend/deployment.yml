@@ -34,8 +34,11 @@ spec:
           env:
             # ✅ Build DATABASE_URL dynamically
             - name: DATABASE_URL
-              value: >-
-                postgresql://postgres:$(POSTGRES_PASSWORD)@pg-postgresql:5432/iam-db
+              valueFrom:
+                secretKeyRef:
+                  name: iam-service-api-secrets
+                  key: DATABASE_URL
+
 
             - name: POSTGRES_PASSWORD
               valueFrom:
