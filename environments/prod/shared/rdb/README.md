@@ -18,3 +18,12 @@ helm install pgadmin runix/pgadmin4 \
   -f pgadmin-config.yml \
   --set env.email=admin@gingersociety.org \
   --set env.password='password here'
+
+
+
+to load backup files : 
+
+kubectl exec -i pg-postgresql-0 -- \
+  env PGPASSWORD=$(kubectl get secret pg-postgresql \
+    -o jsonpath="{.data.postgres-password}" | base64 -d) \
+  psql -U postgres -d metadata-db < metadata-db.sql
