@@ -194,4 +194,21 @@ kubectl create secret generic aws-creds \
   --from-literal=secret_key='your_aws_secret_key'
 
 
-kubectl create secret generic pipeline-secrets-secret   --from-env-file=secrets.env   -n tasks-rackmint-provisioner-service
+kubectl create secret generic pipeline-secrets-secret   --from-env-file=secrets.env   -n tasks-NAME-provisioner-service
+
+
+sudo nano /etc/nginx/nginx.conf
+sudo nginx -t
+sudo systemctl reload nginx
+
+docker update \
+  --cpus="2" \
+  --memory="2g" \
+  NAME-control-plane
+
+
+set docker host : 
+export DOCKER_HOST=unix:///Users/$USER/.docker/run/docker.sock
+
+
+open current folder in dev container : code --folder-uri="vscode-remote://dev-container+$(pwd | tr -d '\n' | xxd -c 256 -p)/workspaces/$(basename "$(pwd)")"
