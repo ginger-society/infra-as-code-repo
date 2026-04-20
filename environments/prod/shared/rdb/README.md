@@ -1,3 +1,5 @@
+helm repo add bitnami https://charts.bitnami.com/bitnami
+helm repo update
 helm install pg bitnami/postgresql -f postgress-resource-config.yml
 
 helm upgrade pg bitnami/postgresql -f postgress-resource-config.yml

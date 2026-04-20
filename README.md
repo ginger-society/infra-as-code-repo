@@ -201,6 +201,8 @@ sudo nano /etc/nginx/nginx.conf
 sudo nginx -t
 sudo systemctl reload nginx
 
+kind create cluster --config gingersociety.org
+
 docker update \
   --cpus="2" \
   --memory="2g" \
@@ -212,3 +214,6 @@ export DOCKER_HOST=unix:///Users/$USER/.docker/run/docker.sock
 
 
 open current folder in dev container : code --folder-uri="vscode-remote://dev-container+$(pwd | tr -d '\n' | xxd -c 256 -p)/workspaces/$(basename "$(pwd)")"
+
+
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
