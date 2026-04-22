@@ -217,3 +217,8 @@ open current folder in dev container : code --folder-uri="vscode-remote://dev-co
 
 
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
+
+
+to allow a folder to have .envrc loaded for new shell session : 
+
+direnv allow

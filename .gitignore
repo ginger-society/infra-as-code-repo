@@ -1,1 +1,3 @@
 .DS_Store
+environments/prod/shared/rabitmq/index.yaml
+environments/prod/shared/rabitmq/rabbitmq-*.tgz
