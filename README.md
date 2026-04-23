@@ -215,6 +215,8 @@ export DOCKER_HOST=unix:///Users/$USER/.docker/run/docker.sock
 
 open current folder in dev container : code --folder-uri="vscode-remote://dev-container+$(pwd | tr -d '\n' | xxd -c 256 -p)/workspaces/$(basename "$(pwd)")"
 
+codium --folder-uri "vscode-remote://ssh-remote+dc0102/home/dc0102"
+codium --install-extension ms-python.python
 
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
 
@@ -222,3 +224,16 @@ kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main
 to allow a folder to have .envrc loaded for new shell session : 
 
 direnv allow
+
+mkdir -p ~/.ginger-society/ssh-keys/NAME
+
+ssh-keygen -t ed25519 -f ~/.ginger-society/ssh-keys/NAME/id_ed25519 -C "NAME"
+
+
+
+
+sudo mkdir -p /var/log/apache2/NAME
+
+
+sudo chown -R www-data:www-data /var/log/apache2/NAME
+sudo chmod 755 /var/log/apache2/NAME
