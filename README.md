@@ -219,6 +219,9 @@ codium --folder-uri "vscode-remote://ssh-remote+dc0102/home/dc0102"
 codium --install-extension ms-python.python
 
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
+helm upgrade ingress-nginx ingress-nginx/ingress-nginx \
+  --namespace ingress-nginx \
+  --set controller.allowSnippetAnnotations=true
 
 
 to allow a folder to have .envrc loaded for new shell session : 

@@ -14,8 +14,8 @@ spec:
       labels:
         app: metadata-db-runtime
     spec:
-      imagePullSecrets:
-        - name: regcred
+      # imagePullSecrets:
+      #   - name: regcred
 
       initContainers:
         - name: wait-for-db
@@ -32,6 +32,8 @@ spec:
       containers:
         - name: metadata-db-runtime
           image: gingersociety/metadata-db-runtime-prod:latest
+          imagePullPolicy: Always
+          command: ["/app/run.sh"]
           ports:
             - containerPort: 8000
 

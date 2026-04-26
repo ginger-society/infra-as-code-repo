@@ -1,16 +1,16 @@
-# ingress.yaml
 apiVersion: networking.k8s.io/v1
-kind: Ingress 
+kind: Ingress
 metadata:
-  name: ingress-prod
+  name: app-ingress
   namespace: default
   annotations:
-      nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"  # 1 hour timeout
-      nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"  # 1 hour timeout
-      nginx.ingress.kubernetes.io/proxy-connect-timeout: "60"  # 60 seconds
-      nginx.ingress.kubernetes.io/enable-websocket: "true"    # WebSocket support
-      nginx.ingress.kubernetes.io/proxy-body-size: "0"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "60"
+    nginx.ingress.kubernetes.io/enable-websocket: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: "0"
 spec:
+  ingressClassName: nginx
   rules:
     - host: api.gingersociety.org
       http:
@@ -18,79 +18,86 @@ spec:
           - path: /example
             pathType: Prefix
             backend:
-                service:
-                  name: example-service 
-                  port:
-                    number: 80
+              service:
+                name: example-service
+                port:
+                  number: 80
+
           - path: /iam
             pathType: Prefix
             backend:
-                service:
-                  name: iam-service-api-service
-                  port:
-                    number: 80
+              service:
+                name: iam-service-api-service
+                port:
+                  number: 80
+
           - path: /metadata
             pathType: Prefix
             backend:
-                service:
-                  name: metadata-service-api-service
-                  port:
-                    number: 80
+              service:
+                name: metadata-service-api-service
+                port:
+                  number: 80
 
           - path: /iam-admin
             pathType: Prefix
             backend:
-                service:
-                  name: iam-admin-service-api-service
-                  port:
-                    number: 80
+              service:
+                name: iam-admin-service-api-service
+                port:
+                  number: 80
+
           - path: /notification
             pathType: Prefix
             backend:
-                service:
-                  name: notification-service-service
-                  port:
-                    number: 80
+              service:
+                name: notification-service-service
+                port:
+                  number: 80
+
     - host: iam.gingersociety.org
       http:
         paths:
           - path: /
             pathType: Prefix
             backend:
-                service:
-                  name: iam-frontend-service
-                  port:
-                    number: 80
+              service:
+                name: iam-frontend-service
+                port:
+                  number: 80
+
     - host: iam-admin.gingersociety.org
       http:
         paths:
           - path: /
             pathType: Prefix
             backend:
-                service:
-                  name: iam-admin-frontend-service
-                  port:
-                    number: 80
+              service:
+                name: iam-admin-frontend-service
+                port:
+                  number: 80
+
     - host: pgadmin.gingersociety.org
       http:
         paths:
           - path: /
             pathType: Prefix
             backend:
-                service:
-                  name: pgadmin-pgadmin4
-                  port:
-                    number: 80
+              service:
+                name: pgadmin-pgadmin4
+                port:
+                  number: 80
+
     - host: source.gingersociety.org
       http:
         paths:
           - path: /
             pathType: Prefix
             backend:
-                service:
-                  name: gitweb-service
-                  port:
-                    number: 80
+              service:
+                name: gitweb-service
+                port:
+                  number: 80
 
     - host: npm.gingersociety.org
       http:
@@ -98,74 +105,79 @@ spec:
           - path: /
             pathType: Prefix
             backend:
-                service:
-                  name: verdaccio-service
-                  port:
-                    number: 80   
+              service:
+                name: verdaccio-service
+                port:
+                  number: 80
+
     - host: docker-ui.gingersociety.org
       http:
         paths:
           - path: /
             pathType: Prefix
             backend:
-                service:
-                  name: registry-ui
-                  port:
-                    number: 80      
+              service:
+                name: registry-ui
+                port:
+                  number: 80
+
     - host: longhorn.gingersociety.org
       http:
         paths:
           - path: /
             pathType: Prefix
             backend:
-                service:
-                  name: longhorn-dashboard-proxy
-                  port:
-                    number: 80   
+              service:
+                name: longhorn-dashboard-proxy
+                port:
+                  number: 80
+
     - host: pip.gingersociety.org
       http:
-        paths: 
+        paths:
           - path: /simple
             pathType: Prefix
             backend:
-                service:
-                  name: pypiserver
-                  port:
-                    number: 80  
+              service:
+                name: pypiserver
+                port:
+                  number: 80
           - path: /ftp
             pathType: Prefix
             backend:
-                service:
-                  name: filebrowser
-                  port:
-                    number: 80  
+              service:
+                name: filebrowser
+                port:
+                  number: 80
+
     - host: images.gingersociety.org
       http:
-        paths: 
+        paths:
           - path: /ftp
             pathType: Prefix
             backend:
-                service:
-                  name: filebrowser-static-images-service
-                  port:
-                    number: 80
+              service:
+                name: filebrowser-static-images-service
+                port:
+                  number: 80
           - path: /
             pathType: Prefix
             backend:
-                service:
-                  name: static-image-service
-                  port:
-                    number: 80  
+              service:
+                name: static-image-service
+                port:
+                  number: 80
+
     - host: tekton.gingersociety.org
       http:
         paths:
           - path: /
             pathType: Prefix
             backend:
-                service:
-                  name: tekton-dashboard-proxy
-                  port:
-                    number: 9097
+              service:
+                name: tekton-dashboard-proxy
+                port:
+                  number: 9097
 
     - host: k8-prod-dashboard.gingersociety.org
       http:
@@ -173,58 +185,40 @@ spec:
           - path: /
             pathType: Prefix
             backend:
-                service:
-                  name: kubernetes-dashboard-proxy
-                  port:
-                    number: 80
-    - host: iam-db.gingersociety.org
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-                service:
-                  name: iam-db-studio-service
-                  port:
-                    number: 80
-    - host: metadata-db.gingersociety.org
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-                service:
-                  name: metadata-db-studio-service
-                  port:
-                    number: 80
+              service:
+                name: kubernetes-dashboard-proxy
+                port:
+                  number: 80
+
     - host: db-compose-test-env.gingersociety.org
       http:
         paths:
           - path: /
             pathType: Prefix
             backend:
-                service:
-                  name: ginger-db-test-env-service
-                  port:
-                    number: 80
+              service:
+                name: ginger-db-test-env-service
+                port:
+                  number: 80
+
     - host: coder-test-env.gingersociety.org
       http:
         paths:
           - path: /
             pathType: Prefix
             backend:
-                service:
-                  name: coder-test-service
-                  port:
-                    number: 80
+              service:
+                name: coder-test-service
+                port:
+                  number: 80
+
     - host: dev-portal.gingersociety.org
       http:
         paths:
           - path: /
             pathType: Prefix
             backend:
-                service:
-                  name: dev-portal-frontend-service
-                  port:
-                    number: 80
-  ingressClassName: nginx
+              service:
+                name: dev-portal-frontend-service
+                port:
+                  number: 80

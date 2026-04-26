@@ -32,6 +32,8 @@ spec:
       containers:
         - name: iam-db-runtime
           image: gingersociety/iam-db-runtime-prod:latest
+          command: ["/app/run.sh"]
+          imagePullPolicy: Always
           ports:
             - containerPort: 8000
 

@@ -17,6 +17,8 @@ spec:
       containers:
         - name: ginger-db-test-env
           image: gingersociety/db-compose-runtime-prod:latest
+          command: ["/app/run.sh"]
+          imagePullPolicy: Always
           ports:
             - containerPort: 8000
           env:
