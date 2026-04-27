@@ -1,12 +1,11 @@
 references = []
 
-[settings]
-git_url_prefix = "https://github.com/ginger-society/infra-as-code-repo"
-take_snapshots = true
-
 [version]
 channel = "Nightly"
 major = 0
-minor = 28
+minor = 29
 patch = 0
 revision = 0
+
+[settings]
+git_url_prefix = "https://github.com/ginger-society/infra-as-code-repo"
