@@ -12,6 +12,44 @@ fix:
 	
  - [0c0da09b6c](https://github.com/ginger-society/infra-as-code-repo0c0da09b6cff4c71c4019f2953708d18c9004620) (Ginger Society Admin) fix: changing runner image to use buster tag of debian
 	
+chore:
+ - [b2f85087fd](https://github.com/ginger-society/infra-as-code-repob2f85087fd012eaa13254b2f85888a3071ab243c) (Ginger Society Admin) chore: version bump to 0.29.0-nightly.0
+	
+ - [2d65567f38](https://github.com/ginger-society/infra-as-code-repo2d65567f38833eebd3635cb2896f36cb1fb0571f) (Ginger Society Admin) chore: cleanup and notes
+	
+ - [bd3ddc5711](https://github.com/ginger-society/infra-as-code-repobd3ddc5711e918dd870dda1c0713a29846d2c26a) (Ginger Society Admin) chore: testing helm chart publishing
+	
+ - [a123255ca6](https://github.com/ginger-society/infra-as-code-repoa123255ca6841e1c0480a47613db88a59defc89a) (Ginger Society Admin) chore: testing helm publishing
+	
+ - [550b12d9b8](https://github.com/ginger-society/infra-as-code-repo550b12d9b842a364a95c176ff1428d85caaacbf6) (Ginger Society Admin) chore: testing helm repo hosting
+	
+ - [1816eb9895](https://github.com/ginger-society/infra-as-code-repo1816eb9895a76cc120cb8f4970d11c665db38e20) (Ginger Society Admin) chore: minor changes
+	
+ - [24c44d9d23](https://github.com/ginger-society/infra-as-code-repo24c44d9d2348802d555e9ecc20c4b896172dd83d) (Ginger Society Admin) chore: minor fixes and readme updates
+	
+ - [70ffd49ad4](https://github.com/ginger-society/infra-as-code-repo70ffd49ad4236f91160abe4f5190503fb4f6848f) (Ginger Society Admin) chore: minor readme changes
+	
+ - [f94a573d44](https://github.com/ginger-society/infra-as-code-repof94a573d44c1204dbf13e7a2cbd826c141ff5527) (Ginger Society Admin) chore: minor fixes
+	
+ - [83f7268323](https://github.com/ginger-society/infra-as-code-repo83f72683233c090a75396bed680e41c2507b1525) (Ginger Society Admin) chore: minor
+	
+ - [5bb5978952](https://github.com/ginger-society/infra-as-code-repo5bb597895235b9318858ecaeec3c32e5baac05c0) (Ginger Society Admin) chore: minor changes
+	
+ - [7be9c7ad5c](https://github.com/ginger-society/infra-as-code-repo7be9c7ad5cef29f4a1c8cfe1822eadc7a031316b) (Ginger Society Admin) chore: minor
+	
+ - [22c00cd5ba](https://github.com/ginger-society/infra-as-code-repo22c00cd5bac3d892e723b12810f2f782bdf430c7) (Ginger Society Admin) chore: minor
+	
+ - [efc871e8e9](https://github.com/ginger-society/infra-as-code-repoefc871e8e96c2eccef1032b9eff8a4fa21d8d2d4) (Ginger Society Admin) chore: updated pgadmin service name in ingress
+	
+ - [151095bf73](https://github.com/ginger-society/infra-as-code-repo151095bf7393aedc095fe9ce9368313db3f096e1) (Ginger Society Admin) chore: refactored apache2 config into mission critical services and infra services
+	
+ - [c65702f25a](https://github.com/ginger-society/infra-as-code-repoc65702f25a419804f56e095f56f86b87bcd850a0) (GingerSociety Admin) chore: version bump to 0.28.0-nightly.0
+	
+ - [deac872246](https://github.com/ginger-society/infra-as-code-repodeac872246211a41f71d584846ec6fa492b48ff5) (GingerSociety Admin) chore: minor
+	
+ - [c71d35345f](https://github.com/ginger-society/infra-as-code-repoc71d35345f8ca24badae7c4f6d0f9701389b0058) (Ginger Society) chore: changing CI image to ubuntu 20
+ - [7d9295af0b](https://github.com/ginger-society/infra-as-code-repo7d9295af0bd234cd381e73818cfd8ee5ea494e7e) (Ginger Society Admin) chore: version bump to 0.29.0-nightly.0
+	
 feat:
  - [515c369307](https://github.com/ginger-society/infra-as-code-repo515c3693079c9312c57a1da8c205097f104943f1) (Ginger Society Admin) feat: added kube service and fixing pipeline
 	
@@ -94,42 +132,6 @@ feat:
 	
  - [a2021bfe81](https://github.com/ginger-society/infra-as-code-repoa2021bfe8127c6e80febf7d9a5f661d4814a9410) (Ginger Society Admin) feat: updated metadata
 	
-chore:
- - [b2f85087fd](https://github.com/ginger-society/infra-as-code-repob2f85087fd012eaa13254b2f85888a3071ab243c) (Ginger Society Admin) chore: version bump to 0.29.0-nightly.0
-	
- - [2d65567f38](https://github.com/ginger-society/infra-as-code-repo2d65567f38833eebd3635cb2896f36cb1fb0571f) (Ginger Society Admin) chore: cleanup and notes
-	
- - [bd3ddc5711](https://github.com/ginger-society/infra-as-code-repobd3ddc5711e918dd870dda1c0713a29846d2c26a) (Ginger Society Admin) chore: testing helm chart publishing
-	
- - [a123255ca6](https://github.com/ginger-society/infra-as-code-repoa123255ca6841e1c0480a47613db88a59defc89a) (Ginger Society Admin) chore: testing helm publishing
-	
- - [550b12d9b8](https://github.com/ginger-society/infra-as-code-repo550b12d9b842a364a95c176ff1428d85caaacbf6) (Ginger Society Admin) chore: testing helm repo hosting
-	
- - [1816eb9895](https://github.com/ginger-society/infra-as-code-repo1816eb9895a76cc120cb8f4970d11c665db38e20) (Ginger Society Admin) chore: minor changes
-	
- - [24c44d9d23](https://github.com/ginger-society/infra-as-code-repo24c44d9d2348802d555e9ecc20c4b896172dd83d) (Ginger Society Admin) chore: minor fixes and readme updates
-	
- - [70ffd49ad4](https://github.com/ginger-society/infra-as-code-repo70ffd49ad4236f91160abe4f5190503fb4f6848f) (Ginger Society Admin) chore: minor readme changes
-	
- - [f94a573d44](https://github.com/ginger-society/infra-as-code-repof94a573d44c1204dbf13e7a2cbd826c141ff5527) (Ginger Society Admin) chore: minor fixes
-	
- - [83f7268323](https://github.com/ginger-society/infra-as-code-repo83f72683233c090a75396bed680e41c2507b1525) (Ginger Society Admin) chore: minor
-	
- - [5bb5978952](https://github.com/ginger-society/infra-as-code-repo5bb597895235b9318858ecaeec3c32e5baac05c0) (Ginger Society Admin) chore: minor changes
-	
- - [7be9c7ad5c](https://github.com/ginger-society/infra-as-code-repo7be9c7ad5cef29f4a1c8cfe1822eadc7a031316b) (Ginger Society Admin) chore: minor
-	
- - [22c00cd5ba](https://github.com/ginger-society/infra-as-code-repo22c00cd5bac3d892e723b12810f2f782bdf430c7) (Ginger Society Admin) chore: minor
-	
- - [efc871e8e9](https://github.com/ginger-society/infra-as-code-repoefc871e8e96c2eccef1032b9eff8a4fa21d8d2d4) (Ginger Society Admin) chore: updated pgadmin service name in ingress
-	
- - [151095bf73](https://github.com/ginger-society/infra-as-code-repo151095bf7393aedc095fe9ce9368313db3f096e1) (Ginger Society Admin) chore: refactored apache2 config into mission critical services and infra services
-	
- - [c65702f25a](https://github.com/ginger-society/infra-as-code-repoc65702f25a419804f56e095f56f86b87bcd850a0) (GingerSociety Admin) chore: version bump to 0.28.0-nightly.0
-	
- - [deac872246](https://github.com/ginger-society/infra-as-code-repodeac872246211a41f71d584846ec6fa492b48ff5) (GingerSociety Admin) chore: minor
-	
- - [c71d35345f](https://github.com/ginger-society/infra-as-code-repoc71d35345f8ca24badae7c4f6d0f9701389b0058) (Ginger Society) chore: changing CI image to ubuntu 20
 ## 0.29.0-nightly.0 - 2026-04-27
 fix:
  - [2ecfcaf0e2](https://github.com/ginger-society/infra-as-code-repo2ecfcaf0e2d26a3a0d7f733dbeb6745653426003) (Ginger Society Admin) fix: ip for db compose test env
@@ -144,6 +146,44 @@ fix:
 	
  - [0c0da09b6c](https://github.com/ginger-society/infra-as-code-repo0c0da09b6cff4c71c4019f2953708d18c9004620) (Ginger Society Admin) fix: changing runner image to use buster tag of debian
 	
+chore:
+ - [b2f85087fd](https://github.com/ginger-society/infra-as-code-repob2f85087fd012eaa13254b2f85888a3071ab243c) (Ginger Society Admin) chore: version bump to 0.29.0-nightly.0
+	
+ - [2d65567f38](https://github.com/ginger-society/infra-as-code-repo2d65567f38833eebd3635cb2896f36cb1fb0571f) (Ginger Society Admin) chore: cleanup and notes
+	
+ - [bd3ddc5711](https://github.com/ginger-society/infra-as-code-repobd3ddc5711e918dd870dda1c0713a29846d2c26a) (Ginger Society Admin) chore: testing helm chart publishing
+	
+ - [a123255ca6](https://github.com/ginger-society/infra-as-code-repoa123255ca6841e1c0480a47613db88a59defc89a) (Ginger Society Admin) chore: testing helm publishing
+	
+ - [550b12d9b8](https://github.com/ginger-society/infra-as-code-repo550b12d9b842a364a95c176ff1428d85caaacbf6) (Ginger Society Admin) chore: testing helm repo hosting
+	
+ - [1816eb9895](https://github.com/ginger-society/infra-as-code-repo1816eb9895a76cc120cb8f4970d11c665db38e20) (Ginger Society Admin) chore: minor changes
+	
+ - [24c44d9d23](https://github.com/ginger-society/infra-as-code-repo24c44d9d2348802d555e9ecc20c4b896172dd83d) (Ginger Society Admin) chore: minor fixes and readme updates
+	
+ - [70ffd49ad4](https://github.com/ginger-society/infra-as-code-repo70ffd49ad4236f91160abe4f5190503fb4f6848f) (Ginger Society Admin) chore: minor readme changes
+	
+ - [f94a573d44](https://github.com/ginger-society/infra-as-code-repof94a573d44c1204dbf13e7a2cbd826c141ff5527) (Ginger Society Admin) chore: minor fixes
+	
+ - [83f7268323](https://github.com/ginger-society/infra-as-code-repo83f72683233c090a75396bed680e41c2507b1525) (Ginger Society Admin) chore: minor
+	
+ - [5bb5978952](https://github.com/ginger-society/infra-as-code-repo5bb597895235b9318858ecaeec3c32e5baac05c0) (Ginger Society Admin) chore: minor changes
+	
+ - [7be9c7ad5c](https://github.com/ginger-society/infra-as-code-repo7be9c7ad5cef29f4a1c8cfe1822eadc7a031316b) (Ginger Society Admin) chore: minor
+	
+ - [22c00cd5ba](https://github.com/ginger-society/infra-as-code-repo22c00cd5bac3d892e723b12810f2f782bdf430c7) (Ginger Society Admin) chore: minor
+	
+ - [efc871e8e9](https://github.com/ginger-society/infra-as-code-repoefc871e8e96c2eccef1032b9eff8a4fa21d8d2d4) (Ginger Society Admin) chore: updated pgadmin service name in ingress
+	
+ - [151095bf73](https://github.com/ginger-society/infra-as-code-repo151095bf7393aedc095fe9ce9368313db3f096e1) (Ginger Society Admin) chore: refactored apache2 config into mission critical services and infra services
+	
+ - [c65702f25a](https://github.com/ginger-society/infra-as-code-repoc65702f25a419804f56e095f56f86b87bcd850a0) (GingerSociety Admin) chore: version bump to 0.28.0-nightly.0
+	
+ - [deac872246](https://github.com/ginger-society/infra-as-code-repodeac872246211a41f71d584846ec6fa492b48ff5) (GingerSociety Admin) chore: minor
+	
+ - [c71d35345f](https://github.com/ginger-society/infra-as-code-repoc71d35345f8ca24badae7c4f6d0f9701389b0058) (Ginger Society) chore: changing CI image to ubuntu 20
+ - [7d9295af0b](https://github.com/ginger-society/infra-as-code-repo7d9295af0bd234cd381e73818cfd8ee5ea494e7e) (Ginger Society Admin) chore: version bump to 0.29.0-nightly.0
+	
 feat:
  - [515c369307](https://github.com/ginger-society/infra-as-code-repo515c3693079c9312c57a1da8c205097f104943f1) (Ginger Society Admin) feat: added kube service and fixing pipeline
 	
@@ -226,42 +266,6 @@ feat:
 	
  - [a2021bfe81](https://github.com/ginger-society/infra-as-code-repoa2021bfe8127c6e80febf7d9a5f661d4814a9410) (Ginger Society Admin) feat: updated metadata
 	
-chore:
- - [b2f85087fd](https://github.com/ginger-society/infra-as-code-repob2f85087fd012eaa13254b2f85888a3071ab243c) (Ginger Society Admin) chore: version bump to 0.29.0-nightly.0
-	
- - [2d65567f38](https://github.com/ginger-society/infra-as-code-repo2d65567f38833eebd3635cb2896f36cb1fb0571f) (Ginger Society Admin) chore: cleanup and notes
-	
- - [bd3ddc5711](https://github.com/ginger-society/infra-as-code-repobd3ddc5711e918dd870dda1c0713a29846d2c26a) (Ginger Society Admin) chore: testing helm chart publishing
-	
- - [a123255ca6](https://github.com/ginger-society/infra-as-code-repoa123255ca6841e1c0480a47613db88a59defc89a) (Ginger Society Admin) chore: testing helm publishing
-	
- - [550b12d9b8](https://github.com/ginger-society/infra-as-code-repo550b12d9b842a364a95c176ff1428d85caaacbf6) (Ginger Society Admin) chore: testing helm repo hosting
-	
- - [1816eb9895](https://github.com/ginger-society/infra-as-code-repo1816eb9895a76cc120cb8f4970d11c665db38e20) (Ginger Society Admin) chore: minor changes
-	
- - [24c44d9d23](https://github.com/ginger-society/infra-as-code-repo24c44d9d2348802d555e9ecc20c4b896172dd83d) (Ginger Society Admin) chore: minor fixes and readme updates
-	
- - [70ffd49ad4](https://github.com/ginger-society/infra-as-code-repo70ffd49ad4236f91160abe4f5190503fb4f6848f) (Ginger Society Admin) chore: minor readme changes
-	
- - [f94a573d44](https://github.com/ginger-society/infra-as-code-repof94a573d44c1204dbf13e7a2cbd826c141ff5527) (Ginger Society Admin) chore: minor fixes
-	
- - [83f7268323](https://github.com/ginger-society/infra-as-code-repo83f72683233c090a75396bed680e41c2507b1525) (Ginger Society Admin) chore: minor
-	
- - [5bb5978952](https://github.com/ginger-society/infra-as-code-repo5bb597895235b9318858ecaeec3c32e5baac05c0) (Ginger Society Admin) chore: minor changes
-	
- - [7be9c7ad5c](https://github.com/ginger-society/infra-as-code-repo7be9c7ad5cef29f4a1c8cfe1822eadc7a031316b) (Ginger Society Admin) chore: minor
-	
- - [22c00cd5ba](https://github.com/ginger-society/infra-as-code-repo22c00cd5bac3d892e723b12810f2f782bdf430c7) (Ginger Society Admin) chore: minor
-	
- - [efc871e8e9](https://github.com/ginger-society/infra-as-code-repoefc871e8e96c2eccef1032b9eff8a4fa21d8d2d4) (Ginger Society Admin) chore: updated pgadmin service name in ingress
-	
- - [151095bf73](https://github.com/ginger-society/infra-as-code-repo151095bf7393aedc095fe9ce9368313db3f096e1) (Ginger Society Admin) chore: refactored apache2 config into mission critical services and infra services
-	
- - [c65702f25a](https://github.com/ginger-society/infra-as-code-repoc65702f25a419804f56e095f56f86b87bcd850a0) (GingerSociety Admin) chore: version bump to 0.28.0-nightly.0
-	
- - [deac872246](https://github.com/ginger-society/infra-as-code-repodeac872246211a41f71d584846ec6fa492b48ff5) (GingerSociety Admin) chore: minor
-	
- - [c71d35345f](https://github.com/ginger-society/infra-as-code-repoc71d35345f8ca24badae7c4f6d0f9701389b0058) (Ginger Society) chore: changing CI image to ubuntu 20
 ## 0.27.0-nightly.0 - 2024-10-07
 feat:
  - [5689a0b2a1](https://github.com/ginger-society/infra-as-code-repo5689a0b2a1fc51167a3cd3d0733b3f3dfbb53ce8) (Ginger Society Admin) feat: added google console link
@@ -298,11 +302,11 @@ chore:
  - [c9e858651b](https://github.com/ginger-society/infra-as-code-repoc9e858651beaaa3be5309b4de7ace78af7ca0d44) (Ginger Society Admin) chore: version bump to 0.21.0-nightly.0
 	
 ## 0.15.0-nightly.0 - 2024-09-24
-feat:
- - [cd8bf4ded4](https://github.com/ginger-society/infra-as-code-repocd8bf4ded465a8e1cb4a186571ad39ebfadb61f9) (Ginger Society Admin) feat: updated metadata
-	
 chore:
  - [7be0f233b2](https://github.com/ginger-society/infra-as-code-repo7be0f233b2e600b985b8ea894ea5966d3b9494c5) (Ginger Society Admin) chore: version bump to 0.15.0-nightly.0
+	
+feat:
+ - [cd8bf4ded4](https://github.com/ginger-society/infra-as-code-repocd8bf4ded465a8e1cb4a186571ad39ebfadb61f9) (Ginger Society Admin) feat: updated metadata
 	
 ## 0.14.0-nightly.0 - 2024-09-24
 chore:
@@ -329,6 +333,11 @@ chore:
  - [3a9342df6e](https://github.com/ginger-society/infra-as-code-repo3a9342df6e37804d2d21e49a15bc5d3d1f71004e) (Ginger Society Admin) chore: version bump to 0.7.0-nightly.0
 	
 ## 0.6.0-nightly.0 - 2024-09-23
+chore:
+ - [53c481b568](https://github.com/ginger-society/infra-as-code-repo53c481b568d879af2135a2e3176c0d18fa0af174) (Ginger Society Admin) chore: version bump to 0.6.0-nightly.0
+	
+ - [54d8332e06](https://github.com/ginger-society/infra-as-code-repo54d8332e0632b4ea8e750c6f7c0865ab17782982) (Ginger Society Admin) chore: remobed openapi cli version comand
+	
 fix:
  - [270175a2d4](https://github.com/ginger-society/infra-as-code-repo270175a2d42289940a79608a1f31c437c94c78aa) (Ginger Society Admin) fix: minor
 	
@@ -338,11 +347,6 @@ feat:
  - [eadf11c548](https://github.com/ginger-society/infra-as-code-repoeadf11c548641e96280f58739fa957421202863a) (Ginger Society Admin) feat: fixing node version to 20
 	
  - [47b3baa885](https://github.com/ginger-society/infra-as-code-repo47b3baa885e14874726dd41d8b55850c2e5cf46c) (Ginger Society Admin) feat: reverting version check comand
-	
-chore:
- - [53c481b568](https://github.com/ginger-society/infra-as-code-repo53c481b568d879af2135a2e3176c0d18fa0af174) (Ginger Society Admin) chore: version bump to 0.6.0-nightly.0
-	
- - [54d8332e06](https://github.com/ginger-society/infra-as-code-repo54d8332e0632b4ea8e750c6f7c0865ab17782982) (Ginger Society Admin) chore: remobed openapi cli version comand
 	
 ## 0.5.0-nightly.0 - 2024-09-09
 chore:
@@ -368,9 +372,6 @@ fix:
 	
  - [a8389487af](https://github.com/ginger-society/infra-as-code-repoa8389487afe80a2a87d306bc9a3b868e1dda48de) (Ginger Society Admin) fix: folder name correction
 	
-first
- - [af7df1df94](https://github.com/ginger-society/infra-as-code-repoaf7df1df942b114a4a00e6323cc3b7eb4a889592) (py-react) first commit
-	
 chore:
  - [a52e337f1e](https://github.com/ginger-society/infra-as-code-repoa52e337f1e1250e2f24e2508c8ae4e758978dc20) (Ginger Society Admin) chore: version bump to 0.2.0-nightly.0
 	
@@ -379,6 +380,9 @@ chore:
  - [08d6fdfac6](https://github.com/ginger-society/infra-as-code-repo08d6fdfac6f17d8d948fcf01028c3cd30e51cf1c) (Ginger Society Admin) chore: minor copy change in readme
 	
  - [f90527bdf3](https://github.com/ginger-society/infra-as-code-repof90527bdf3af6e6e42502c040ceb4ed02118e713) (Ginger Society Admin) chore: refactored
+	
+first
+ - [af7df1df94](https://github.com/ginger-society/infra-as-code-repoaf7df1df942b114a4a00e6323cc3b7eb4a889592) (py-react) first commit
 	
 feat:
  - [84d492aeb3](https://github.com/ginger-society/infra-as-code-repo84d492aeb34550886a9984f02ef56f8a75c89e30) (Ginger Society Admin) feat: added changelot and releaser in git
