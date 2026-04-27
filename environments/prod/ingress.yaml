@@ -38,6 +38,14 @@ spec:
                 name: metadata-service-api-service
                 port:
                   number: 80
+          
+          - path: /kube
+            pathType: Prefix
+            backend:
+              service:
+                name: ginger-kube-service
+                port:
+                  number: 80
 
           - path: /iam-admin
             pathType: Prefix

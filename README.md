@@ -240,3 +240,8 @@ sudo mkdir -p /var/log/apache2/NAME
 
 sudo chown -R www-data:www-data /var/log/apache2/NAME
 sudo chmod 755 /var/log/apache2/NAME
+
+
+kubectl run tmp-psql --rm -it --image=postgres --restart=Never \
+  --env="PGPASSWORD=$(kubectl get secret pg-postgresql -o jsonpath='{.data.postgres-password}' | base64 -d)" \
+  --command -- psql -h pg-postgresql -U postgres -c "CREATE DATABASE \"ginger-kube-db\";"

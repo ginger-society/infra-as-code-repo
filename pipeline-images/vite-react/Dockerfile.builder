@@ -6,8 +6,6 @@ RUN apt update && apt install -y bash curl unzip
 # Use bash as the default shell
 SHELL ["/bin/bash", "-c"]
 
-WORKDIR /app
-
 # Install necessary packages
 RUN apt update && apt install -y curl nano make gcc wget build-essential procps
 
@@ -37,3 +35,5 @@ RUN ./aws/install
 
 # Verify OpenAPI Generator CLI version
 RUN openapi-generator-cli version
+
+WORKDIR /app
