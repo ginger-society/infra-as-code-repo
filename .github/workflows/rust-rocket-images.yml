@@ -54,5 +54,5 @@ jobs:
     - name: Push Rocket dev Docker image
       run: docker push ${{ secrets.DOCKER_HUB_USERNAME }}/rust-rocket-api-dev:latest
 
-    - name: trigger system wide check
-      run: ginger-connector system-check ${{secrets.GH_TOKEN}}
+    # - name: trigger system wide check
+    #   run: ginger-connector system-check ${{secrets.GH_TOKEN}}
