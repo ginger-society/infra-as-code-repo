@@ -1,0 +1,36 @@
+# deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gitolite
+  labels:
+    app: gitolite
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gitolite
+  template:
+    metadata:
+      labels:
+        app: gitolite
+    spec:
+      containers:
+        - name: gitolite
+          image: gingersociety/gitter:latest  # replace with your image
+          ports:
+            - containerPort: 22
+          volumeMounts:
+            - name: gitolite-data
+              mountPath: /var/lib/git
+            - name: admin-key
+              mountPath: /run/secrets/admin_key.pub
+              subPath: admin_key.pub
+              readOnly: true
+      volumes:
+        - name: gitolite-data
+          persistentVolumeClaim:
+            claimName: gitolite-pvc
+        - name: admin-key
+          secret:
+            secretName: gitolite-admin-key

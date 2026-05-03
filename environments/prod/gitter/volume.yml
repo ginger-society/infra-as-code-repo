@@ -1,0 +1,24 @@
+# pv-pvc.yaml
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: gitolite-pv
+spec:
+  capacity:
+    storage: 5Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  hostPath:
+    path: /data/gitolite   # host path where data will live
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: gitolite-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi

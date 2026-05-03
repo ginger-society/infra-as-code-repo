@@ -1,0 +1,15 @@
+# service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: gitolite-service
+spec:
+  type: NodePort
+  selector:
+    app: gitolite
+  ports:
+    - name: ssh
+      protocol: TCP
+      port: 22           # ClusterIP port
+      targetPort: 22     # container port
+      nodePort: 30022    # NodePort range is 30000-32767
