@@ -1,57 +1,6 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: registry-read-only
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: registry-read-only
-  template:
-    metadata:
-      labels:
-        app: registry-read-only
-    spec:
-      containers:
-        - name: registry-read-only
-          image: registry:2
-          env:
-            - name: REGISTRY_HTTP_SECRET
-              value: "o43g2kjgn2iuhv2k4jn2f23f290qfghsdg"
-            - name: REGISTRY_STORAGE_DELETE_ENABLED
-              value: "true"
-            - name: REGISTRY_HTTP_ADDR
-              value: "0.0.0.0:5000"
-          ports:
-            - containerPort: 5000
-          volumeMounts:
-            - mountPath: /var/lib/registry
-              name: registry-storage
-              readOnly: true
-      volumes:
-        - name: registry-storage
-          persistentVolumeClaim:
-            claimName: registry-pvc
-
-
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: registry-read-only
-spec:
-  selector:
-    app: registry-read-only
-  ports:
-    - protocol: TCP
-      port: 5000
-      targetPort: 5000
-  type: ClusterIP
----
-
-apiVersion: apps/v1
-kind: Deployment
-metadata:
   name: registry-ui
 spec:
   replicas: 1
@@ -70,7 +19,7 @@ spec:
             - name: NODE_ENV
               value: "production"
             - name: REGISTRY_HOST
-              value: "registry-read-only:5000"
+              value: "registry:5000"
           ports:
             - containerPort: 80
 ---

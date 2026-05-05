@@ -4,10 +4,10 @@ metadata:
   name: registry-pvc
 spec:
   accessModes:
-    - ReadWriteMany
+    - ReadWriteOnce
   resources:
     requests:
-      storage: 5Gi
+      storage: 50Gi
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -33,28 +33,34 @@ spec:
               value: "true"
             - name: REGISTRY_HTTP_ADDR
               value: "0.0.0.0:5000"
+
+            # Token auth replacing htpasswd
             - name: REGISTRY_AUTH
-              value: "htpasswd"
-            - name: REGISTRY_AUTH_HTPASSWD_REALM
-              value: "Registry Realm"
-            - name: REGISTRY_AUTH_HTPASSWD_PATH
-              value: "/auth/htpasswd"
+              value: "token"
+            - name: REGISTRY_AUTH_TOKEN_REALM
+              value: "https://api.gingersociety.org/iam/docker-token"
+            - name: REGISTRY_AUTH_TOKEN_SERVICE
+              value: "docker.gingersociety.org"
+            - name: REGISTRY_AUTH_TOKEN_ISSUER
+              value: "my-auth-server"
+            - name: REGISTRY_AUTH_TOKEN_ROOTCERTBUNDLE
+              value: "/certs/auth.cert"
+
           ports:
             - containerPort: 5000
           volumeMounts:
             - mountPath: /var/lib/registry
               name: registry-storage
-            - mountPath: /auth
-              name: auth-volume
+            - mountPath: /certs
+              name: cert-volume
+
       volumes:
         - name: registry-storage
           persistentVolumeClaim:
             claimName: registry-pvc
-        - name: auth-volume
+        - name: cert-volume
           secret:
-            secretName: registry-auth
-
-
+            secretName: registry-auth-secret
 ---
 apiVersion: v1
 kind: Service

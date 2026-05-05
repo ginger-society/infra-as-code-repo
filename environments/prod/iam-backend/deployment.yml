@@ -76,3 +76,15 @@ spec:
 
             - name: ROCKET_PORT
               value: "8000"
+            
+            - name: DOCKER_REGISTRY_PRIVATE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: iam-service-api-secrets
+                  key: DOCKER_REGISTRY_PRIVATE_KEY
+
+            - name: DOCKER_TOKEN_ISSUER
+              valueFrom:
+                secretKeyRef:
+                  name: iam-service-api-secrets
+                  key: DOCKER_TOKEN_ISSUER

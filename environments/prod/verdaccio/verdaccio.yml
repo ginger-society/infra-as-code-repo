@@ -5,6 +5,9 @@ metadata:
 data:
   config.yaml: |
     storage: /verdaccio/storage
+    web:
+      title: "GingerSociety Artifactory"
+      favicon: https://www.gingersociety.org/ginger_icon.ico
     auth:
       htpasswd:
         file: /verdaccio/storage/htpasswd
