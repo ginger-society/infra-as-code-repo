@@ -194,7 +194,7 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: kubernetes-dashboard-proxy
+                name: dashboard-auth-proxy
                 port:
                   number: 80
 

@@ -1,13 +1,14 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: pypiserver-pvc
+  name: pypi-pvc
 spec:
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 1Gi
+      storage: 2Gi
+  storageClassName: standard
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -23,19 +24,52 @@ spec:
       labels:
         app: pypiserver
     spec:
+      tolerations:
+        - key: "node-role.kubernetes.io/control-plane"
+          operator: "Exists"
+          effect: "NoSchedule"
       containers:
+        # ── Primary: pypi index ───────────────────────────────────────────────
         - name: pypiserver
-          image: pypiserver/pypiserver:latest
-          args: ["run"]
+          image: gingersociety/pypi-index:latest
+          args:
+            - "run"
+            - "--authenticate"
+            - "update,download,list"
+            - "./packages"
           ports:
             - containerPort: 8080
           volumeMounts:
             - mountPath: /data/packages
-              name: package-storage
+              name: pypi-storage
+
+        # ── Sidecar: auth proxy ───────────────────────────────────────────────
+        # Listens on :3000, validates JWTs, and forwards authed traffic
+        # to the pypiserver on localhost:8080.
+        - name: ginger-auth-proxy
+          image: gingersociety/ginger-auth-proxy:latest
+          ports:
+            - containerPort: 3000
+          env:
+            - name: JWT_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: platform-secrets
+                  key: JWT_SECRET
+            - name: UPSTREAM_URL
+              value: "http://localhost:8080"
+            - name: IAM_LOGIN_URL
+              value: "https://iam.gingersociety.org/#pypi-index/login"   # ← replace with your IAM URL
+            - name: PORT
+              value: "3000"
+            # Uncomment and set to bypass auth on specific paths, e.g. health checks
+            # - name: EXCLUDED_PATHS
+            #   value: "/health,/simple"
+
       volumes:
-        - name: package-storage
+        - name: pypi-storage
           persistentVolumeClaim:
-            claimName: pypiserver-pvc
+            claimName: pypi-pvc
 ---
 apiVersion: v1
 kind: Service
@@ -45,7 +79,8 @@ spec:
   selector:
     app: pypiserver
   ports:
-    - protocol: TCP
+    - name: proxy
+      protocol: TCP
       port: 80
-      targetPort: 8080
+      targetPort: 3000   # ← traffic enters through the auth proxy, not pypiserver directly
   type: ClusterIP

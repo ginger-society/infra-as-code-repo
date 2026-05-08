@@ -43,3 +43,9 @@ spec:
 
             - name: AWS_REGION
               value: "ap-south-1"
+            
+            - name: REDIS_URI
+              value: "redis://redis-service:6379"
+            
+            - name: REDIS_PUBSUB_URI
+              value: "redis://redis-service:6379"

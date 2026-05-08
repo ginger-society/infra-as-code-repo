@@ -16,3 +16,8 @@ kubectl create secret generic iam-service-api-secrets \
   --from-literal=DOCKER_TOKEN_ISSUER="my-auth-server" \
   --dry-run=client -o yaml | kubectl apply -f -
 
+
+# Separate secret for the CA key (keeps it isolated — good practice)
+kubectl create secret generic iam-git-ssh-ca-secret \
+  --from-file=ca_key=./ca_key \
+  --dry-run=client -o yaml | kubectl apply -f -

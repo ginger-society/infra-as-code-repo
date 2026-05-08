@@ -31,6 +31,11 @@ spec:
           ports:
             - containerPort: 8000
 
+          volumeMounts:
+            - name: ssh-ca-key
+              mountPath: /etc/ssh-ca
+              readOnly: true
+
           env:
             # ✅ Build DATABASE_URL dynamically
             - name: DATABASE_URL
@@ -88,3 +93,8 @@ spec:
                 secretKeyRef:
                   name: iam-service-api-secrets
                   key: DOCKER_TOKEN_ISSUER
+      volumes:
+        - name: ssh-ca-key
+          secret:
+            secretName: iam-git-ssh-ca-secret
+            defaultMode: 0400

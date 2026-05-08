@@ -1,11 +1,78 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# ExternalName service — bridges default namespace to the dashboard in
+# kubernetes-dashboard namespace
+# ─────────────────────────────────────────────────────────────────────────────
 apiVersion: v1
 kind: Service
 metadata:
-  name: kubernetes-dashboard-proxy
+  name: kubernetes-dashboard-proxy-upstream
   namespace: default
 spec:
   type: ExternalName
   externalName: kubernetes-dashboard.kubernetes-dashboard.svc.cluster.local
   ports:
-    - port: 80
-      targetPort: 80  # Kubernetes Dashboard default port
+    - port: 443
+      targetPort: 443
+
+---
+# ─────────────────────────────────────────────────────────────────────────────
+# Auth proxy deployment — in default namespace, so platform-secrets is available
+# ─────────────────────────────────────────────────────────────────────────────
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dashboard-auth-proxy
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dashboard-auth-proxy
+  template:
+    metadata:
+      labels:
+        app: dashboard-auth-proxy
+    spec:
+      tolerations:
+        - key: "node-role.kubernetes.io/control-plane"
+          operator: "Exists"
+          effect: "NoSchedule"
+      containers:
+        - name: ginger-auth-proxy
+          image: gingersociety/ginger-auth-proxy:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3000
+          env:
+            - name: JWT_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: platform-secrets
+                  key: JWT_SECRET
+            - name: UPSTREAM_URL
+              value: "https://kubernetes-dashboard-proxy-upstream.default.svc.cluster.local:443"
+            - name: IAM_LOGIN_URL
+              value: "https://iam.gingersociety.org/#k8s-dashboard/login"   # ← update
+            - name: PORT
+              value: "3000"
+            - name: UPSTREAM_TLS_SKIP_VERIFY
+              value: "true"
+
+---
+# ─────────────────────────────────────────────────────────────────────────────
+# Service for the proxy itself
+# ─────────────────────────────────────────────────────────────────────────────
+apiVersion: v1
+kind: Service
+metadata:
+  name: dashboard-auth-proxy
+  namespace: default
+spec:
+  selector:
+    app: dashboard-auth-proxy
+  ports:
+    - name: proxy
+      protocol: TCP
+      port: 80
+      targetPort: 3000
+  type: ClusterIP

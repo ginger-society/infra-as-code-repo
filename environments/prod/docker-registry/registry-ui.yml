@@ -12,16 +12,49 @@ spec:
       labels:
         app: registry-ui
     spec:
+      tolerations:
+        - key: "node-role.kubernetes.io/control-plane"
+          operator: "Exists"
+          effect: "NoSchedule"
       containers:
+        # ── Primary: docker registry UI ───────────────────────────────────────
         - name: registry-ui
-          image: jc21/registry-ui
+          image: gingersociety/docker-registry-ui
+          imagePullPolicy: Always
           env:
             - name: NODE_ENV
               value: "production"
             - name: REGISTRY_HOST
-              value: "registry:5000"
+              value: "docker.gingersociety.org"
+            - name: REGISTRY_SSL
+              value: "true"
+            - name: AUTH_SERVER
+              value: "https://api.gingersociety.org/iam/docker-token"
           ports:
             - containerPort: 80
+
+        # ── Sidecar: auth proxy ───────────────────────────────────────────────
+        # Listens on :3000, validates JWTs, forwards authed traffic to
+        # the registry-ui on localhost:80.
+        - name: ginger-auth-proxy
+          image: gingersociety/ginger-auth-proxy:latest
+          ports:
+            - containerPort: 3000
+          env:
+            - name: JWT_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: platform-secrets
+                  key: JWT_SECRET
+            - name: UPSTREAM_URL
+              value: "http://localhost:80"
+            - name: IAM_LOGIN_URL
+              value: "https://iam.gingersociety.org/#docker-registry/login"   # ← replace with your IAM URL
+            - name: PORT
+              value: "3000"
+            # Uncomment to bypass auth on specific paths
+            # - name: EXCLUDED_PATHS
+            #   value: "/health"
 ---
 apiVersion: v1
 kind: Service
@@ -33,5 +66,5 @@ spec:
   ports:
     - protocol: TCP
       port: 80
-      targetPort: 80
+      targetPort: 3000   # ← traffic enters through the auth proxy
   type: ClusterIP

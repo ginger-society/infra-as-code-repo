@@ -245,3 +245,15 @@ sudo chmod 755 /var/log/apache2/NAME
 kubectl run tmp-psql --rm -it --image=postgres --restart=Never \
   --env="PGPASSWORD=$(kubectl get secret pg-postgresql -o jsonpath='{.data.postgres-password}' | base64 -d)" \
   --command -- psql -h pg-postgresql -U postgres -c "CREATE DATABASE \"ginger-kube-db\";"
+
+
+------K8 Dashboard ------
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.7.0/aio/deploy/recommended.yaml
+
+
+  kubectl -n kubernetes-dashboard patch deployment kubernetes-dashboard \
+  --type=json \
+  -p='[
+    {"op":"add","path":"/spec/template/spec/containers/0/args/-","value":"--enable-skip-login"},
+    {"op":"add","path":"/spec/template/spec/containers/0/args/-","value":"--token-ttl=0"}
+  ]'
