@@ -14,6 +14,15 @@ case "$(uname -s)" in
         ;;
 esac
 
+# ── Device ID argument ────────────────────────────────────────────────────────
+if [ "$#" -ne 1 ]; then
+    echo "Usage: sudo $0 <device-id>"
+    echo "Example: sudo $0 my-macbook"
+    exit 1
+fi
+
+DEVICE_ID="$1"
+
 # ── Install the binary first ──────────────────────────────────────────────────
 echo "Installing ginger-infra..."
 bash -c "$(curl -fsSL https://raw.githubusercontent.com/ginger-society/infra-as-code-repo/main/rust-helpers/installer.sh)" -- ginger-society/ginger-infra:latest
@@ -48,6 +57,8 @@ case "$(uname -s)" in
     <array>
         <string>${BINARY}</string>
         <string>start</string>
+        <string>--device-id</string>
+        <string>${DEVICE_ID}</string>
     </array>
 
     <key>RunAtLoad</key>
@@ -68,16 +79,15 @@ case "$(uname -s)" in
 </plist>
 EOF
 
-        # Set correct permissions on plist
         chown root:wheel "$PLIST"
         chmod 644 "$PLIST"
 
-        # Load the daemon
         launchctl unload "$PLIST" 2>/dev/null
         launchctl load -w "$PLIST"
 
         echo "✅ ginger-infra daemon installed and started via launchd"
-        echo "   Logs: /var/log/ginger-infra.log"
+        echo "   Device ID:  ${DEVICE_ID}"
+        echo "   Logs:       /var/log/ginger-infra.log"
         echo "   To stop:    sudo launchctl unload $PLIST"
         echo "   To start:   sudo launchctl load $PLIST"
         ;;
@@ -94,7 +104,7 @@ Wants=network-online.target
 
 [Service]
 Type=simple
-ExecStart=${BINARY} start
+ExecStart=${BINARY} start --device-id ${DEVICE_ID}
 Restart=always
 RestartSec=5
 WorkingDirectory=/etc/ginger-infra
@@ -106,12 +116,12 @@ SyslogIdentifier=ginger-infra
 WantedBy=multi-user.target
 EOF
 
-        # Reload systemd, enable and start
         systemctl daemon-reload
         systemctl enable ginger-infra
         systemctl restart ginger-infra
 
         echo "✅ ginger-infra daemon installed and started via systemd"
+        echo "   Device ID:  ${DEVICE_ID}"
         echo "   Logs:       sudo journalctl -u ginger-infra -f"
         echo "   To stop:    sudo systemctl stop ginger-infra"
         echo "   To start:   sudo systemctl start ginger-infra"
