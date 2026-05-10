@@ -77,7 +77,7 @@ apt_install_if_missing() {
 }
 
 confirm() {
-    read -r -p "$1 [y/N] " response
+    read -r -p "$1 [y/N] " response </dev/tty
     [[ "$response" =~ ^[Yy]$ ]]
 }
 
