@@ -28,6 +28,7 @@ esac
 # ── Argument parsing ──────────────────────────────────────────────────────────
 DEVICE_ID=""
 INSTALL_GATEWAY=false
+INSTALL_K8_CLUSTER_MANAGER=false
 
 while [[ "$#" -gt 0 ]]; do
     case "$1" in
@@ -37,6 +38,10 @@ while [[ "$#" -gt 0 ]]; do
             ;;
         --install-gateway)
             INSTALL_GATEWAY=true
+            shift
+            ;;
+        --install-k8-cluster-manager)
+            INSTALL_K8_CLUSTER_MANAGER=true
             shift
             ;;
         *)
@@ -56,6 +61,11 @@ fi
 # ── Gateway on macOS guard ────────────────────────────────────────────────────
 if [ "$INSTALL_GATEWAY" = true ] && [ "$OS_TYPE" = "darwin" ]; then
     echo "❌ --install-gateway is only supported on Linux."
+    exit 1
+fi
+
+if [ "$INSTALL_K8_CLUSTER_MANAGER" = true ] && [ "$OS_TYPE" = "darwin" ]; then
+    echo "❌ --install-k8-cluster-manager is only supported on Linux."
     exit 1
 fi
 
@@ -317,3 +327,101 @@ echo "  4. Reload Apache2:    sudo systemctl reload apache2"
 echo ""
 echo "  ginger-infra logs:  sudo journalctl -u ginger-infra -f"
 echo "  Apache2 logs:       /var/log/apache2/"
+
+
+# ── K8 Cluster Manager installation ──────────────────────────────────────────
+if [ "$INSTALL_K8_CLUSTER_MANAGER" = true ]; then
+
+echo ""
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo " K8 Cluster Manager Installation"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo ""
+echo "This will install and configure the following:"
+echo "  • Docker"
+echo "  • Kind (Kubernetes in Docker)"
+echo "  • kubectl"
+echo ""
+
+if ! confirm "Proceed with K8 cluster manager installation?"; then
+    echo "Skipping K8 cluster manager installation."
+else
+    apt-get update -y
+
+    # ── Docker ────────────────────────────────────────────────────────────────
+    echo ""
+    echo "── Docker ───────────────────────────────────────────────"
+    if is_installed "docker"; then
+        echo "✅ Docker already installed, skipping."
+    else
+        echo "📦 Installing Docker..."
+        apt-get install -y ca-certificates curl gnupg lsb-release
+
+        install -m 0755 -d /etc/apt/keyrings
+        curl -fsSL https://download.docker.com/linux/ubuntu/gpg | \
+            gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+        chmod a+r /etc/apt/keyrings/docker.gpg
+
+        echo \
+            "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] \
+            https://download.docker.com/linux/ubuntu \
+            $(lsb_release -cs) stable" | \
+            tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+        apt-get update -y
+        apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+        systemctl enable docker
+        systemctl start docker
+
+        echo "✅ Docker installed."
+    fi
+
+    # ── kubectl ───────────────────────────────────────────────────────────────
+    echo ""
+    echo "── kubectl ──────────────────────────────────────────────"
+    if is_installed "kubectl"; then
+        echo "✅ kubectl already installed, skipping."
+    else
+        echo "📦 Installing kubectl..."
+        curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.29/deb/Release.key | \
+            gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+
+        echo "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] \
+            https://pkgs.k8s.io/core:/stable:/v1.29/deb/ /" | \
+            tee /etc/apt/sources.list.d/kubernetes.list > /dev/null
+
+        apt-get update -y
+        apt-get install -y kubectl
+        echo "✅ kubectl installed."
+    fi
+
+    # ── Kind ──────────────────────────────────────────────────────────────────
+    echo ""
+    echo "── Kind ─────────────────────────────────────────────────"
+    if is_installed "kind"; then
+        echo "✅ Kind already installed, skipping."
+    else
+        echo "📦 Installing Kind..."
+        ARCH=$(dpkg --print-architecture)
+        curl -Lo /usr/local/bin/kind \
+            "https://kind.sigs.k8s.io/dl/v0.22.0/kind-linux-${ARCH}"
+        chmod +x /usr/local/bin/kind
+        echo "✅ Kind installed."
+    fi
+
+    # ── Summary ───────────────────────────────────────────────────────────────
+    echo ""
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    echo "✅ K8 cluster manager installation complete"
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    echo ""
+    echo "Next steps:"
+    echo "  1. Create a cluster:  kind create cluster --name my-cluster"
+    echo "  2. List clusters:     kind get clusters"
+    echo "  3. Delete a cluster:  kind delete cluster --name my-cluster"
+    echo ""
+    echo "  Docker status:  sudo systemctl status docker"
+fi
+
+fi
