@@ -12,6 +12,7 @@ API_PORT="$2"
 PORT_MAPPINGS_JSON="$3"
 FQDN="${CLUSTER_NAME}.test-clusters.rackmint.com"
 KIND_CONFIG="/tmp/kind-${CLUSTER_NAME}.yaml"
+NGINX_ENTRIES_FILE="/etc/nginx/stream.d/kind-cluster-entries.map"
 NGINX_STREAM_CONF="/etc/nginx/stream.d/kind-clusters.conf"
 
 # ── Check jq is available ─────────────────────────────────────────────────────
@@ -75,19 +76,15 @@ rm -f "$KIND_CONFIG"
 # ── Update Nginx stream config ────────────────────────────────────────────────
 mkdir -p /etc/nginx/stream.d
 
-NGINX_STREAM_CONF="/etc/nginx/stream.d/kind-clusters.conf"
+# Update entries file (.map extension so nginx doesn't include it)
+touch "$NGINX_ENTRIES_FILE"
+sed -i "/^.*${FQDN}.*$/d" "$NGINX_ENTRIES_FILE"
+echo "        ${FQDN}    127.0.0.1:${API_PORT};" >> "$NGINX_ENTRIES_FILE"
 
-if [ -f "$NGINX_STREAM_CONF" ]; then
-    sed -i "/^.*${FQDN}.*$/d" "$NGINX_STREAM_CONF"
-fi
-
-echo "        ${FQDN}    127.0.0.1:${API_PORT};" >> "$NGINX_STREAM_CONF"
-
-ENTRIES=$(cat "$NGINX_STREAM_CONF")
-
+# Rebuild stream conf from entries
 cat > "$NGINX_STREAM_CONF" <<EOF
 map \$ssl_preread_server_name \$kind_backend {
-${ENTRIES}
+$(cat "$NGINX_ENTRIES_FILE")
 }
 
 server {
@@ -98,8 +95,6 @@ server {
 EOF
 
 nginx -t && systemctl reload nginx
-
-
 if [ $? -ne 0 ]; then
     echo "ERROR: nginx reload failed"
     exit 4
