@@ -240,7 +240,7 @@ echo ""
 echo "This will install and configure the following:"
 echo "  • Snap"
 echo "  • Certbot (via Snap)"
-echo "  • Apache2 with modules: ssl, proxy, proxy_http, proxy_wstunnel, rewrite, headers"
+echo "  • Apache2 with modules: ssl, proxy, proxy_http, proxy_wstunnel, rewrite, headers, proxy_connect"
 echo "  • Nginx (configured to NOT listen on 80/443 — Apache2 is the main gateway)"
 echo ""
 
@@ -288,6 +288,7 @@ APACHE_MODULES=(
     proxy_wstunnel
     rewrite
     headers
+    proxy_connect
 )
 
 for mod in "${APACHE_MODULES[@]}"; do

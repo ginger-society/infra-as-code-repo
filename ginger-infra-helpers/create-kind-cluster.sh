@@ -75,6 +75,8 @@ rm -f "$KIND_CONFIG"
 # ── Update Nginx stream config ────────────────────────────────────────────────
 mkdir -p /etc/nginx/stream.d
 
+NGINX_STREAM_CONF="/etc/nginx/stream.d/kind-clusters.conf"
+
 if [ -f "$NGINX_STREAM_CONF" ]; then
     sed -i "/^.*${FQDN}.*$/d" "$NGINX_STREAM_CONF"
 fi
@@ -83,21 +85,21 @@ echo "        ${FQDN}    127.0.0.1:${API_PORT};" >> "$NGINX_STREAM_CONF"
 
 ENTRIES=$(cat "$NGINX_STREAM_CONF")
 
-cat > /etc/nginx/conf.d/kind-stream.conf <<EOF
-stream {
-    map \$ssl_preread_server_name \$kind_backend {
+cat > "$NGINX_STREAM_CONF" <<EOF
+map \$ssl_preread_server_name \$kind_backend {
 ${ENTRIES}
-    }
+}
 
-    server {
-        listen 3333;
-        ssl_preread on;
-        proxy_pass \$kind_backend;
-    }
+server {
+    listen 3333;
+    ssl_preread on;
+    proxy_pass \$kind_backend;
 }
 EOF
 
 nginx -t && systemctl reload nginx
+
+
 if [ $? -ne 0 ]; then
     echo "ERROR: nginx reload failed"
     exit 4
