@@ -113,3 +113,14 @@ KUBECONFIG=$(echo "$KUBECONFIG" | sed "s|server: https://127\.0\.0\.1:${API_PORT
 echo "KUBECONFIG_START"
 echo "$KUBECONFIG"
 echo "KUBECONFIG_END"
+
+# ── Save kubeconfig ───────────────────────────────────────────────────────────
+KUBE_DIR="${HOME}/.kube"
+mkdir -p "$KUBE_DIR"
+
+echo "$KUBECONFIG" > "${KUBE_DIR}/${CLUSTER_NAME}.yaml"
+chmod 600 "${KUBE_DIR}/${CLUSTER_NAME}.yaml"
+
+echo "Kubeconfig saved to ${KUBE_DIR}/${CLUSTER_NAME}.yaml"
+echo "Use it with: kubectl --kubeconfig=${KUBE_DIR}/${CLUSTER_NAME}.yaml get nodes"
+echo "Or export:   export KUBECONFIG=${KUBE_DIR}/${CLUSTER_NAME}.yaml"
