@@ -348,7 +348,7 @@ if ! confirm "Proceed with K8 cluster manager installation?"; then
 else
     apt-get update -y
 
-    # ── Docker ────────────────────────────────────────────────────────────────
+    # ── Docker ────────────────────────────────────────────────────────────────────
     echo ""
     echo "── Docker ───────────────────────────────────────────────"
     if is_installed "docker"; then
@@ -358,14 +358,25 @@ else
         apt-get install -y ca-certificates curl gnupg lsb-release
 
         install -m 0755 -d /etc/apt/keyrings
-        curl -fsSL https://download.docker.com/linux/ubuntu/gpg | \
+
+        # detect debian vs ubuntu for correct repo
+        DISTRO_ID=$(lsb_release -is | tr '[:upper:]' '[:lower:]')
+        DISTRO_CODENAME=$(lsb_release -cs)
+
+        if [ "$DISTRO_ID" = "debian" ]; then
+            DOCKER_REPO="https://download.docker.com/linux/debian"
+        else
+            DOCKER_REPO="https://download.docker.com/linux/ubuntu"
+        fi
+
+        curl -fsSL "${DOCKER_REPO}/gpg" | \
             gpg --dearmor -o /etc/apt/keyrings/docker.gpg
         chmod a+r /etc/apt/keyrings/docker.gpg
 
         echo \
             "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] \
-            https://download.docker.com/linux/ubuntu \
-            $(lsb_release -cs) stable" | \
+            ${DOCKER_REPO} \
+            ${DISTRO_CODENAME} stable" | \
             tee /etc/apt/sources.list.d/docker.list > /dev/null
 
         apt-get update -y
