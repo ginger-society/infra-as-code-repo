@@ -91,6 +91,34 @@ confirm() {
     [[ "$response" =~ ^[Yy]$ ]]
 }
 
+# ── Stop and remove existing ginger-infra ────────────────────────────────────
+echo ""
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo " Cleaning up existing ginger-infra installation"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+if [ "$OS_TYPE" = "linux" ]; then
+    if systemctl is-active --quiet ginger-infra 2>/dev/null; then
+        echo "Stopping ginger-infra service..."
+        systemctl stop ginger-infra
+    fi
+elif [ "$OS_TYPE" = "darwin" ]; then
+    PLIST="/Library/LaunchDaemons/org.gingersociety.ginger-infra.plist"
+    if [ -f "$PLIST" ]; then
+        echo "Stopping ginger-infra daemon..."
+        launchctl unload "$PLIST" 2>/dev/null
+    fi
+fi
+
+if [ -f "/usr/local/bin/ginger-infra" ]; then
+    echo "Removing existing binary..."
+    rm -f /usr/local/bin/ginger-infra
+    echo "✅ Old binary removed."
+else
+    echo "No existing binary found, skipping."
+fi
+
+
 # ── Install ginger-infra binary ───────────────────────────────────────────────
 echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
@@ -319,13 +347,7 @@ echo "━━━━━━━━━━━━━━━━━━━━━━━━�
 echo "✅ Gateway installation complete"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""
-echo "Next steps:"
-echo "  1. Add your VirtualHost configs to /etc/apache2/sites-available/"
-echo "  2. Enable them with:  sudo a2ensite <your-site>.conf"
-echo "  3. Get SSL certs:     sudo certbot --apache -d yourdomain.com"
-echo "  4. Reload Apache2:    sudo systemctl reload apache2"
-echo ""
-echo "  ginger-infra logs:  sudo journalctl -u ginger-infra -f"
+echo "  Apache2 status:     sudo service apache2 status"
 echo "  Apache2 logs:       /var/log/apache2/"
 
 
@@ -427,10 +449,6 @@ else
     echo "✅ K8 cluster manager installation complete"
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     echo ""
-    echo "Next steps:"
-    echo "  1. Create a cluster:  kind create cluster --name my-cluster"
-    echo "  2. List clusters:     kind get clusters"
-    echo "  3. Delete a cluster:  kind delete cluster --name my-cluster"
     echo ""
     echo "  Docker status:  sudo systemctl status docker"
 fi

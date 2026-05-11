@@ -1,4 +1,4 @@
-sudo bash -c "$(curl -fsSL https://raw.githubusercontent.com/ginger-society/infra-as-code-repo/main/ginger-infra-helpers/installer.sh)" -- my-macbook
+sudo bash -c "$(curl -fsSL https://raw.githubusercontent.com/ginger-society/infra-as-code-repo/main/ginger-infra-helpers/installer.sh)" -- --device-id my-macbook
 
 
 on macos
