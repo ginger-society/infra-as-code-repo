@@ -92,3 +92,4 @@ fi
 
 echo ""
 echo "✅ ginger-infra uninstalled successfully"
+echo "Please note that we only removed ginger society's infra helpers. If you have other tools installed such as docker , kubectl , kind, they will not be affected."

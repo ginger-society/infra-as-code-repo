@@ -41,12 +41,12 @@ docker exec -it ginger-test bash
 
 then as a root
 
-curl -fsSL https://raw.githubusercontent.com/ginger-society/infra-as-code-repo/main/ginger-infra-helpers/installer.sh | bash -s -- --device-id test-server --install-gateway
+curl -fsSL https://raw.githubusercontent.com/ginger-society/infra-as-code-repo/main/ginger-infra-helpers/installer.sh | bash -s -- --device-id test-server-img --install-gateway
 
 
 On the server as a sudoer : 
 
-curl -fsSL https://raw.githubusercontent.com/ginger-society/infra-as-code-repo/main/ginger-infra-helpers/installer.sh | sudo bash -s -- --device-id test-server --install-gateway --install-k8-cluster-manager
+curl -fsSL https://raw.githubusercontent.com/ginger-society/infra-as-code-repo/main/ginger-infra-helpers/installer.sh | sudo bash -s -- --device-id test-server-img --install-gateway --install-k8-cluster-manager
 
 
-curl -fsSL https://raw.githubusercontent.com/ginger-society/infra-as-code-repo/main/ginger-infra-helpers/installer.sh | sudo bash -s -- --device-id test-server
+curl -fsSL https://raw.githubusercontent.com/ginger-society/infra-as-code-repo/main/ginger-infra-helpers/installer.sh | sudo bash -s -- --device-id test-server-img
