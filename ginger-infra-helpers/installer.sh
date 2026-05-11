@@ -254,6 +254,12 @@ apt-get update -y
 # ── Snap ──────────────────────────────────────────────────────────────────────
 echo ""
 echo "── Snap ─────────────────────────────────────────────────"
+
+# ensure universe repo is enabled (required for snapd on GCP Ubuntu)
+apt-get install -y software-properties-common
+add-apt-repository -y universe
+apt-get update -y
+
 apt_install_if_missing "snapd" "snap"
 
 systemctl enable --now snapd.socket
