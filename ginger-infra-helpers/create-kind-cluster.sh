@@ -1,19 +1,37 @@
 #!/bin/bash
 
 # ── Args ──────────────────────────────────────────────────────────────────────
-if [ "$#" -ne 3 ]; then
-    echo "Usage: $0 <cluster-name> <api-port> <port-mappings-json>"
-    echo "Example: $0 alpha 8001 '[{\"container_port\":80,\"host_port\":8081,\"protocol\":\"TCP\"}]'"
+if [ "$#" -lt 3 ]; then
+    echo "Usage: $0 <cluster-name> <api-port> <port-mappings-json> [--cpus N] [--memory Xg] [--disk Xg]"
+    echo "Example: $0 alpha 8001 '[{\"container_port\":80,\"host_port\":8081,\"protocol\":\"TCP\"}]' --cpus 4 --memory 8g --disk 50g"
     exit 1
 fi
 
 CLUSTER_NAME="$1"
 API_PORT="$2"
 PORT_MAPPINGS_JSON="$3"
+shift 3
+
+# ── Optional resource limits (defaults) ───────────────────────────────────────
+CPUS="2"
+MEMORY="4g"
+DISK="30g"
+
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --cpus)   CPUS="$2";   shift 2 ;;
+        --memory) MEMORY="$2"; shift 2 ;;
+        --disk)   DISK="$2";   shift 2 ;;
+        *) echo "Unknown option: $1"; exit 1 ;;
+    esac
+done
+
 FQDN="${CLUSTER_NAME}.test-clusters.rackmint.com"
 KIND_CONFIG="/tmp/kind-${CLUSTER_NAME}.yaml"
 NGINX_ENTRIES_FILE="/etc/nginx/stream.d/kind-cluster-entries.map"
 NGINX_STREAM_CONF="/etc/nginx/stream.d/kind-clusters.conf"
+
+echo "Resource limits — CPUs: ${CPUS} | Memory: ${MEMORY} | Disk: ${DISK}"
 
 # ── Check jq is available ─────────────────────────────────────────────────────
 if ! command -v jq &>/dev/null; then
@@ -73,15 +91,62 @@ fi
 
 rm -f "$KIND_CONFIG"
 
+# ── Apply CPU and memory limits ───────────────────────────────────────────────
+echo "Applying resource limits to '${CLUSTER_NAME}-control-plane'..."
+docker update \
+    --cpus "${CPUS}" \
+    --memory "${MEMORY}" \
+    --memory-swap "${MEMORY}" \
+    "${CLUSTER_NAME}-control-plane"
+
+if [ $? -ne 0 ]; then
+    echo "WARNING: failed to apply CPU/memory limits (non-fatal, cluster still usable)"
+else
+    echo "✅ CPU and memory limits applied"
+fi
+
+# ── Apply disk limit via loopback device ──────────────────────────────────────
+# Convert Xg → integer GB for fallocate
+DISK_GB=$(echo "$DISK" | sed 's/[gG]$//')
+LOOP_IMAGE_DIR="/var/kind-disks"
+LOOP_IMAGE="${LOOP_IMAGE_DIR}/${CLUSTER_NAME}.img"
+MOUNT_POINT="/var/kind-mounts/${CLUSTER_NAME}"
+
+mkdir -p "$LOOP_IMAGE_DIR" "$MOUNT_POINT"
+
+echo "Allocating ${DISK_GB}GB disk image for cluster '${CLUSTER_NAME}'..."
+fallocate -l "${DISK_GB}G" "$LOOP_IMAGE"
+if [ $? -ne 0 ]; then
+    echo "WARNING: fallocate failed, trying dd fallback..."
+    dd if=/dev/zero of="$LOOP_IMAGE" bs=1G count="${DISK_GB}" status=progress
+fi
+
+mkfs.ext4 -F "$LOOP_IMAGE"
+
+LOOP_DEV=$(losetup --find --show "$LOOP_IMAGE")
+mount "$LOOP_DEV" "$MOUNT_POINT"
+
+if [ $? -ne 0 ]; then
+    echo "WARNING: failed to mount disk image (non-fatal, cluster still usable)"
+else
+    # Persist mount across reboots
+    echo "${LOOP_DEV} ${MOUNT_POINT} ext4 defaults,nofail 0 0" >> /etc/fstab
+
+    # Store metadata so delete script can clean this up
+    echo "LOOP_DEV=${LOOP_DEV}" > "${LOOP_IMAGE_DIR}/${CLUSTER_NAME}.meta"
+    echo "LOOP_IMAGE=${LOOP_IMAGE}" >> "${LOOP_IMAGE_DIR}/${CLUSTER_NAME}.meta"
+    echo "MOUNT_POINT=${MOUNT_POINT}" >> "${LOOP_IMAGE_DIR}/${CLUSTER_NAME}.meta"
+
+    echo "✅ Disk limit of ${DISK_GB}GB applied at ${MOUNT_POINT}"
+fi
+
 # ── Update Nginx stream config ────────────────────────────────────────────────
 mkdir -p /etc/nginx/stream.d
 
-# Update entries file (.map extension so nginx doesn't include it)
 touch "$NGINX_ENTRIES_FILE"
 sed -i "/^.*${FQDN}.*$/d" "$NGINX_ENTRIES_FILE"
 echo "        ${FQDN}    127.0.0.1:${API_PORT};" >> "$NGINX_ENTRIES_FILE"
 
-# Rebuild stream conf from entries
 cat > "$NGINX_STREAM_CONF" <<EOF
 map \$ssl_preread_server_name \$kind_backend {
 $(cat "$NGINX_ENTRIES_FILE")
@@ -124,3 +189,11 @@ chmod 600 "${KUBE_DIR}/${CLUSTER_NAME}.yaml"
 echo "Kubeconfig saved to ${KUBE_DIR}/${CLUSTER_NAME}.yaml"
 echo "Use it with: kubectl --kubeconfig=${KUBE_DIR}/${CLUSTER_NAME}.yaml get nodes"
 echo "Or export:   export KUBECONFIG=${KUBE_DIR}/${CLUSTER_NAME}.yaml"
+
+# ── Summary ───────────────────────────────────────────────────────────────────
+echo ""
+echo "✅ Cluster '${CLUSTER_NAME}' ready"
+echo "   CPUs:   ${CPUS}"
+echo "   Memory: ${MEMORY}"
+echo "   Disk:   ${DISK_GB}GB (${MOUNT_POINT})"
+echo "   FQDN:   ${FQDN}"
