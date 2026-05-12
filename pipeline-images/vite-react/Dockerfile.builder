@@ -9,9 +9,9 @@ SHELL ["/bin/bash", "-c"]
 # Install necessary packages
 RUN apt update && apt install -y curl nano make gcc wget build-essential procps
 
-# Install Node.js (version 20.11.0)
-RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
-    apt install -y nodejs=20.11.0-1nodesource1
+# Install Node.js (version 22)
+RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - && \
+    apt install -y nodejs
 
 # Install pnpm globally
 RUN npm install -g pnpm
