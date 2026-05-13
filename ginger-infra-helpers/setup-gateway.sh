@@ -121,15 +121,11 @@ fi
 # ── Build WebSocket block ─────────────────────────────────────────────────────
 if [ "$WEBSOCKET" = true ]; then
     WS_BLOCK="
-    # WebSocket Proxy
-    ProxyPass /notification/ws/ ws://0.0.0.0:${HTTP_PORT}/notification/ws/
-    ProxyPassReverse /notification/ws/ ws://0.0.0.0:${HTTP_PORT}/notification/ws/
-
-    # Enable WebSocket Upgrade Handling
+    # WebSocket — global upgrade handling (must be before ProxyPass)
     RewriteEngine On
     RewriteCond %{HTTP:Upgrade} websocket [NC]
     RewriteCond %{HTTP:Connection} upgrade [NC]
-    RewriteRule ^/notification/ws/(.*) ws://0.0.0.0:${HTTP_PORT}/notification/ws/\$1 [P,L]"
+    RewriteRule ^/(.*) ws://0.0.0.0:${HTTP_PORT}/\$1 [P,L]"
 else
     WS_BLOCK="
     RewriteEngine On"
@@ -166,11 +162,11 @@ if [ "$SSL_AVAILABLE" = true ]; then
     <Proxy *>
         Require all granted
     </Proxy>
+${WS_BLOCK}
 
     # Standard HTTP Proxy
     ProxyPass "/" "http://0.0.0.0:${HTTP_PORT}/"
     ProxyPassReverse "/" "http://0.0.0.0:${HTTP_PORT}/"
-${WS_BLOCK}
 
     ErrorLog \${APACHE_LOG_DIR}/gingersociety/${DOMAIN//./_}_error.log
     CustomLog \${APACHE_LOG_DIR}/gingersociety/${DOMAIN//./_}_access.log combined
@@ -182,7 +178,6 @@ ${WS_BLOCK}
 </IfModule>
 EOF
 else
-    # HTTP only — no SSL yet
     cat > "$CONF_FILE" <<EOF
 <VirtualHost *:80>
     ServerName ${DOMAIN}
@@ -196,11 +191,11 @@ else
     <Proxy *>
         Require all granted
     </Proxy>
+${WS_BLOCK}
 
     # Standard HTTP Proxy
     ProxyPass "/" "http://0.0.0.0:${HTTP_PORT}/"
     ProxyPassReverse "/" "http://0.0.0.0:${HTTP_PORT}/"
-${WS_BLOCK}
 
     ErrorLog \${APACHE_LOG_DIR}/gingersociety/${DOMAIN//./_}_error.log
     CustomLog \${APACHE_LOG_DIR}/gingersociety/${DOMAIN//./_}_access.log combined

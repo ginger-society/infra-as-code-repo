@@ -151,7 +151,7 @@ We use Kubernetes clusters for production and staging environments, with resourc
 kubectl scale statefulset dc01-pg-db-1-postgresql --replicas=1
 for installing tekton: 
 
-
+kubectl apply --filename https://infra.tekton.dev/tekton-releases/pipeline/latest/release.yaml
 
 
 nginx proxy for the gitloite 
