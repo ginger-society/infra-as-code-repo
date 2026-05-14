@@ -6,8 +6,10 @@ ENV XDG_RUNTIME_DIR=/workspace/buildah-cache \
     CONTAINERS_STORAGE_CONF=/workspace/buildah-cache/storage.conf
 
 # Copy setup script
-COPY configurator_buildah.sh /usr/local/bin/configurator_buildah.sh
-RUN chmod +x /usr/local/bin/configurator_buildah.sh
+COPY configure_buildah.sh /usr/local/bin/configure_buildah.sh
+RUN chmod +x /usr/local/bin/configure_buildah.sh
 
-# Default command
-CMD ["/bin/bash", "/usr/local/bin/configurator_buildah.sh"]
+COPY mount-docker-credentials.sh /usr/local/bin/mount-docker-credentials.sh
+RUN chmod +x /usr/local/bin/mount-docker-credentials.sh
+
+

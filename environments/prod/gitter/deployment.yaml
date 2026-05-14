@@ -27,6 +27,9 @@ spec:
               mountPath: /run/secrets/admin_key.pub
               subPath: admin_key.pub
               readOnly: true
+            # Mount a sidecar for a service to manage permissions to the repositories , this should also provide an API to update / create kubeconfig of the tekton cluster for a given workspace , we can mount the private key here to push the changes to the gitolite-admin repo , it should not push it on every request but should have a debounce mechanism to avoid pushing too many commits to the repo or even race conditions because of multiple requests at the same time. We will probably need Redis for locking and debouncing the requests. We may be able to avoid a DB for this and can pull the gitolite-admin repo and read the config file.
+            # The idea for permission is that API Tokens can write to the main/master branch , everyone else can only write to dev-principal-* branches
+            # Redis is useful in the artifactory cluster , as we may need to cache some requests anyways later. 
       volumes:
         - name: gitolite-data
           persistentVolumeClaim:
