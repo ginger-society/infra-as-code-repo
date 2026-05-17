@@ -1,11 +1,61 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Auth proxy deployment
+# ─────────────────────────────────────────────────────────────────────────────
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tekton-dashboard-auth-proxy
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tekton-dashboard-auth-proxy
+  template:
+    metadata:
+      labels:
+        app: tekton-dashboard-auth-proxy
+    spec:
+      tolerations:
+        - key: "node-role.kubernetes.io/control-plane"
+          operator: "Exists"
+          effect: "NoSchedule"
+      containers:
+        - name: ginger-auth-proxy
+          image: gingersociety/ginger-auth-proxy:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3000
+          env:
+            - name: JWT_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: platform-secrets
+                  key: JWT_SECRET
+            - name: UPSTREAM_URL
+              value: "http://tekton-dashboard.tekton-pipelines.svc.cluster.local:9097"
+            - name: IAM_LOGIN_URL
+              value: "https://iam.gingersociety.org/#tekton-dashboard/login"
+            - name: PORT
+              value: "3000"
+            - name: UPSTREAM_TLS_SKIP_VERIFY
+              value: "false"
+
+---
+# ─────────────────────────────────────────────────────────────────────────────
+# Service for the proxy itself
+# ─────────────────────────────────────────────────────────────────────────────
 apiVersion: v1
 kind: Service
 metadata:
-  name: tekton-dashboard-proxy
-  namespace: default  # ✅ Proxy service in `default`
+  name: tekton-dashboard-auth-proxy
+  namespace: default
 spec:
-  type: ExternalName
-  externalName: tekton-dashboard.tekton-pipelines.svc.cluster.local
+  selector:
+    app: tekton-dashboard-auth-proxy
   ports:
-    - port: 9097
-      targetPort: 9097
+    - name: proxy
+      protocol: TCP
+      port: 80
+      targetPort: 3000
+  type: ClusterIP

@@ -257,3 +257,26 @@ kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.7.0/a
     {"op":"add","path":"/spec/template/spec/containers/0/args/-","value":"--enable-skip-login"},
     {"op":"add","path":"/spec/template/spec/containers/0/args/-","value":"--token-ttl=0"}
   ]'
+
+
+
+  Install tekton using 
+
+kubectl apply --filename https://infra.tekton.dev/tekton-releases/pipeline/latest/release.yaml
+
+Then the dashboard : 
+
+# Install dashboard directly — skip the installer script
+kubectl apply --filename https://storage.googleapis.com/tekton-releases/dashboard/latest/release.yaml
+
+# Wait for dashboard
+kubectl wait -n tekton-pipelines \
+  --for=condition=ready pod \
+  --selector=app.kubernetes.io/part-of=tekton-dashboard,app.kubernetes.io/component=dashboard \
+  --timeout=90s
+
+
+
+echo "/srv/nfs/registry-cache 192.168.49.0/24(rw,sync,no_subtree_check,no_root_squash)" | sudo tee -a /etc/exports
+sudo exportfs -ra
+sudo exportfs -v
