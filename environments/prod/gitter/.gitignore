@@ -1,2 +1,5 @@
 admin_key.pub
+admin_key
+backup_account_ssh_key
+backup_account_pat
 .envrc

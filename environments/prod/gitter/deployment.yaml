@@ -17,19 +17,71 @@ spec:
     spec:
       containers:
         - name: gitolite
-          image: gingersociety/gitter:latest  # replace with your image
+          image: gingersociety/gitter:latest
           ports:
             - containerPort: 22
           volumeMounts:
             - name: gitolite-data
-              mountPath: /var/lib/git
+              mountPath: /home/git
             - name: admin-key
               mountPath: /run/secrets/admin_key.pub
               subPath: admin_key.pub
               readOnly: true
-            # Mount a sidecar for a service to manage permissions to the repositories , this should also provide an API to update / create kubeconfig of the tekton cluster for a given workspace , we can mount the private key here to push the changes to the gitolite-admin repo , it should not push it on every request but should have a debounce mechanism to avoid pushing too many commits to the repo or even race conditions because of multiple requests at the same time. We will probably need Redis for locking and debouncing the requests. We may be able to avoid a DB for this and can pull the gitolite-admin repo and read the config file.
-            # The idea for permission is that API Tokens can write to the main/master branch , everyone else can only write to dev-principal-* branches
-            # Redis is useful in the artifactory cluster , as we may need to cache some requests anyways later. 
+
+        - name: ginger-gitter-service
+          image: gingersociety/ginger-gitter-service:latest
+          ports:
+            - containerPort: 8080
+          imagePullPolicy: Always
+          env:
+            - name: REDIS_URL
+              value: "redis://redis-service:6379"
+            - name: ADMIN_REPO_SSH_URL
+              value: "git@localhost:gitolite-admin.git"
+            - name: ADMIN_SSH_KEY_PATH
+              value: "/run/secrets/admin_key"
+            - name: GH_SSH_PREFIX
+              valueFrom:
+                configMapKeyRef:
+                  name: ginger-gitter-config
+                  key: GH_SSH_PREFIX
+            - name: GH_USERNAME
+              valueFrom:
+                configMapKeyRef:
+                  name: ginger-gitter-config
+                  key: GH_USERNAME
+            - name: GH_PAT
+              valueFrom:
+                secretKeyRef:
+                  name: gitolite-admin-key
+                  key: gh_pat
+            - name: GH_SSH_KEY_PATH
+              value: "/run/secrets/gh_ssh_key"
+            - name: ADMIN_REPO_PATH
+              value: "./admin-repo"
+            - name: GITOLITE_PORT
+              value: "22"
+            - name: GITOLITE_HOST
+              value: "localhost"
+            - name: RUST_LOG
+              value: "debug"
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: platform-secrets
+                  key: JWT_SECRET
+          volumeMounts:
+            - name: admin-key
+              mountPath: /run/secrets/admin_key
+              subPath: admin_key
+              readOnly: true
+            - name: admin-key
+              mountPath: /run/secrets/gh_ssh_key
+              subPath: gh_ssh_key
+              readOnly: true
+            - name: gitolite-data
+              mountPath: /home/git
+
       volumes:
         - name: gitolite-data
           persistentVolumeClaim:
@@ -37,3 +89,4 @@ spec:
         - name: admin-key
           secret:
             secretName: gitolite-admin-key
+            defaultMode: 0400
