@@ -1,5 +1,88 @@
+## 0.31.0-nightly.0 - 2026-05-17
+chore:debug
+ - [1135fdefcd](https://github.com/ginger-society/infra-as-code-repo1135fdefcd146a9aca01fa5a53028b5fd4bccc89) (Ginger Society Admin) chore:debug
+	
+feat:
+ - [32374b6fc8](https://github.com/ginger-society/infra-as-code-repo32374b6fc867fcee32530603cfd52870581f1d8c) (Ginger Society Admin) feat: cleanup towards v1
+	
+ - [79c26e0fe5](https://github.com/ginger-society/infra-as-code-repo79c26e0fe5692ecef8b493026494f839819886b0) (Ginger Society Admin) feat: gitter service
+	
+ - [7139c37390](https://github.com/ginger-society/infra-as-code-repo7139c373905193b712e2c59bbcb279fdf96d7b9e) (Ginger Society Admin) feat: tekton pipeline images
+	
+ - [3b259eab83](https://github.com/ginger-society/infra-as-code-repo3b259eab8385f8c8d871cd7afffaf3d195ccfec9) (Ginger Society Admin) feat: generic web socket proxy in the gateway setup script
+	
+ - [86792c46e3](https://github.com/ginger-society/infra-as-code-repo86792c46e3eebc644fc1a76d3114ca6be2f8cec1) (Ginger Society Admin) feat: added delete gateway script
+	
+ - [10e786a876](https://github.com/ginger-society/infra-as-code-repo10e786a87614614189607572e60e6b2197ddb1eb) (Ginger Society Admin) feat: installing ca certs in rust runner image
+	
+ - [2f777d9a5b](https://github.com/ginger-society/infra-as-code-repo2f777d9a5b51d1c785887948b356b4eaebe08a41) (Ginger Society Admin) feat: added delete cluster script
+	
+ - [5dad932b76](https://github.com/ginger-society/infra-as-code-repo5dad932b7644577095559f2b8e5b8932a052d91b) (Ginger Society Admin) feat: saving final kubeconfig into file as well
+	
+ - [7141868929](https://github.com/ginger-society/infra-as-code-repo714186892952507928a3cae039ea7173a4861f2e) (Ginger Society Admin) feat: setup gateway script
+	
+ - [a2e4d250ae](https://github.com/ginger-society/infra-as-code-repoa2e4d250ae623c51706a01b8072ce04c6b61b1f8) (Ginger Society Admin) feat: enabling universal repository for ubuntu
+	
+ - [f90c54b8e2](https://github.com/ginger-society/infra-as-code-repof90c54b8e21d8a13f855d4f36721ad11ed7f566e) (Ginger Society Admin) feat: uninstall existing ginger infra service before installation
+	
+ - [001baceec8](https://github.com/ginger-society/infra-as-code-repo001baceec8600c00093c2fa8cdf1088ba3ea0231) (Ginger Society Admin) feat: added create kind cluster script
+	
+ - [d37cfc6122](https://github.com/ginger-society/infra-as-code-repod37cfc6122437bc91b29686d7644449b7b5e9994) (Ginger Society Admin) feat: install docker kind and kubectl
+	
+ - [ab94551408](https://github.com/ginger-society/infra-as-code-repoab945514081bf7f54650ff0b1cdac939970c38b1) (Ginger Society Admin) feat: test docker image for ginger infra
+	
+ - [85a84e5922](https://github.com/ginger-society/infra-as-code-repo85a84e5922d9f59eebb8bdb711e6e24f1fec4bb2) (Ginger Society Admin) feat: now ginger infra installer requires a device id for installation
+	
+ - [f799d3b622](https://github.com/ginger-society/infra-as-code-repof799d3b622676497c2fe054a14d0c17905082e2a) (Ginger Society Admin) feat: ginger infra helper scripts
+	
+ - [d3ffe190e3](https://github.com/ginger-society/infra-as-code-repod3ffe190e30c4c2c473b01dc24af5c7da1f372f4) (Ginger Society Admin) feat: add k8 dashboard , git accesss ca file for iam and various other deployments
+	
+ - [db02198265](https://github.com/ginger-society/infra-as-code-repodb0219826580cd1dcdbbf7814f8fd56955f9188e) (Ginger Society Admin) feat: added docker with its public certificate - 100% safe to do so
+	
+ - [cb54201bfb](https://github.com/ginger-society/infra-as-code-repocb54201bfb4f2ecc862700826d02e2eea976f394) (Ginger Society Admin) feat: added verdaccio
+	
+ - [a9948bff9c](https://github.com/ginger-society/infra-as-code-repoa9948bff9c9f58c8dc41004ffcf13c576f8dd888) (Ginger Society Admin) feat: added gitter
+	
+ - [c3c34fe6fc](https://github.com/ginger-society/infra-as-code-repoc3c34fe6fc081a19c081d1955ae64be052b7a7ac) (Ginger Society Admin) feat: refactored artifactory apache config
+	
+fix:
+ - [a4aaca97a4](https://github.com/ginger-society/infra-as-code-repoa4aaca97a4d30780357cb54d11b1590b45c07403) (Ginger Society Admin) fix: vite build now uses node 22
+	
+ - [873776b019](https://github.com/ginger-society/infra-as-code-repo873776b01958f625d7f1413725528c16f903dfd6) (Ginger Society Admin) fix: using different extension for map
+	
+ - [47b7a58285](https://github.com/ginger-society/infra-as-code-repo47b7a582858a80962dcce488ec17a15f2c239c04) (Ginger Society Admin) fix: stream configuration issue
+	
+ - [18c8388958](https://github.com/ginger-society/infra-as-code-repo18c8388958355c2f4ee117935df58e4732feb6f3) (Ginger Society Admin) fix: docker installtion on debian or ubuntu
+	
+ - [05ef596b9e](https://github.com/ginger-society/infra-as-code-repo05ef596b9ec0b092780a481e248f218e81c3c0d5) (Ginger Society Admin) fix: minor
+	
+ - [beb914c3f2](https://github.com/ginger-society/infra-as-code-repobeb914c3f2598a45d1f95ae5cd69bc96601c0c2f) (Ginger Society Admin) fix: changing docker registry to be configured using node port
+	
+ - [eed5ca35f2](https://github.com/ginger-society/infra-as-code-repoeed5ca35f29c6aa958da8fafb6a5f8378c0400ff) (Ginger Society Admin) fix: forcing docker rust builder image to build for amd64
+	
+chore:
+ - [03e374a257](https://github.com/ginger-society/infra-as-code-repo03e374a25775785cc8d89f1028edbd6cb7024d07) (Ginger Society Admin) chore: cleanup
+	
+ - [f56ac83646](https://github.com/ginger-society/infra-as-code-repof56ac83646d108dda3b035c9e7b341d30edfeb9b) (Ginger Society Admin) chore: testing
+	
+ - [bc1ce5cfb6](https://github.com/ginger-society/infra-as-code-repobc1ce5cfb63cc135963f6e186effc0646f5f8ac1) (Ginger Society Admin) chore: debug
+	
+ - [3350c171ce](https://github.com/ginger-society/infra-as-code-repo3350c171ced73144fd4a6d30dae68f571cc1295a) (Ginger Society Admin) chore: debug
+	
+ - [e085f7e223](https://github.com/ginger-society/infra-as-code-repoe085f7e22374d93521621f08a9769d6e05df03d5) (Ginger Society Admin) chore: debug
+	
+ - [15e3badf92](https://github.com/ginger-society/infra-as-code-repo15e3badf921d925fbfdf6bc6ec5b3f3bdacd5711) (Ginger Society Admin) chore: debug
+	
+ - [962b34ceed](https://github.com/ginger-society/infra-as-code-repo962b34ceed5092ffc5624fba4d4bd299d48f0a08) (Ginger Society Admin) chore: debug
+	
+ - [42b6d101d3](https://github.com/ginger-society/infra-as-code-repo42b6d101d3aade8487011f9b5fc5abf2d16811be) (Ginger Society Admin) chore: disabling system check on push
+	
 ## 0.30.0-nightly.0 - 2026-04-27
 chore:
+ - [adb23bb836](https://github.com/ginger-society/infra-as-code-repoadb23bb83617da728d16bedf8571d2af5ac63746) (Ginger Society Admin) chore: version bump to 0.30.0-nightly.0
+	
+	 dsdasdas
+	
  - [b02de416cd](https://github.com/ginger-society/infra-as-code-repob02de416cd4e2ef770f2acc27ebcdc1731025076) (Ginger Society Admin) chore: version bump to 0.29.0-nightly.0
 	
  - [01089c8be6](https://github.com/ginger-society/infra-as-code-repo01089c8be664378384932c24243637e1a34ba9b4) (Ginger Society Admin) chore: version bump to 0.29.0-nightly.0
@@ -139,9 +222,6 @@ chore:
 	
  - [c71d35345f](https://github.com/ginger-society/infra-as-code-repoc71d35345f8ca24badae7c4f6d0f9701389b0058) (Ginger Society) chore: changing CI image to ubuntu 20
 ## 0.27.0-nightly.0 - 2024-10-07
-chore:
- - [a061dc7ed1](https://github.com/ginger-society/infra-as-code-repoa061dc7ed18ce8db9c5f1d18075d23f6a3b2f0e8) (Ginger Society Admin) chore: version bump to 0.27.0-nightly.0
-	
 feat:
  - [5689a0b2a1](https://github.com/ginger-society/infra-as-code-repo5689a0b2a1fc51167a3cd3d0733b3f3dfbb53ce8) (Ginger Society Admin) feat: added google console link
 	
@@ -150,6 +230,9 @@ feat:
  - [a577f6bd53](https://github.com/ginger-society/infra-as-code-repoa577f6bd536702671eeadfb3ae679f39c1cd896f) (Ginger Society Admin) feat: fixing ginger auth expiration issue in pipeline
 	
  - [3b7ca13139](https://github.com/ginger-society/infra-as-code-repo3b7ca131395891b77190a52348e29b6aada6b1a0) (Ginger Society Admin) feat: updated pipeline to trigger system wide check
+	
+chore:
+ - [a061dc7ed1](https://github.com/ginger-society/infra-as-code-repoa061dc7ed18ce8db9c5f1d18075d23f6a3b2f0e8) (Ginger Society Admin) chore: version bump to 0.27.0-nightly.0
 	
 ## 0.24.0-nightly.0 - 2024-10-03
 chore:
@@ -165,13 +248,13 @@ chore:
  - [95634cbef1](https://github.com/ginger-society/infra-as-code-repo95634cbef194c6a83aa1f88d03ddf2575c70326f) (Ginger Society Admin) chore: version bump to 0.22.0-nightly.0
 	
 ## 0.21.0-nightly.0 - 2024-10-03
+chore:
+ - [c9e858651b](https://github.com/ginger-society/infra-as-code-repoc9e858651beaaa3be5309b4de7ace78af7ca0d44) (Ginger Society Admin) chore: version bump to 0.21.0-nightly.0
+	
 feat:
  - [866c40cc36](https://github.com/ginger-society/infra-as-code-repo866c40cc367fdbce418825b0c626c394a43fd54f) (Ginger Society Admin) feat: updated docker images to use only pipeline essential dockerfile
 	
  - [ffe2b06dbe](https://github.com/ginger-society/infra-as-code-repoffe2b06dbe2927a825ef93494a6ac34b27f58ecc) (Ginger Society Admin) feat: added rabbit mq deployment and service and addded pipeline cli installer script
-	
-chore:
- - [c9e858651b](https://github.com/ginger-society/infra-as-code-repoc9e858651beaaa3be5309b4de7ace78af7ca0d44) (Ginger Society Admin) chore: version bump to 0.21.0-nightly.0
 	
 ## 0.15.0-nightly.0 - 2024-09-24
 chore:
@@ -205,6 +288,9 @@ chore:
  - [3a9342df6e](https://github.com/ginger-society/infra-as-code-repo3a9342df6e37804d2d21e49a15bc5d3d1f71004e) (Ginger Society Admin) chore: version bump to 0.7.0-nightly.0
 	
 ## 0.6.0-nightly.0 - 2024-09-23
+fix:
+ - [270175a2d4](https://github.com/ginger-society/infra-as-code-repo270175a2d42289940a79608a1f31c437c94c78aa) (Ginger Society Admin) fix: minor
+	
 feat:
  - [cdba17f0d0](https://github.com/ginger-society/infra-as-code-repocdba17f0d08b4f80736d9bbdf90fd2e2014bc013) (Ginger Society Admin) feat: changed yatn to pnpm
 	
@@ -216,9 +302,6 @@ chore:
  - [53c481b568](https://github.com/ginger-society/infra-as-code-repo53c481b568d879af2135a2e3176c0d18fa0af174) (Ginger Society Admin) chore: version bump to 0.6.0-nightly.0
 	
  - [54d8332e06](https://github.com/ginger-society/infra-as-code-repo54d8332e0632b4ea8e750c6f7c0865ab17782982) (Ginger Society Admin) chore: remobed openapi cli version comand
-	
-fix:
- - [270175a2d4](https://github.com/ginger-society/infra-as-code-repo270175a2d42289940a79608a1f31c437c94c78aa) (Ginger Society Admin) fix: minor
 	
 ## 0.5.0-nightly.0 - 2024-09-09
 chore:
