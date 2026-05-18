@@ -1,5 +1,7 @@
 .DS_Store
 environments/prod/shared/rabitmq/index.yaml
 environments/prod/shared/rabitmq/rabbitmq-*.tgz
-build
+build/
 values.json
+values.memory.json
+vault.json

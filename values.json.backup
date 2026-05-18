@@ -1,3 +1,44 @@
 {
-    "JWT_TOKEN": "1234"
+  "GINGER_KUBE": {
+    "DB_URL": "shell(echo postgresql://postgres:$(kubectl get secret pg-postgresql -o jsonpath='{.data.postgres-password}' | base64 -d)@pg-postgresql:5432/ginger-kube-db)",
+    "ISC_SECRET": "verysecure"
+  },
+  "IAM_ADMIN": {
+     "DB_URL": "shell(echo postgresql://postgres:$(kubectl get secret pg-postgresql -o jsonpath='{.data.postgres-password}' | base64 -d)@pg-postgresql:5432/iam-db)",
+    "ISC_SECRET": "verysecure"
+  },
+  "IAM": {
+    "DB_URL": "shell(echo postgresql://postgres:$(kubectl get secret pg-postgresql -o jsonpath='{.data.postgres-password}' | base64 -d)@pg-postgresql:5432/iam-db)",
+    "ISC_SECRET": "verysecure"
+  },
+  "METADATA": {
+    "DB_URL": "shell(echo postgresql://postgres:$(kubectl get secret pg-postgresql -o jsonpath='{.data.postgres-password}' | base64 -d)@pg-postgresql:5432/metadata-db)",
+    "ISC_SECRET": "verysecure"
+  },
+  "GH_MIRROR": {
+    "PAT": "file(./platform/artifactory/gitter/backup_account_pat) ",
+    "SSH_PREFIX": "git@github.com:NAME",
+    "SSH_KEY": "file(./platform/artifactory/gitter/backup_account_ssh_key)",
+    "USERNAME": "NAME"
+  },
+  "GITOLITE": {
+    "ADMIN_KEY_PUB": "file(./platform/artifactory/gitter/admin_key.pub)",
+    "ADMIN_KEY": "file(./platform/artifactory/gitter/admin_key)",
+    "CA_KEY": "file(./platform/mcs/iam-backend/ca_key)"
+  },
+  "DOCKER": {
+    "REGISTRY_AUTH_CERT": "file(./platform/artifactory/docker-registry/auth.cert)",
+    "REGISTRY_AUTH_PRIVATE_KEY": "file(./platform/mcs/iam-backend/auth.key)",
+    "TOKEN_ISSUER": "my-auth-server"
+  },
+  
+  "NOTIFICATION": {
+    "AWS_ACCESS_KEY_ID": "vault(AWS_ACCESS_KEY_ID)",
+    "AWS_SECRET_ACCESS_KEY": "vault(AWS_SECRET_ACCESS_KEY)"
+  },
+  "shared": {
+    "DATABASE_PASSWORD": "shell(kubectl get secret pg-postgresql -o jsonpath='{.data.postgres-password}' | base64 -d)",
+    "JWT_SECRET_KEY": "vault(JWT_SECRET_KEY)",
+    "ROCKET_SECRET_KEY": "onceshell(openssl rand -base64 64 | tr -d '\\n')"
+  }
 }

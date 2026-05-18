@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ginger-gitter-config
+data:
+  GH_SSH_PREFIX: {{GH_MIRROR.SSH_PREFIX}}
+  GH_USERNAME: {{GH_MIRROR.USERNAME}}
