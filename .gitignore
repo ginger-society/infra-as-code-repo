@@ -2,3 +2,4 @@
 environments/prod/shared/rabitmq/index.yaml
 environments/prod/shared/rabitmq/rabbitmq-*.tgz
 build
+values.json
