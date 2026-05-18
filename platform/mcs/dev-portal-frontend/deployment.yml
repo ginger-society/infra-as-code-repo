@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: dev-portal-frontend-app
-        image: gingersociety/dev-portal-prod-fe:{{ services["@ginger-society/dev-portal"] }}  # Use Apache2 image
+        image: gingersociety/dev-portal-prod-fe  # Use Apache2 image
         imagePullPolicy: Always
         ports:
         - containerPort: 80  # Apache defaults to port 80
