@@ -1,7 +1,7 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: app-ingress
+  name: tekton-ingress
   namespace: default
   annotations:
     nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
@@ -13,7 +13,7 @@ spec:
   ingressClassName: nginx
   rules:
 
-    - host: tekton.gingersociety.org
+    - host: tekton.{{HOSTING_FQDN}}
       http:
         paths:
           - path: /

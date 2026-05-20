@@ -1,0 +1,7 @@
+[[fixture]]
+sql_file = "./fixtures/iam-db.sql"
+db_name = "iam-db"
+
+[[fixture]]
+sql_file = "./fixtures/metadata-db.sql"
+db_name = "metadata-db"

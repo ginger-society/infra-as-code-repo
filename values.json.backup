@@ -1,4 +1,5 @@
 {
+  "HOSTING_FQDN": "$HOSTING_FQDN",
   "GINGER_KUBE": {
     "DB_URL": "shell(echo postgresql://postgres:$(kubectl get secret pg-postgresql -o jsonpath='{.data.postgres-password}' | base64 -d)@pg-postgresql:5432/ginger-kube-db)",
     "ISC_SECRET": "verysecure"
@@ -9,7 +10,9 @@
   },
   "IAM": {
     "DB_URL": "shell(echo postgresql://postgres:$(kubectl get secret pg-postgresql -o jsonpath='{.data.postgres-password}' | base64 -d)@pg-postgresql:5432/iam-db)",
-    "ISC_SECRET": "verysecure"
+    "ISC_SECRET": "verysecure",
+    "URL": "https://iam.gingersociety.org",
+    "GINGER_SOCIETY_IAM_FRONTEND_USERS": "http://localhost:6005"
   },
   "METADATA": {
     "DB_URL": "shell(echo postgresql://postgres:$(kubectl get secret pg-postgresql -o jsonpath='{.data.postgres-password}' | base64 -d)@pg-postgresql:5432/metadata-db)",

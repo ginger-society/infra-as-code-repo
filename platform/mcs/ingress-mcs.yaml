@@ -1,7 +1,7 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: app-ingress
+  name: mcs-ingress
   namespace: default
   annotations:
     nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
@@ -12,7 +12,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-    - host: api.gingersociety.org
+    - host: api.{{HOSTING_FQDN}}
       http:
         paths:
           - path: /example
@@ -63,7 +63,7 @@ spec:
                 port:
                   number: 80
 
-    - host: iam.gingersociety.org
+    - host: iam.{{HOSTING_FQDN}}
       http:
         paths:
           - path: /
@@ -74,7 +74,7 @@ spec:
                 port:
                   number: 80
 
-    - host: iam-admin.gingersociety.org
+    - host: iam-admin.{{HOSTING_FQDN}}
       http:
         paths:
           - path: /
@@ -85,7 +85,7 @@ spec:
                 port:
                   number: 80
 
-    - host: pgadmin.gingersociety.org
+    - host: pgadmin.{{HOSTING_FQDN}}
       http:
         paths:
           - path: /
@@ -96,98 +96,7 @@ spec:
                 port:
                   number: 80
 
-    - host: source.gingersociety.org
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: gitweb-service
-                port:
-                  number: 80
-
-    - host: npm.gingersociety.org
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: verdaccio-service
-                port:
-                  number: 80
-
-    - host: docker-ui.gingersociety.org
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: registry-ui
-                port:
-                  number: 80
-
-    - host: longhorn.gingersociety.org
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: longhorn-dashboard-proxy
-                port:
-                  number: 80
-
-    - host: pip.gingersociety.org
-      http:
-        paths:
-          - path: /simple
-            pathType: Prefix
-            backend:
-              service:
-                name: pypiserver
-                port:
-                  number: 80
-          - path: /ftp
-            pathType: Prefix
-            backend:
-              service:
-                name: filebrowser
-                port:
-                  number: 80
-
-    - host: images.gingersociety.org
-      http:
-        paths:
-          - path: /ftp
-            pathType: Prefix
-            backend:
-              service:
-                name: filebrowser-static-images-service
-                port:
-                  number: 80
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: static-image-service
-                port:
-                  number: 80
-
-    - host: tekton.gingersociety.org
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: tekton-dashboard-proxy
-                port:
-                  number: 9097
-
-    - host: k8-prod-dashboard.gingersociety.org
+    - host: k8-prod-dashboard.{{HOSTING_FQDN}}
       http:
         paths:
           - path: /
@@ -198,7 +107,7 @@ spec:
                 port:
                   number: 80
 
-    - host: db-compose-test-env.gingersociety.org
+    - host: db-compose-test-env.{{HOSTING_FQDN}}
       http:
         paths:
           - path: /
@@ -209,7 +118,7 @@ spec:
                 port:
                   number: 80
 
-    - host: coder-test-env.gingersociety.org
+    - host: coder-test-env.{{HOSTING_FQDN}}
       http:
         paths:
           - path: /
@@ -220,7 +129,7 @@ spec:
                 port:
                   number: 80
 
-    - host: dev-portal.gingersociety.org
+    - host: dev-portal.{{HOSTING_FQDN}}
       http:
         paths:
           - path: /

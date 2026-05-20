@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: dev-portal-config
+data:
+  config.json: |
+    {
+      "IAMService": "{{IAM.URL}}",
+      "GINGER_SOCIETY_IAM_FRONTEND_USERS": "{{IAM.GINGER_SOCIETY_IAM_FRONTEND_USERS}}"
+    }

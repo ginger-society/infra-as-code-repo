@@ -1,7 +1,7 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: app-ingress
+  name: artifactory-ingress
   namespace: default
   annotations:
     nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
@@ -12,7 +12,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-    - host: npm.gingersociety.org
+    - host: npm.{{HOSTING_FQDN}}
       http:
         paths:
           - path: /
@@ -23,7 +23,7 @@ spec:
                 port:
                   number: 80
 
-    - host: docker-ui.gingersociety.org
+    - host: docker-ui.{{HOSTING_FQDN}}
       http:
         paths:
           - path: /
@@ -34,7 +34,7 @@ spec:
                 port:
                   number: 80
 
-    - host: pip.gingersociety.org
+    - host: pip.{{HOSTING_FQDN}}
       http:
         paths:
           - path: /
