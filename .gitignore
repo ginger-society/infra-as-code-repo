@@ -5,3 +5,5 @@ build/
 values.json
 values.memory.json
 vault.json
+*.sql
+bootstrap.sh

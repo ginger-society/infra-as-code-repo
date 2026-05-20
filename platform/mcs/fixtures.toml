@@ -1,7 +1,7 @@
 [[fixture]]
-sql_file = "./fixtures/iam-db.sql"
+sql_file = "./fixtures/iam-db.out.sql"
 db_name = "iam-db"
 
 [[fixture]]
-sql_file = "./fixtures/metadata-db.sql"
+sql_file = "./fixtures/metadata-db.out.sql"
 db_name = "metadata-db"

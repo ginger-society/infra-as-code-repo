@@ -118,17 +118,6 @@ spec:
                 port:
                   number: 80
 
-    - host: coder-test-env.{{HOSTING_FQDN}}
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: coder-test-service
-                port:
-                  number: 80
-
     - host: dev-portal.{{HOSTING_FQDN}}
       http:
         paths:

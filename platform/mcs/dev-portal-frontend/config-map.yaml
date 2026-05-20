@@ -5,6 +5,9 @@ metadata:
 data:
   config.json: |
     {
-      "IAMService": "{{IAM.URL}}",
-      "GINGER_SOCIETY_IAM_FRONTEND_USERS": "{{IAM.GINGER_SOCIETY_IAM_FRONTEND_USERS}}"
+      "IAMService": "https://api.{{HOSTING_FQDN}}/iam",
+      "MetadataService": "https://api.{{HOSTING_FQDN}}/metadata",
+      "NotificationService": "https://api.{{HOSTING_FQDN}}",
+      "GINGER_SOCIETY_IAM_FRONTEND_USERS": "https://iam.{{HOSTING_FQDN}}",
+      "GINGER_SOCIETY_NOTIFICATIONSERVICE_WS": "wss://api.{{HOSTING_FQDN}}/notification"
     }
