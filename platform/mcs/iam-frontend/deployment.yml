@@ -19,3 +19,12 @@ spec:
         image: gingersociety/iam-prod-fe  # Use Apache2 image
         ports:
         - containerPort: 80  # Apache defaults to port 80
+
+        volumeMounts:
+        - name: config
+          mountPath: /usr/share/nginx/html/config.json
+          subPath: config.json
+      volumes:
+      - name: config
+        configMap:
+          name: iam-fe-config
