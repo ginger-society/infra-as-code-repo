@@ -1,12 +1,12 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: dev-portal-frontend-service
+  name: dev-portal-service
   labels:
-    app: dev-portal-frontend-app
+    app: dev-portal
 spec:
   selector:
-    app: dev-portal-frontend-app
+    app: dev-portal
   ports:
     - protocol: TCP
       name: http

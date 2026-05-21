@@ -44,3 +44,14 @@ spec:
                 name: pypiserver
                 port:
                   number: 80
+    
+    - host: source.{{HOSTING_FQDN}}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: gitter-service
+                port:
+                  number: 80
