@@ -17,6 +17,8 @@ Logs:       sudo journalctl -u ginger-infra -f
    Status:     sudo systemctl status ginger-infra
 
 
+sudo systemctl stop ginger-infra
+sudo systemctl start ginger-infra
 
 For development
 --------
