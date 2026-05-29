@@ -1,12 +1,12 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: iam-admin-frontend-service
+  name: iam-admin-fe-service
   labels:
-    app: iam-admin-frontend-app
+    app: iam-admin-fe
 spec:
   selector:
-    app: iam-admin-frontend-app
+    app: iam-admin-fe
   ports:
     - protocol: TCP
       name: http

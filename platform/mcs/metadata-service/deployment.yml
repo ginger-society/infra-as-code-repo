@@ -1,18 +1,18 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: metadata-service-api-deployment
+  name: metadataservice
   labels:
-    app: metadata-service-api
+    app: metadataservice
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: metadata-service-api
+      app: metadataservice
   template:
     metadata:
       labels:
-        app: metadata-service-api
+        app: metadataservice
     spec:
       initContainers:
         - name: wait-for-db
@@ -27,7 +27,7 @@ spec:
               done
 
       containers:
-        - name: metadata-service-api
+        - name: metadataservice
           image: gingersociety/metadata-service-api-stage:latest
           ports:
             - containerPort: 8000

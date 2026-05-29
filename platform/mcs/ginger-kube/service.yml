@@ -1,12 +1,12 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: ginger-kube-service
+  name: gingerkubeservice-service
   labels:
-    app: ginger-kube
+    app: gingerkubeservice
 spec:
   selector:
-    app: ginger-kube
+    app: gingerkubeservice
   ports:
     - name: http
       protocol: TCP

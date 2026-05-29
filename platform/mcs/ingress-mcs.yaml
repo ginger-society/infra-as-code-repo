@@ -27,7 +27,7 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: iam-service-api-service
+                name: iamservice-service
                 port:
                   number: 80
 
@@ -35,7 +35,7 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: metadata-service-api-service
+                name: metadataservice-service
                 port:
                   number: 80
           
@@ -43,7 +43,7 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: ginger-kube-service
+                name: gingerkubeservice-service
                 port:
                   number: 80
 
@@ -59,7 +59,7 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: notification-service-service
+                name: notificationservice-service
                 port:
                   number: 80
 
@@ -70,7 +70,7 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: iam-frontend-service
+                name: iam-frontend-users-service
                 port:
                   number: 80
 
@@ -81,18 +81,7 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: iam-admin-frontend-service
-                port:
-                  number: 80
-
-    - host: pgadmin.{{HOSTING_FQDN}}
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: pgadmin-pgadmin4
+                name: iam-admin-fe-service
                 port:
                   number: 80
 
@@ -114,7 +103,7 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: ginger-db-test-env-service
+                name: schema-gen-service-service
                 port:
                   number: 80
 

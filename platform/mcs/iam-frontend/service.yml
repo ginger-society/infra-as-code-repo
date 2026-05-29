@@ -1,12 +1,12 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: iam-frontend-service
+  name: iam-frontend-users-service
   labels:
-    app: iam-frontend-app
+    app: iam-frontend-users
 spec:
   selector:
-    app: iam-frontend-app
+    app: iam-frontend-users
   ports:
     - protocol: TCP
       name: http

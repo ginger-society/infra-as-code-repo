@@ -2,22 +2,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: ginger-kube-deployment
+  name: gingerkubeservice
   labels:
-    app: ginger-kube
+    app: gingerkubeservice
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: ginger-kube
+      app: gingerkubeservice
   template:
     metadata:
       labels:
-        app: ginger-kube
+        app: gingerkubeservice
     spec:
-      # serviceAccountName: ginger-kube-sa
+      # serviceAccountName: gingerkubeservice-sa
       containers:
-      - name: ginger-kube
+      - name: gingerkubeservice
         image: gingersociety/ginger-kube-service-api-stage:latest
         ports:
         - containerPort: 8000

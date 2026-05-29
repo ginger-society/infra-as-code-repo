@@ -1,21 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: ginger-db-test-env
+  name: schema-gen-service
   labels:
-    app: ginger-db-test-env
+    app: schema-gen-service
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: ginger-db-test-env
+      app: schema-gen-service
   template:
     metadata:
       labels:
-        app: ginger-db-test-env
+        app: schema-gen-service
     spec:
       containers:
-        - name: ginger-db-test-env
+        - name: schema-gen-service
           image: gingersociety/db-compose-runtime-prod:latest
           command: ["/app/run.sh"]
           imagePullPolicy: Always

@@ -1,21 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: notification-service-deployment
+  name: notificationservice
   labels:
-    app: notification-service
+    app: notificationservice
 spec:
   replicas: 3
   selector:
     matchLabels:
-      app: notification-service
+      app: notificationservice
   template:
     metadata:
       labels:
-        app: notification-service
+        app: notificationservice
     spec:
       containers:
-        - name: notification-service
+        - name: notificationservice
           image: gingersociety/notification-service-stage:latest
           ports:
             - containerPort: 3030
