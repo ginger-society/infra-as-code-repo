@@ -84,6 +84,17 @@ spec:
                 name: iam-admin-fe-service
                 port:
                   number: 80
+      
+    - host: {{HOSTING_FQDN}}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: homepage-service
+                port:
+                  number: 80
 
     - host: k8-prod-dashboard.{{HOSTING_FQDN}}
       http:

@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: homepage
+  labels:
+    app: homepage
+spec:
+  selector:
+    matchLabels:
+      app: homepage
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: homepage
+    spec:
+      containers:
+      - name: homepage
+        image: gingersociety/homepage  # Use Apache2 image for in memory caching to reduce disk io
+        ports:
+        - containerPort: 80  # Apache defaults to port 80
