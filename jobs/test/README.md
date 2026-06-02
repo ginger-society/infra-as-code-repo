@@ -1,50 +1,3 @@
-
-<!-- Project level -->
-
-
-kubectl create secret generic ginger-token-secret \
-  --from-literal=token=API_TOKEN \
-  -n tasks-PROJECTNAME-provisioner-service
-
-
-kubectl delete pvc general-purpose-cache-pvc -n tasks-PROJECTNAME-provisioner-service
-
-
-kubectl create -f - <<EOF
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: general-purpose-cache-pvc
-  namespace: tasks-PROJECTNAME-provisioner-service
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 20Gi
-EOF
-
-
-
-
-kubectl create -f - <<EOF
-# ── PersistentVolumeClaim ─────────────────────────────────────────────────────
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: buildah-cache-pvc
-  namespace: tasks-PROJECTNAME-provisioner-service
-spec:
-  accessModes:
-    - ReadWriteMany
-  resources:
-    requests:
-      storage: 100Gi
-  storageClassName: ""
-  volumeName: buildah-cache-pv
-
-EOF
-
 <!-- Cluster level -->
 
 kubectl patch configmap feature-flags \
@@ -53,19 +6,22 @@ kubectl patch configmap feature-flags \
   -p '{"data":{"coschedule":"disabled"}}'
 
 
-kubectl create -f - <<EOF
-apiVersion: v1
-kind: PersistentVolume
-metadata:
-  name: buildah-cache-pv
-spec:
-  capacity:
-    storage: 100Gi
-  accessModes:
-    - ReadWriteMany
-  persistentVolumeReclaimPolicy: Retain
-  storageClassName: ""
-  nfs:
-    server: 172.18.0.1
-    path: /srv/nfs/buildah-cache
-EOF
+<!-- Machine level -->
+sudo apt update && sudo apt install -y nfs-kernel-server nfs-common
+sudo mkdir -p /srv/nfs/buildah-cache
+sudo chown nobody:nogroup /srv/nfs/buildah-cache
+sudo chmod 777 /srv/nfs/buildah-cache
+
+
+KIND_SUBNET=$(docker network inspect kind --format '{{range .IPAM.Config}}{{.Subnet}}{{end}}' | grep -oP '[\d.]+/\d+')
+echo $KIND_SUBNET
+# should be: 172.18.0.0/16
+
+echo "/srv/nfs/buildah-cache ${KIND_SUBNET}(rw,sync,no_subtree_check,no_root_squash)" | sudo tee /etc/exports
+sudo exportfs -ra
+sudo exportfs -v
+sudo systemctl enable --now nfs-kernel-server
+
+
+# check it 
+docker exec $(kind get nodes --name 6d4418a8-c7d1-487a-b5d3-ec0ea9609cc7 | head -1) showmount -e 172.18.0.1
