@@ -1,0 +1,65 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: registry-mirror-script
+data:
+  sync.sh: |
+    #!/bin/sh
+    set -e
+
+    SRC_REGISTRY="docker.gingersociety.org"
+    DST_REGISTRY="docker.io"
+    AUTH_SERVER="https://api.gingersociety.org/iam/docker-token"
+
+    REPOS="{{DOCKER.MIRROR_REPOS}}"
+
+    get_token() {
+      REPO=$1
+      SCOPE="repository:${REPO}:pull"
+      BASIC=$(echo -n "__token__:${SRC_PASS}" | base64 | tr -d '\n')
+      curl -sk \
+        -H "Authorization: Basic ${BASIC}" \
+        "${AUTH_SERVER}?service=${SRC_REGISTRY}&scope=${SCOPE}&account=__token__" \
+        | grep -o '"token":"[^"]*"' | cut -d'"' -f4
+    }
+
+    for REPO in $REPOS; do
+      IMAGE_NAME=$(echo "$REPO" | tr '/' '_')
+
+      echo "Getting token for ${REPO}..."
+      TOKEN=$(get_token "$REPO")
+
+      if [ -z "$TOKEN" ]; then
+        echo "WARN: could not get token for ${REPO}, skipping..."
+        continue
+      fi
+
+      echo "Fetching tags for ${REPO}..."
+      TAGS=$(curl -sk \
+        -H "Authorization: Bearer ${TOKEN}" \
+        "https://${SRC_REGISTRY}/v2/${REPO}/tags/list" \
+        | grep -o '"tags":\[[^]]*\]' \
+        | grep -o '"[^"]*"' \
+        | grep -v '^"tags"$' \
+        | tr -d '"')
+
+      if [ -z "$TAGS" ]; then
+        echo "No tags found for ${REPO}, skipping..."
+        continue
+      fi
+
+      for TAG in $TAGS; do
+        SRC="docker://${SRC_REGISTRY}/${REPO}:${TAG}"
+        DST="docker://${DST_REGISTRY}/${DST_USER}/${IMAGE_NAME}:${TAG}"
+
+        echo "Syncing ${SRC} --> ${DST}"
+        skopeo copy \
+          --src-tls-verify=true \
+          --dest-tls-verify=true \
+          --src-registry-token="${TOKEN}" \
+          --dest-creds="${DST_USER}:${DST_PASS}" \
+          "${SRC}" "${DST}" || echo "WARN: failed to sync ${REPO}:${TAG}, skipping"
+      done
+    done
+
+    echo "Mirror sync complete."

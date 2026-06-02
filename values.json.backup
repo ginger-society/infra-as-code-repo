@@ -30,7 +30,12 @@
   "DOCKER": {
     "REGISTRY_AUTH_CERT": "file(./platform/artifactory/docker-registry/auth.cert)",
     "REGISTRY_AUTH_PRIVATE_KEY": "file(./platform/mcs/iam-backend/auth.key)",
-    "TOKEN_ISSUER": "my-auth-server"
+    "TOKEN_ISSUER": "my-auth-server",
+    "MIRROR_SRC_USERNAME": "__token__",
+    "MIRROR_SRC_PASSWORD": "vault(GINGER_DOCKER_REGISTRY_TOKEN)",
+    "MIRROR_DEST_USERNAME": "MIRROR_USERNAME",
+    "MIRROR_DEST_PASSWORD": "vault(MIRROR_DOCKER_REGISTRY_PAT)",
+    "MIRROR_REPOS": ""
   },
   
   "NOTIFICATION": {

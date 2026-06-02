@@ -1,0 +1,45 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: registry-mirror-sync
+spec:
+  schedule: "0 2 * * *"       # runs daily at 2am
+  concurrencyPolicy: Forbid   # don't overlap runs
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: skopeo-sync
+              image: quay.io/skopeo/stable:latest
+              command: ["/bin/sh", "/scripts/sync.sh"]
+              env:
+                - name: SRC_USER
+                  valueFrom:
+                    secretKeyRef:
+                      name: mirror-registry-auth-secret   
+                      key: username
+                - name: SRC_PASS
+                  valueFrom:
+                    secretKeyRef:
+                      name: mirror-registry-auth-secret   
+                      key: password
+                - name: DST_USER
+                  valueFrom:
+                    secretKeyRef:
+                      name: mirror-dockerhub-creds        
+                      key: username
+                - name: DST_PASS
+                  valueFrom:
+                    secretKeyRef:
+                      name: mirror-dockerhub-creds        
+                      key: password
+              volumeMounts:
+                - mountPath: /scripts
+                  name: script-volume
+          volumes:
+            - name: script-volume
+              configMap:
+                name: registry-mirror-script
+                defaultMode: 0755
