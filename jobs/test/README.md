@@ -25,3 +25,45 @@ sudo systemctl enable --now nfs-kernel-server
 
 # check it 
 docker exec $(kind get nodes --name 6d4418a8-c7d1-487a-b5d3-ec0ea9609cc7 | head -1) showmount -e 172.18.0.1
+
+
+# per namespace
+
+cat <<EOF | kubectl apply -f -
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: buildah-cache-pv-ginger-society-db
+spec:
+  accessModes:
+  - ReadWriteMany
+  capacity:
+    storage: 100Gi
+  nfs:
+    path: /srv/nfs/buildah-cache
+    server: 172.18.0.1
+  persistentVolumeReclaimPolicy: Retain
+  volumeMode: Filesystem
+EOF
+
+
+kubectl delete pvc buildah-cache-pvc -n tasks-ginger-society-database
+
+cat <<EOF | kubectl apply -f -
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: buildah-cache-pvc
+  namespace: tasks-ginger-society-database
+spec:
+  accessModes:
+  - ReadWriteMany
+  resources:
+    requests:
+      storage: 100Gi
+  volumeName: buildah-cache-pv-ginger-society-db
+  storageClassName: ""
+EOF
+
+
+

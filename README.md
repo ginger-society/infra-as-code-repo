@@ -280,3 +280,15 @@ kubectl wait -n tekton-pipelines \
 echo "/srv/nfs/registry-cache 192.168.49.0/24(rw,sync,no_subtree_check,no_root_squash)" | sudo tee -a /etc/exports
 sudo exportfs -ra
 sudo exportfs -v
+
+
+
+curl -X POST https://api.gingersociety.org/iam/create-api-session-token \
+  -d '{"api_token": "", "days_to_expire": 365}'
+
+# use response to create regcred
+kubectl create secret docker-registry regcred \
+  --docker-server=docker.gingersociety.org \
+  --docker-username=__token__ \
+  --docker-password=<long-lived-session-token> \
+  -n default
