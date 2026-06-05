@@ -7,15 +7,33 @@ metadata:
     nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
     nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
     nginx.ingress.kubernetes.io/proxy-connect-timeout: "60"
-    nginx.ingress.kubernetes.io/enable-websocket: "true"
     nginx.ingress.kubernetes.io/proxy-body-size: "0"
+    nginx.ingress.kubernetes.io/proxy-buffering: "off"
+    nginx.ingress.kubernetes.io/proxy-request-buffering: "off"
+    nginx.ingress.kubernetes.io/proxy-http-version: "1.1"
+    nginx.ingress.kubernetes.io/enable-websocket: "true"
 spec:
   ingressClassName: nginx
   rules:
-
     - host: tekton.{{HOSTING_FQDN}}
       http:
         paths:
+          # WebSocket watch endpoints — direct to Tekton, no auth proxy
+          - path: /apis
+            pathType: Prefix
+            backend:
+              service:
+                name: tekton-dashboard-proxy
+                port:
+                  number: 9097
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: tekton-dashboard-proxy
+                port:
+                  number: 9097
+          # Everything else — through auth proxy
           - path: /
             pathType: Prefix
             backend:
@@ -23,5 +41,3 @@ spec:
                 name: tekton-dashboard-auth-proxy
                 port:
                   number: 80
-
-    

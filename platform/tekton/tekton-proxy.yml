@@ -40,6 +40,8 @@ spec:
               value: "3000"
             - name: UPSTREAM_TLS_SKIP_VERIFY
               value: "false"
+            - name: RUST_LOG
+              value: "ginger_auth_proxy=debug"
 
 ---
 # ─────────────────────────────────────────────────────────────────────────────
@@ -59,3 +61,18 @@ spec:
       port: 80
       targetPort: 3000
   type: ClusterIP
+
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: tekton-dashboard-proxy
+  namespace: default
+spec:
+  type: ExternalName
+  externalName: tekton-dashboard.tekton-pipelines.svc.cluster.local
+  ports:
+    - port: 80
+      targetPort: 9097   # tekton-dashboard's actual port
