@@ -7,3 +7,4 @@ values.memory.json
 vault.json
 *.sql
 bootstrap.sh
+helm-build
