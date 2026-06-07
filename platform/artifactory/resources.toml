@@ -1,0 +1,38 @@
+# platform/mcs/resources.toml
+#
+# Declares helm chart installations for this cluster.
+# Processed by: ginger-infra install-helm-charts
+#
+# Values support the same substitution as templates:
+#   {{KEY}}           — from values.json
+#   vault(KEY)        — resolved at install time from vault.json
+#   shell(cmd)        — resolved at plan time with this cluster's .envrc context
+#
+# Run order: resources are installed top-to-bottom within a cluster.
+# All installs use --wait --timeout <timeout> so the command only exits
+# once every resource is healthy — safe to chain with load-fixtures.
+
+# ── Local chart (from charts/ in this repo) ───────────────────────────────────
+[[resource]]
+type    = "local_chart"
+release = "my-rabbitmq-test"
+chart   = "../../charts/rabitmq"       # relative to this resources.toml
+timeout = "5m"
+
+[resource.set]
+"rabbitmq.auth.username" = "{{shared.RABBITMQ_DEFAULT_USER}}"
+"rabbitmq.auth.password" = "{{shared.RABBITMQ_DEFAULT_PASS}}"   # from vault.json at install time
+
+# ── Remote chart (helm repo) ──────────────────────────────────────────────────
+[[resource]]
+type        = "remote_chart"
+release     = "pg-test"
+repo_name   = "bitnami"
+repo_url    = "https://charts.bitnami.com/bitnami"
+chart       = "bitnami/postgresql"
+values_file = "../../charts/postgress-resource-config.yml"   # relative to this file, copied into helm-build/
+timeout     = "8m"
+
+# # Extra --set overrides on top of the values file (optional)
+# [resource.set]
+# "global.postgresql.auth.postgresPassword" = "vault(postgres-password)"

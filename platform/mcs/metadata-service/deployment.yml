@@ -11,6 +11,8 @@ spec:
       app: metadataservice
   template:
     metadata:
+      annotations:
+        x-ginger-code-ejectable: "metadataservice"
       labels:
         app: metadataservice
     spec:

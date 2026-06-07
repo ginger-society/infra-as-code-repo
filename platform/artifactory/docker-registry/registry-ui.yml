@@ -9,6 +9,8 @@ spec:
       app: registry-ui
   template:
     metadata:
+      annotations:
+        x-ginger-code-ejectable: "registry-ui"
       labels:
         app: registry-ui
     spec:
