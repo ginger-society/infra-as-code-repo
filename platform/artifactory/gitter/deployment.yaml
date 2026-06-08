@@ -2,18 +2,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: gitolite
+  name: ginger-gitter
   labels:
-    app: gitolite
+    app: ginger-gitter
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: gitolite
+      app: ginger-gitter
   template:
     metadata:
+      annotations:
+        x-ginger-code-ejectable: "ginger-gitter-service"
       labels:
-        app: gitolite
+        app: ginger-gitter
     spec:
       containers:
         - name: gitolite

@@ -23,7 +23,7 @@ metadata:
     app: gitolite
 spec:
   selector:
-    app: gitolite
+    app: ginger-gitter
   ports:
     - name: http
       protocol: TCP

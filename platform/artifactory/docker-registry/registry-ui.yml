@@ -51,7 +51,7 @@ spec:
             - name: UPSTREAM_URL
               value: "http://localhost:80"
             - name: IAM_LOGIN_URL
-              value: "https://iam.gingersociety.org/#docker-registry/login"   # ← replace with your IAM URL
+              value: "https://iam.{{HOSTING_FQDN}}/#docker-registry/login"   # ← replace with your IAM URL
             - name: PORT
               value: "3000"
             # Uncomment to bypass auth on specific paths

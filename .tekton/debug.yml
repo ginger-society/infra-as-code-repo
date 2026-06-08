@@ -1,0 +1,28 @@
+# .tekton/debug.yaml
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: debug-pipeline
+  annotations:
+    x-gitter-enabled: "true"
+spec:
+  params:
+    - name: image_tag
+      type: string
+    - name: target_env
+      type: string
+      default: "staging"
+    - name: dry_run
+      type: string
+      default: "false"
+  tasks:
+    - name: print-params
+      taskRef:
+        name: print-params
+      params:
+        - name: image_tag
+          value: $(params.image_tag)
+        - name: target_env
+          value: $(params.target_env)
+        - name: dry_run
+          value: $(params.dry_run)

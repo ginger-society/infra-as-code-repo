@@ -1,0 +1,23 @@
+# .tekton/tasks/print-params.yaml
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: print-params
+spec:
+  params:
+    - name: image_tag
+      type: string
+    - name: target_env
+      type: string
+    - name: dry_run
+      type: string
+  steps:
+    - name: print-params
+      image: alpine:latest
+      script: |
+        #!/bin/sh
+        echo "============================================"
+        echo "image_tag  : $(params.image_tag)"
+        echo "target_env : $(params.target_env)"
+        echo "dry_run    : $(params.dry_run)"
+        echo "============================================"
