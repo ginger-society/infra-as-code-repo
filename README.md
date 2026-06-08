@@ -292,3 +292,5 @@ kubectl create secret docker-registry regcred \
   --docker-username=__token__ \
   --docker-password=<long-lived-session-token> \
   -n default
+
+  
