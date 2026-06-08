@@ -6,7 +6,7 @@ metadata:
 spec:
   type: NodePort
   selector:
-    app: gitolite
+    app: ginger-gitter
   ports:
     - name: ssh
       protocol: TCP
