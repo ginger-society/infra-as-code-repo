@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "redis.fullname" . }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ include "redis.name" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "redis.name" . }}
+    spec:
+      containers:
+        - name: redis
+          image: {{ .Values.redis.image }}
+          ports:
+            - containerPort: {{ .Values.redis.service.redisPort }}
+          args:
+            - "--requirepass"
+            - "$(REDIS_PASSWORD)"
+          env:
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "redis.fullname" . }}-auth
+                  key: password
+
+        - name: redis-exporter
+          image: oliver006/redis_exporter:latest
+          ports:
+            - containerPort: {{ .Values.redis.service.metricsPort }}
+          env:
+            - name: REDIS_ADDR
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "redis.fullname" . }}-auth
+                  key: exporter_url

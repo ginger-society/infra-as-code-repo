@@ -1,0 +1,10 @@
+redis:
+  image: redis:6.2
+
+  auth:
+    password: password
+
+  service:
+    type: ClusterIP
+    redisPort: 6379
+    metricsPort: 9121

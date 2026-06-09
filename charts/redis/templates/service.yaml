@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "redis.fullname" . }}
+spec:
+  type: {{ .Values.redis.service.type }}
+  selector:
+    app: {{ include "redis.name" . }}
+  ports:
+    - name: redis
+      port: {{ .Values.redis.service.redisPort }}
+      targetPort: {{ .Values.redis.service.redisPort }}
+    - name: metrics
+      port: {{ .Values.redis.service.metricsPort }}
+      targetPort: {{ .Values.redis.service.metricsPort }}
