@@ -46,3 +46,7 @@ spec:
             image: docker.gingersociety.org/ginger-society/tekton-task-ginger-infra:latest
             script: |
               echo "hello"
+              ginger-infra --version
+              ginger-infra --help
+              rackctl --version
+              rackctl --help
