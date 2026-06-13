@@ -33,7 +33,7 @@ spec:
       taskSpec:
         steps:
           - name: echo-hello
-            image: alpine
+            image: alpine:latest
             script: |
               echo "hello"
 
@@ -43,6 +43,6 @@ spec:
       taskSpec:
         steps:
           - name: echo-hello
-            image: alpine
+            image: docker.gingersociety.org/ginger-society/tekton-task-ginger-infra:latest
             script: |
               echo "hello"
