@@ -1,22 +1,22 @@
-{
-  "HOSTING_FQDN": "$HOSTING_FQDN",
+{ 
+  "HOSTING_FQDN": "shell(echo $HOSTING_FQDN)",
   "IAM_ADMIN": {
-     "DB_URL": "shell(echo postgresql://postgres:$(kubectl get secret iam-postgresql -o jsonpath='{.data.postgres-password}' | base64 -d)@iam-postgresql:5432/iam-db)",
+   "DB_URL": "shell(set -e; PW=$(kubectl get secret iam-postgresql -o jsonpath='{.data.postgres-password}' | base64 -d); echo postgresql://postgres:${PW}@iam-postgresql:5432/iam-db)",
     "ISC_SECRET": "verysecure"
   },
   "IAM": {
-    "DB_URL": "shell(echo postgresql://postgres:$(kubectl get secret iam-postgresql -o jsonpath='{.data.postgres-password}' | base64 -d)@iam-postgresql:5432/iam-db)",
+    "DB_URL": "shell(set -e; PW=$(kubectl get secret iam-postgresql -o jsonpath='{.data.postgres-password}' | base64 -d); echo postgresql://postgres:${PW}@iam-postgresql:5432/iam-db)",
     "ISC_SECRET": "verysecure"
   },
   "METADATA": {
-    "DB_URL": "shell(echo postgresql://postgres:$(kubectl get secret metadata-postgresql -o jsonpath='{.data.postgres-password}' | base64 -d)@metadata-postgresql:5432/metadata-db)",
+    "DB_URL": "shell(set -e; PW=$(kubectl get secret metadata-postgresql -o jsonpath='{.data.postgres-password}' | base64 -d); echo postgresql://postgres:${PW}@metadata-postgresql:5432/metadata-db)",
     "ISC_SECRET": "verysecure"
   },
   "GH_MIRROR": {
     "PAT": "file(./platform/artifactory/gitter/backup_account_pat) ",
-    "SSH_PREFIX": "git@github.com:NAME",
+    "SSH_PREFIX": "vault(GH_MIRROR_SSH_PREFIX)",
     "SSH_KEY": "file(./platform/artifactory/gitter/backup_account_ssh_key)",
-    "USERNAME": "NAME"
+    "USERNAME": "vault(GH_MIRROR_USERNAME)"
   },
   "GITOLITE": {
     "ADMIN_KEY_PUB": "file(./platform/artifactory/gitter/admin_key.pub)",
@@ -29,9 +29,9 @@
     "TOKEN_ISSUER": "my-auth-server",
     "MIRROR_SRC_USERNAME": "__token__",
     "MIRROR_SRC_PASSWORD": "vault(GINGER_DOCKER_REGISTRY_TOKEN)",
-    "MIRROR_DEST_USERNAME": "MIRROR_USERNAME",
+    "MIRROR_DEST_USERNAME": "vault(MIRROR_DEST_USERNAME)",
     "MIRROR_DEST_PASSWORD": "vault(MIRROR_DOCKER_REGISTRY_PAT)",
-    "MIRROR_REPOS": ""
+    "MIRROR_REPOS": "vault(MIRROR_REPOS)"
   },
   
   "NOTIFICATION": {
@@ -42,7 +42,7 @@
     "DATABASE_PASSWORD": "shell(kubectl get secret pg-postgresql -o jsonpath='{.data.postgres-password}' | base64 -d)",
     "JWT_SECRET_KEY": "vault(JWT_SECRET_KEY)",
     "ROCKET_SECRET_KEY": "onceshell(openssl rand -base64 64 | tr -d '\\n')",
-    "RABBITMQ_DEFAULT_USER": "username",
+    "RABBITMQ_DEFAULT_USER": "rabbiter",
     "RABBITMQ_DEFAULT_PASS": "vault(RABBITMQ_DEFAULT_PASS)"
   }
 }

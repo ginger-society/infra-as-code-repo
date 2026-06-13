@@ -24,7 +24,7 @@ spec:
             - sh
             - -c
             - |
-              until pg_isready -h pg-postgresql -p 5432 -U postgres; do 
+              until pg_isready -h metadata-postgresql -p 5432 -U postgres; do 
                 echo "Waiting for DB..."
                 sleep 5
               done
@@ -51,7 +51,7 @@ spec:
               value: "postgres"
 
             - name: DB_HOST
-              value: "pg-postgresql"
+              value: "metadata-postgresql"
 
             - name: DB_PORT
               value: "5432"
@@ -60,7 +60,7 @@ spec:
             - name: DB_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: pg-postgresql
+                  name: metadata-postgresql
                   key: postgres-password
         # - name: backup-sidecar
         #   image: containers.gingersociety.org/gingersociety/pg-backup-to-aws-helper

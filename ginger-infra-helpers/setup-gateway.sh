@@ -62,29 +62,46 @@ if [ "$WEBSOCKET" = false ]; then
     [[ "$ws_response" =~ ^[Yy]$ ]] && WEBSOCKET=true
 fi
 
+# ── Derive SSL_BASE_DOMAIN from DOMAIN ───────────────────────────────────────
+# e.g. dev-portal.feat-18.ginger-society.test-clusters.rackmint.com
+#   -> feat-18.ginger-society.test-clusters.rackmint.com
+SSL_BASE_DOMAIN="${DOMAIN#*.}"
+
 echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo " Gateway Configuration"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "  Domain:    $DOMAIN"
-echo "  Port:      $HTTP_PORT"
-echo "  WebSocket: $WEBSOCKET"
+echo "  Domain:          $DOMAIN"
+echo "  Port:            $HTTP_PORT"
+echo "  WebSocket:       $WEBSOCKET"
+echo "  SSL base domain: $SSL_BASE_DOMAIN"
 echo ""
 
-# ── SSL check ─────────────────────────────────────────────────────────────────
-SSL_CERT="/etc/letsencrypt/live/${DOMAIN}/fullchain.pem"
-SSL_KEY="/etc/letsencrypt/live/${DOMAIN}/privkey.pem"
-SSL_OPTIONS="/etc/letsencrypt/options-ssl-apache.conf"
-
+# ── SSL check — prefer wildcard cert at base domain, fall back to exact ───────
+SSL_CERT=""
+SSL_KEY=""
 SSL_AVAILABLE=false
-if [ -f "$SSL_CERT" ] && [ -f "$SSL_KEY" ]; then
+
+WILDCARD_CERT="/etc/letsencrypt/live/${SSL_BASE_DOMAIN}/fullchain.pem"
+WILDCARD_KEY="/etc/letsencrypt/live/${SSL_BASE_DOMAIN}/privkey.pem"
+EXACT_CERT="/etc/letsencrypt/live/${DOMAIN}/fullchain.pem"
+EXACT_KEY="/etc/letsencrypt/live/${DOMAIN}/privkey.pem"
+
+if [ -f "$WILDCARD_CERT" ] && [ -f "$WILDCARD_KEY" ]; then
+    SSL_CERT="$WILDCARD_CERT"
+    SSL_KEY="$WILDCARD_KEY"
     SSL_AVAILABLE=true
-    echo "✅ SSL certificates found for $DOMAIN"
+    echo "✅ Wildcard SSL cert found at /etc/letsencrypt/live/${SSL_BASE_DOMAIN}/"
+elif [ -f "$EXACT_CERT" ] && [ -f "$EXACT_KEY" ]; then
+    SSL_CERT="$EXACT_CERT"
+    SSL_KEY="$EXACT_KEY"
+    SSL_AVAILABLE=true
+    echo "✅ Exact SSL cert found at /etc/letsencrypt/live/${DOMAIN}/"
 else
-    echo "⚠️  SSL certificates NOT found at /etc/letsencrypt/live/${DOMAIN}/"
+    echo "⚠️  SSL certificates NOT found at either:"
+    echo "     /etc/letsencrypt/live/${SSL_BASE_DOMAIN}/ (wildcard)"
+    echo "     /etc/letsencrypt/live/${DOMAIN}/ (exact)"
     echo "   The config will be written with HTTP only."
-    echo "   Run: sudo certbot certonly --apache -d ${DOMAIN}"
-    echo "   Then re-run this script to enable HTTPS."
 fi
 
 # ── Ensure log directory exists ───────────────────────────────────────────────
@@ -97,19 +114,17 @@ else
     echo "✅ Log directory already exists."
 fi
 
-# ── Ensure sites-available/gingersociety dir and apache2.conf include ─────────
+# ── Ensure sites-available and apache2.conf include ───────────────────────────
 SITES_AVAILABLE="/etc/apache2/sites-available"
 CONF_FILE="${SITES_AVAILABLE}/${DOMAIN}.conf"
 APACHE_CONF="/etc/apache2/apache2.conf"
 SITES_ENABLED="/etc/apache2/sites-enabled"
 
-# Check that apache2 is installed
 if ! command -v apache2ctl &>/dev/null; then
     echo "❌ Apache2 is not installed. Please install it first."
     exit 1
 fi
 
-# Ensure IncludeOptional sites-enabled is present in apache2.conf
 if ! grep -q "sites-enabled" "$APACHE_CONF"; then
     echo "🔧 Adding IncludeOptional sites-enabled/*.conf to apache2.conf..."
     echo "IncludeOptional sites-enabled/*.conf" >> "$APACHE_CONF"
@@ -154,25 +169,21 @@ if [ "$SSL_AVAILABLE" = true ]; then
     ServerName ${DOMAIN}
 
     ProxyPreserveHost On
-
-    # Remove POST body size limit
     LimitRequestBody 0
 
-    # Setup the proxy
     <Proxy *>
         Require all granted
     </Proxy>
 ${WS_BLOCK}
 
-    # Standard HTTP Proxy
     ProxyPass "/" "http://0.0.0.0:${HTTP_PORT}/"
     ProxyPassReverse "/" "http://0.0.0.0:${HTTP_PORT}/"
 
     ErrorLog \${APACHE_LOG_DIR}/gingersociety/${DOMAIN//./_}_error.log
     CustomLog \${APACHE_LOG_DIR}/gingersociety/${DOMAIN//./_}_access.log combined
 
-    SSLCertificateFile /etc/letsencrypt/live/${DOMAIN}/fullchain.pem
-    SSLCertificateKeyFile /etc/letsencrypt/live/${DOMAIN}/privkey.pem
+    SSLCertificateFile ${SSL_CERT}
+    SSLCertificateKeyFile ${SSL_KEY}
     Include /etc/letsencrypt/options-ssl-apache.conf
 </VirtualHost>
 </IfModule>
@@ -183,17 +194,13 @@ else
     ServerName ${DOMAIN}
 
     ProxyPreserveHost On
-
-    # Remove POST body size limit
     LimitRequestBody 0
 
-    # Setup the proxy
     <Proxy *>
         Require all granted
     </Proxy>
 ${WS_BLOCK}
 
-    # Standard HTTP Proxy
     ProxyPass "/" "http://0.0.0.0:${HTTP_PORT}/"
     ProxyPassReverse "/" "http://0.0.0.0:${HTTP_PORT}/"
 
@@ -227,8 +234,8 @@ fi
 # ── Restart Apache2 ───────────────────────────────────────────────────────────
 echo ""
 echo "🔄 Restarting Apache2..."
-if systemctl restart apache2; then
-    echo "✅ Apache2 restarted successfully."
+if systemctl reload apache2; then
+    echo "✅ Apache2 reloaded successfully."
 else
     echo "❌ Apache2 failed to restart."
     echo "   Check: sudo journalctl -u apache2 -n 50"
@@ -241,15 +248,10 @@ echo "━━━━━━━━━━━━━━━━━━━━━━━━�
 echo "✅ Gateway setup complete for ${DOMAIN}"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""
-echo "  Config file:  $CONF_FILE"
-echo "  Backend port: $HTTP_PORT"
-echo "  WebSocket:    $WEBSOCKET"
-if [ "$SSL_AVAILABLE" = true ]; then
-    echo "  SSL:          ✅ Enabled"
-else
-    echo "  SSL:          ⚠️  Not yet — run certbot then re-run this script"
-    echo "  Certbot cmd:  sudo certbot certonly --apache -d ${DOMAIN}"
-fi
+echo "  Config file:   $CONF_FILE"
+echo "  Backend port:  $HTTP_PORT"
+echo "  WebSocket:     $WEBSOCKET"
+echo "  SSL cert:      ${SSL_CERT:-none}"
 echo ""
-echo "  Logs:         $LOG_DIR/"
+echo "  Logs:          $LOG_DIR/"
 echo "  Apache status: sudo systemctl status apache2"

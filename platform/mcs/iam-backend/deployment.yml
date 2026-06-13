@@ -20,7 +20,7 @@ spec:
             - sh
             - -c
             - |
-              until pg_isready -h pg-postgresql -p 5432 -U postgres; do 
+              until pg_isready -h iam-postgresql -p 5432 -U postgres; do 
                 echo "Waiting for DB..."
                 sleep 5
               done
@@ -48,12 +48,15 @@ spec:
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: pg-postgresql
+                  name: iam-postgresql
                   key: postgres-password
 
             # Redis stays simple
             - name: REDIS_URI
-              value: "redis://redis-service:6379"
+              valueFrom:
+                secretKeyRef:
+                  name: estonia-redis-auth
+                  key: url
 
             # ✅ Platform secret
             - name: JWT_SECRET

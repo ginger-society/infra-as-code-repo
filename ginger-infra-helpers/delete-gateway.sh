@@ -73,8 +73,8 @@ fi
 # ── Restart Apache2 ───────────────────────────────────────────────────────────
 echo ""
 echo "🔄 Restarting Apache2..."
-if systemctl restart apache2; then
-    echo "✅ Apache2 restarted successfully."
+if systemctl reload apache2; then
+    echo "✅ Apache2 reloaded successfully."
 else
     echo "❌ Apache2 failed to restart."
     echo "   Check: sudo journalctl -u apache2 -n 50"

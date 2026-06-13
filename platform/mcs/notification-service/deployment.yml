@@ -25,7 +25,7 @@ spec:
             - name: AMPQ_URI
               valueFrom:
                 secretKeyRef:
-                  name: my-rabbitmq-rabbitmq-auth
+                  name: changi-rabbitmq-auth
                   key: amqp_url
 
             # ✅ AWS creds from SES secret
@@ -45,7 +45,13 @@ spec:
               value: "ap-south-1"
             
             - name: REDIS_URI
-              value: "redis://redis-service:6379"
+              valueFrom:
+                secretKeyRef:
+                  name: estonia-redis-auth
+                  key: url
             
             - name: REDIS_PUBSUB_URI
-              value: "redis://redis-service:6379"
+              valueFrom:
+                secretKeyRef:
+                  name: estonia-redis-auth
+                  key: url

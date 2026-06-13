@@ -1,7 +1,17 @@
 [[fixture]]
 sql_file = "./fixtures/iam-db.out.sql"
 db_name = "iam-db"
+secret_name = "iam-postgresql"
+pod_name = "iam-postgresql-0"
+password_key = "postgres-password"
+username = "postgres"
+port = 5432
 
 [[fixture]]
 sql_file = "./fixtures/metadata-db.sql"
 db_name = "metadata-db"
+secret_name = "metadata-postgresql"
+pod_name = "metadata-postgresql-0"
+password_key = "postgres-password"
+username = "postgres"
+port = 5432

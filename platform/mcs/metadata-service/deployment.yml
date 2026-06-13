@@ -23,7 +23,7 @@ spec:
             - sh
             - -c
             - |
-              until pg_isready -h pg-postgresql -p 5432 -U postgres; do 
+              until pg_isready -h metadata-postgresql -p 5432 -U postgres; do 
                 echo "Waiting for DB..."
                 sleep 5
               done
@@ -44,7 +44,10 @@ spec:
 
             # ✅ Redis (unchanged)
             - name: REDIS_URI
-              value: "redis://redis-service:6379"
+              valueFrom:
+                secretKeyRef:
+                  name: estonia-redis-auth
+                  key: url
 
             # ✅ App secrets from same secret
             - name: ISC_SECRET

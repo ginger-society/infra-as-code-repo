@@ -39,11 +39,14 @@ spec:
           imagePullPolicy: Always
           env:
             - name: REDIS_URL
-              value: "redis://redis-service:6379"
+              valueFrom:
+                secretKeyRef:
+                  name: estonia-redis-auth
+                  key: url
             - name: AMPQ_URI
               valueFrom:
                 secretKeyRef:
-                  name: my-rabbitmq-rabbitmq-auth
+                  name: changi-rabbitmq-auth
                   key: amqp_url
             - name: ADMIN_REPO_SSH_URL
               value: "git@localhost:gitolite-admin.git"

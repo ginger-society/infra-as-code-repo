@@ -1,52 +1,198 @@
-# .tekton/debug.yaml
 apiVersion: tekton.dev/v1beta1
 kind: Pipeline
 metadata:
-  name: debug-pipeline
+  name: setup-ephimeral
   annotations:
     x-gitter-enabled: "true"
 spec:
   params:
-    - name: image_tag
+    - name: HOSTING_FQDN
       type: string
-    - name: target_env
+      default: ""
+    - name: vault
       type: string
-      default: "staging"
-    - name: dry_run
-      type: string
-      default: "false"
+      default: "{}"
   tasks:
-    - name: print-params
-      taskRef:
-        name: print-params
-      params:
-        - name: image_tag
-          value: $(params.image_tag)
-        - name: target_env
-          value: $(params.target_env)
-        - name: dry_run
-          value: $(params.dry_run)
-
-    - name: hello-task-1
-      runAfter:
-        - print-params
+    - name: generate-platform-files
       taskSpec:
         steps:
-          - name: echo-hello
-            image: alpine:latest
-            script: |
-              echo "hello"
-
-    - name: hello-task-2
-      runAfter:
-        - hello-task-1
-      taskSpec:
-        steps:
-          - name: echo-hello
+          - name: generate-keys-and-certs
             image: docker.gingersociety.org/ginger-society/tekton-task-ginger-infra:latest
+            workingDir: /workspace/source/repo
             script: |
-              echo "hello"
+              #!/bin/bash
+              set -e
+
+              # ── Create directory structure ─────────────────────────────────
+              mkdir -p /workspace/source/repo/platform/artifactory/gitter
+              mkdir -p /workspace/source/repo/platform/artifactory/docker-registry
+              mkdir -p /workspace/source/repo/platform/mcs/iam-backend
+
+              # ── Generate platform files ────────────────────────────────────
+              echo "ghp_$(openssl rand -hex 20)" \
+                > /workspace/source/repo/platform/artifactory/gitter/backup_account_pat
+
+              ssh-keygen -t ed25519 -N "" -C "rackmint-backup" \
+                -f /workspace/source/repo/platform/artifactory/gitter/backup_account_ssh_key -q
+
+              ssh-keygen -t ed25519 -N "" -C "gitolite-admin" \
+                -f /workspace/source/repo/platform/artifactory/gitter/admin_key -q
+
+              ssh-keygen -t ed25519 -N "" -C "gitolite-ssh-ca" \
+                -f /workspace/source/repo/platform/mcs/iam-backend/ca_key -q
+
+              openssl ecparam -name prime256v1 -genkey -noout \
+                -out /workspace/source/repo/platform/mcs/iam-backend/auth.key
+
+              openssl req -new -x509 \
+                -key /workspace/source/repo/platform/mcs/iam-backend/auth.key \
+                -out /workspace/source/repo/platform/artifactory/docker-registry/auth.cert \
+                -days 3650 \
+                -subj "/CN=registry-auth"
+
+              chmod 600 \
+                /workspace/source/repo/platform/artifactory/gitter/backup_account_ssh_key \
+                /workspace/source/repo/platform/artifactory/gitter/admin_key \
+                /workspace/source/repo/platform/mcs/iam-backend/ca_key \
+                /workspace/source/repo/platform/mcs/iam-backend/auth.key
+
+    - name: setup-ephimeral-env
+      runAfter:
+        - generate-platform-files
+      taskSpec:
+        params:
+          - name: vault
+            type: string
+          - name: HOSTING_FQDN
+            type: string
+        volumes:
+          - name: kube-config
+            emptyDir: {}
+          - name: rackmint-state
+            emptyDir: {}
+        steps:
+          - name: setup-vault
+            image: docker.gingersociety.org/ginger-society/tekton-task-ginger-infra:latest
+            workingDir: /workspace/source/repo
+            env:
+              - name: VAULT_JSON
+                value: $(params.vault)
+            script: |
+              #!/bin/bash
+              set -e
+
+              printf '%s' "$VAULT_JSON" > /workspace/source/repo/vault.json
+              jq empty /workspace/source/repo/vault.json
+              echo "✓ vault.json written and validated"
+
+          - name: bootstrap-cluster
+            image: docker.gingersociety.org/ginger-society/tekton-task-ginger-infra:latest
+            workingDir: /workspace/source/repo
+            env:
+              - name: HOSTING_FQDN
+                value: $(params.HOSTING_FQDN)
+              - name: KUBECONFIG
+                value: /kube/config
+            volumeMounts:
+              - name: kube-config
+                mountPath: /kube
+              - name: rackmint-state
+                mountPath: /root/.rackmint
+            script: |
+              #!/bin/bash
+              set -e
+
+              /usr/local/bin/mount-ginger-credentials.sh
+
+              unset KUBERNETES_SERVICE_HOST
+              unset KUBERNETES_SERVICE_PORT
+              unset KUBERNETES_PORT
+
               ginger-infra --version
-              ginger-infra --help
-              rackctl --version
-              rackctl --help
+              rackctl create "$HOSTING_FQDN" --do-not-delete --cpu-limit 10 --ram-limit 15 --disk-size 40
+
+              kubectl apply --filename https://infra.tekton.dev/tekton-releases/pipeline/latest/release.yaml
+              kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
+              kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.7.0/aio/deploy/recommended.yaml
+
+          - name: setup-ssl
+            image: docker.gingersociety.org/ginger-society/tekton-task-ginger-infra:latest
+            workingDir: /workspace/source/repo
+            env:
+              - name: HOSTING_FQDN
+                value: $(params.HOSTING_FQDN)
+              - name: KUBECONFIG
+                value: /kube/config
+            volumeMounts:
+              - name: kube-config
+                mountPath: /kube
+              - name: rackmint-state
+                mountPath: /root/.rackmint
+            script: |
+              #!/bin/bash
+              set -e
+
+              /usr/local/bin/mount-ginger-credentials.sh
+
+              unset KUBERNETES_SERVICE_HOST
+              unset KUBERNETES_SERVICE_PORT
+              unset KUBERNETES_PORT
+
+
+              # Strip any whitespace/newlines Tekton may have injected
+              HOSTING_FQDN="$(echo -n "$HOSTING_FQDN" | tr -d '[:space:]')"
+
+              SUBDOMAINS=(
+                dev-portal
+                iam
+                iam-db
+                metadata-db
+                iam-admin
+                api
+                tekton
+                npm
+                docker
+                docker-ui
+                pip
+                source
+                k8-prod-dashboard
+              )
+
+              for subdomain in "${SUBDOMAINS[@]}"; do
+                echo "Generating SSL for ${subdomain}.${HOSTING_FQDN} ..."
+                rackctl gen-ssl --skip-dns-check "${subdomain}.${HOSTING_FQDN}"
+              done
+
+              echo "✓ SSL certs generated for all subdomains"
+
+          - name: rollout
+            image: docker.gingersociety.org/ginger-society/tekton-task-ginger-infra:latest
+            workingDir: /workspace/source/repo
+            env:
+              - name: HOSTING_FQDN
+                value: $(params.HOSTING_FQDN)
+            volumeMounts:
+              - name: kube-config
+                mountPath: /root/.kube
+              - name: rackmint-state
+                mountPath: /root/.rackmint
+            script: |
+              #!/bin/bash
+              set -e
+
+              /usr/local/bin/mount-ginger-credentials.sh
+
+              unset KUBERNETES_SERVICE_HOST
+              unset KUBERNETES_SERVICE_PORT
+              unset KUBERNETES_PORT
+
+              ginger-infra install-helm-charts
+              ginger-infra verbose-replace --input platform/mcs/fixtures/iam-db.sql --output platform/mcs/fixtures/iam-db.out.sql
+              ginger-infra load-fixtures
+              ginger-infra rollout
+
+      params:
+        - name: vault
+          value: $(params.vault)
+        - name: HOSTING_FQDN
+          value: $(params.HOSTING_FQDN)
