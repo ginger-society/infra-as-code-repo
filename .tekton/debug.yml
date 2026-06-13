@@ -26,3 +26,21 @@ spec:
           value: $(params.target_env)
         - name: dry_run
           value: $(params.dry_run)
+
+    - name: hello-task-1
+      taskSpec:
+        steps:
+          - name: echo-hello
+            image: alpine
+            script: |
+              echo "hello"
+
+    - name: hello-task-2
+      runAfter:
+        - hello-task-1
+      taskSpec:
+        steps:
+          - name: echo-hello
+            image: alpine
+            script: |
+              echo "hello"
