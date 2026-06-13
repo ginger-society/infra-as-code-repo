@@ -28,6 +28,8 @@ spec:
           value: $(params.dry_run)
 
     - name: hello-task-1
+      runAfter:
+        - print-params
       taskSpec:
         steps:
           - name: echo-hello
