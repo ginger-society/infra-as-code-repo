@@ -29,6 +29,8 @@ spec:
               mountPath: /run/secrets/admin_key.pub
               subPath: admin_key.pub
               readOnly: true
+            - name: ssh-principals
+              mountPath: /etc/ssh/auth_principals
 
         - name: ginger-gitter-service
           image: gingersociety/ginger-gitter-service:latest
@@ -88,7 +90,8 @@ spec:
               readOnly: true
             - name: gitolite-data
               mountPath: /home/git
-
+            - name: ssh-principals
+              mountPath: /etc/ssh/auth_principals
 
       volumes:
         - name: gitolite-data
@@ -100,13 +103,28 @@ spec:
             items:
               - key: admin_key.pub
                 path: admin_key.pub
-                mode: 0444        # readable by git user for gitolite setup
+                mode: 0444
               - key: admin_key
                 path: admin_key
-                mode: 0400        # private key — SSH requires this
+                mode: 0400
               - key: gh_ssh_key
                 path: gh_ssh_key
-                mode: 0400        # private key — SSH requires this
+                mode: 0400
               - key: gh_pat
                 path: gh_pat
                 mode: 0400
+        - name: ssh-principals
+          persistentVolumeClaim:
+            claimName: ssh-principals-pvc
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: ssh-principals-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Mi
