@@ -346,14 +346,14 @@ COPY public."group" (id, identifier, disabled, short_text) FROM stdin;
 --
 
 COPY public.group_owners (id, group_id, user_id) FROM stdin;
-1	1	2
-2	2	2
-3	3	2
-4	4	2
-5	5	1
-6	6	1
-7	7	2
-8	8	2
+1	1	3
+2	2	3
+3	3	3
+4	4	3
+5	5	3
+6	6	3
+7	7	3
+8	8	3
 \.
 
 
@@ -362,16 +362,15 @@ COPY public.group_owners (id, group_id, user_id) FROM stdin;
 --
 
 COPY public.group_users (id, group_id, user_id) FROM stdin;
-1	1	2
-2	2	2
-3	3	2
-4	4	2
-5	5	1
-6	2	1
-7	6	1
-8	7	2
-9	8	1
-10	8	2
+1	1	3
+2	2	3
+3	3	3
+4	4	3
+5	5	3
+7	6	3
+8	7	3
+9	8	3
+10	8	3
 \.
 
 

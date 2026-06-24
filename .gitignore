@@ -2,9 +2,9 @@
 environments/prod/shared/rabitmq/index.yaml
 environments/prod/shared/rabitmq/rabbitmq-*.tgz
 build/
-values.json
 values.memory.json
 vault.json
 *.sql
 bootstrap.sh
 helm-build
+values.json

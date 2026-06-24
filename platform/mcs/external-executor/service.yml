@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: external-executor-service
+  labels:
+    app: external-executor
+spec:
+  selector:
+    app: external-executor
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 8000

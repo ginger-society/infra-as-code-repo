@@ -20,3 +20,7 @@ kubectl run registry-gc --rm -it \
 
 
 registry garbage-collect --delete-untagged /etc/docker/registry/config.yml
+
+
+# scale back 
+kubectl scale deployment registry --replicas=1

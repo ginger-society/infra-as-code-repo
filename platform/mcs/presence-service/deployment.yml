@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: presence-service
+  labels:
+    app: presence-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: presence-service
+  template:
+    metadata:
+      annotations:
+        x-ginger-code-ejectable: "presence-service"
+      labels:
+        app: presence-service
+    spec:
+      containers:
+        - name: presence-service
+          image: gingersociety/ginger-presence-api-stage:latest
+          ports:
+            - containerPort: 8080
+
+          env:
+
+            # ✅ Redis (unchanged)
+            - name: REDIS_URI
+              valueFrom:
+                secretKeyRef:
+                  name: estonia-redis-auth
+                  key: url
+
+            # ✅ App secrets from same secret
+            - name: ISC_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: presence-service-api-secrets
+                  key: ISC_SECRET
+
+            - name: ROCKET_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: presence-service-api-secrets
+                  key: ROCKET_SECRET_KEY
+
+            # ✅ Global secret
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: platform-secrets
+                  key: JWT_SECRET
+
+            - name: ROCKET_ADDRESS
+              value: "0.0.0.0"
+
+            - name: ROCKET_PORT
+              value: "8000"

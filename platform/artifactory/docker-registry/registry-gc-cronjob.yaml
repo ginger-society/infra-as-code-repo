@@ -1,0 +1,130 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: registry-gc-config
+data:
+  config.yml: |
+    version: 0.1
+    storage:
+      filesystem:
+        rootdirectory: /var/lib/registry
+      delete:
+        enabled: true
+    http:
+      addr: :5000
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: registry-gc-sa
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: registry-gc-role
+rules:
+  - apiGroups: ["apps"]
+    resources: ["deployments", "deployments/scale"]
+    verbs: ["get", "list", "watch", "patch", "update"]
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["get", "list", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: registry-gc-rolebinding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: registry-gc-role
+subjects:
+  - kind: ServiceAccount
+    name: registry-gc-sa
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: registry-gc
+spec:
+  schedule: "0 2 * * 0"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          serviceAccountName: registry-gc-sa
+          restartPolicy: OnFailure
+          volumes:
+            - name: registry-storage
+              persistentVolumeClaim:
+                claimName: registry-pvc
+            - name: cert-volume
+              secret:
+                secretName: registry-auth-secret
+            - name: gc-config
+              configMap:
+                name: registry-gc-config
+          initContainers:
+            - name: scale-down
+              image: bitnami/kubectl:latest
+              command:
+                - sh
+                - -c
+                - |
+                  set -e
+
+                  echo "⏳ Scaling down registry deployment..."
+                  kubectl scale deployment registry --replicas=0
+
+                  echo "⏳ Waiting for registry pods to terminate..."
+                  kubectl wait --for=delete pod \
+                    -l app=registry \
+                    --timeout=300s || true
+
+                  echo "✅ Registry scaled down successfully"
+
+            - name: garbage-collect
+              image: registry:2
+              command:
+                - sh
+                - -c
+                - |
+                  set -e
+
+                  echo "🔍 Running GC dry-run first..."
+                  registry garbage-collect \
+                    --dry-run \
+                    --delete-untagged \
+                    /etc/docker/registry/config.yml
+
+                  echo "🗑️  Running actual garbage collection..."
+                  registry garbage-collect \
+                    --delete-untagged \
+                    /etc/docker/registry/config.yml
+
+                  echo "✅ Garbage collection complete"
+              volumeMounts:
+                - mountPath: /var/lib/registry
+                  name: registry-storage
+                - mountPath: /etc/docker/registry
+                  name: gc-config
+
+          containers:
+            - name: scale-up
+              image: bitnami/kubectl:latest
+              command:
+                - sh
+                - -c
+                - |
+                  set -e
+
+                  echo "⏳ Scaling registry back up..."
+                  kubectl scale deployment registry --replicas=1
+
+                  echo "⏳ Waiting for registry to be ready..."
+                  kubectl rollout status deployment/registry --timeout=120s
+
+                  echo "✅ Registry is back online"

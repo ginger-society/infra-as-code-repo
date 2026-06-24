@@ -31,6 +31,14 @@ spec:
                 port:
                   number: 80
 
+          - path: /presence
+            pathType: Prefix
+            backend:
+              service:
+                name: presence-service
+                port:
+                  number: 80
+
           - path: /metadata
             pathType: Prefix
             backend:
@@ -52,6 +60,14 @@ spec:
             backend:
               service:
                 name: notificationservice-service
+                port:
+                  number: 80
+
+          - path: /external-executor
+            pathType: Prefix
+            backend:
+              service:
+                name: external-executor-service
                 port:
                   number: 80
 

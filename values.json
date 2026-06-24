@@ -12,6 +12,12 @@
     "DB_URL": "shell(set -e; PW=$(kubectl get secret metadata-postgresql -o jsonpath='{.data.postgres-password}' | base64 -d); echo postgresql://postgres:${PW}@metadata-postgresql:5432/metadata-db)",
     "ISC_SECRET": "verysecure"
   },
+   "PRESENCE": {
+    "ISC_SECRET": "vault(PRESENCE_ISC_TOKEN)"
+  },
+   "EXECUTOR": {
+    "ISC_SECRET": "vault(EXECUTOR_ISC_TOKEN)"
+  },
   "GH_MIRROR": {
     "PAT": "file(./platform/artifactory/gitter/backup_account_pat) ",
     "SSH_PREFIX": "vault(GH_MIRROR_SSH_PREFIX)",
