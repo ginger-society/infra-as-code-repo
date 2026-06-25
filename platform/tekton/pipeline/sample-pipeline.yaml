@@ -1,0 +1,165 @@
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: fetch-source
+  namespace: default
+spec:
+  params:
+    - name: repo-url
+      type: string
+    - name: revision
+      type: string
+      default: main
+  workspaces:
+    - name: source
+  steps:
+    - name: clone
+      image: alpine/git:latest
+      script: |
+        #!/usr/bin/env sh
+        set -e
+        echo "==> Cloning $(params.repo-url) @ $(params.revision)"
+        git clone --depth=1 --branch=$(params.revision) \
+          $(params.repo-url) $(workspaces.source.path)
+        echo "==> Clone complete. $(ls $(workspaces.source.path) | wc -l) files."
+---
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: run-tests
+  namespace: default
+spec:
+  params:
+    - name: app-name
+      type: string
+      default: my-app
+  workspaces:
+    - name: source
+  results:
+    - name: test-status
+    - name: test-count
+  steps:
+    - name: unit-test
+      image: alpine:3.19
+      script: |
+        #!/usr/bin/env sh
+        set -e
+        echo "==> Running test suite for $(params.app-name)"
+        PASS=0
+        for i in 1 2 3 4 5; do
+          echo "  [PASS] test_case_$i"
+          PASS=$((PASS+1))
+          sleep 1
+        done
+        echo "==> $PASS/5 passed"
+        printf '%s' "$PASS" > $(results.test-count.path)
+        printf '%s' "pass"  > $(results.test-status.path)
+---
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: build-summary
+  namespace: default
+spec:
+  params:
+    - name: test-status
+      type: string
+    - name: test-count
+      type: string
+    - name: app-name
+      type: string
+  results:
+    - name: build-id
+  steps:
+    - name: summarize
+      image: alpine:3.19
+      script: |
+        #!/usr/bin/env sh
+        BUILD_ID="build-$(date +%Y%m%d-%H%M%S)"
+        echo "╔══════════════════════════════╗"
+        echo "║      PIPELINE SUMMARY        ║"
+        echo "║  App:    $(params.app-name)"
+        echo "║  Tests:  $(params.test-count)"
+        echo "║  Status: $(params.test-status)"
+        echo "║  Build:  $BUILD_ID"
+        echo "╚══════════════════════════════╝"
+        printf '%s' "$BUILD_ID" > $(results.build-id.path)
+---
+apiVersion: tekton.dev/v1
+kind: Pipeline
+metadata:
+  name: sample-ci-pipeline
+  namespace: default
+spec:
+  params:
+    - name: repo-url
+      default: https://github.com/tektoncd/pipeline
+    - name: revision
+      default: main
+    - name: app-name
+      default: my-app
+  workspaces:
+    - name: shared-source
+  results:
+    - name: build-id
+      value: $(tasks.summarize.results.build-id)
+    - name: test-status
+      value: $(tasks.test.results.test-status)
+  tasks:
+    - name: fetch
+      taskRef:
+        name: fetch-source
+      params:
+        - name: repo-url
+          value: $(params.repo-url)
+        - name: revision
+          value: $(params.revision)
+      workspaces:
+        - name: source
+          workspace: shared-source
+    - name: test
+      taskRef:
+        name: run-tests
+      runAfter: [fetch]
+      params:
+        - name: app-name
+          value: $(params.app-name)
+      workspaces:
+        - name: source
+          workspace: shared-source
+    - name: summarize
+      taskRef:
+        name: build-summary
+      runAfter: [test]
+      params:
+        - name: test-status
+          value: $(tasks.test.results.test-status)
+        - name: test-count
+          value: $(tasks.test.results.test-count)
+        - name: app-name
+          value: $(params.app-name)
+---
+# Change the name for each new run — PipelineRuns are immutable
+apiVersion: tekton.dev/v1
+kind: PipelineRun
+metadata:
+  name: sample-ci-run-001
+  namespace: default
+spec:
+  pipelineRef:
+    name: sample-ci-pipeline
+  params:
+    - name: repo-url
+      value: https://github.com/tektoncd/pipeline
+    - name: revision
+      value: main
+    - name: app-name
+      value: tekton-pipeline
+  workspaces:
+    - name: shared-source
+      volumeClaimTemplate:
+        spec:
+          accessModes: [ReadWriteOnce]
+          resources:
+            requests:
+              storage: 500Mi
