@@ -1,0 +1,146 @@
+# example-parallel-pipeline.yaml  (apply with: kubectl apply -f example-parallel-pipeline.yaml)
+
+# example-parallel-pipeline.yaml
+#
+# A minimal pipeline to exercise parallel-task streaming:
+#
+#   fetch
+#    +--> lint      (parallel with test, ~5s)
+#    +--> test      (parallel with lint, ~20s)
+#         (both runAfter fetch, neither depends on the other)
+#   summarize  (runAfter both lint and test)
+#
+# Apply with:
+#   kubectl apply -f example-parallel-pipeline.yaml
+#
+# Trigger a run:
+#   kubectl create -f - <<EOF
+#   apiVersion: tekton.dev/v1
+#   kind: PipelineRun
+#   metadata:
+#     generateName: parallel-test-
+#   spec:
+#     pipelineRef:
+#       name: parallel-ci-pipeline
+#     workspaces:
+#       - name: shared-source
+#         volumeClaimTemplate:
+#           spec:
+#             accessModes: [ReadWriteOnce]
+#             resources:
+#               requests:
+#                 storage: 500Mi
+#   EOF
+#
+# Then grab the generated PipelineRun name and stream it:
+#   kubectl get pipelineruns -l tekton.dev/pipeline=parallel-ci-pipeline --sort-by=.metadata.creationTimestamp
+#   ginger-code-cli logs-run <generated-name> --sidekick-url http://localhost:8080
+
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: fetch-source
+spec:
+  workspaces:
+    - name: shared-source
+  steps:
+    - name: clone
+      image: alpine/git
+      script: |
+        #!/bin/sh
+        echo "==> Cloning..."
+        cd $(workspaces.shared-source.path)
+        git clone --depth 1 https://github.com/tektoncd/pipeline.git source
+        echo "==> Clone complete."
+
+---
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: lint-code
+spec:
+  workspaces:
+    - name: shared-source
+  steps:
+    - name: lint
+      image: alpine
+      script: |
+        #!/bin/sh
+        echo "==> Running linter..."
+        sleep 5
+        echo "[lint] no issues found"
+        echo "==> Lint complete."
+
+---
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: run-tests
+spec:
+  workspaces:
+    - name: shared-source
+  steps:
+    - name: unit-test
+      image: alpine
+      script: |
+        #!/bin/sh
+        echo "==> Running test suite..."
+        for i in 1 2 3 4 5; do
+          sleep 4
+          echo "[PASS] test_case_$i"
+        done
+        echo "==> 5/5 passed."
+
+---
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: build-summary
+spec:
+  steps:
+    - name: summarize
+      image: alpine
+      script: |
+        #!/bin/sh
+        echo "==> Both lint and tests finished -- summarizing."
+        echo "Build: OK"
+
+---
+apiVersion: tekton.dev/v1
+kind: Pipeline
+metadata:
+  name: parallel-ci-pipeline
+spec:
+  workspaces:
+    - name: shared-source
+  tasks:
+    - name: fetch
+      taskRef:
+        name: fetch-source
+      workspaces:
+        - name: shared-source
+          workspace: shared-source
+
+    # Both of these runAfter fetch, but NOT after each other --
+    # Tekton schedules them concurrently.
+    - name: lint
+      taskRef:
+        name: lint-code
+      runAfter: ["fetch"]
+      workspaces:
+        - name: shared-source
+          workspace: shared-source
+
+    - name: test
+      taskRef:
+        name: run-tests
+      runAfter: ["fetch"]
+      workspaces:
+        - name: shared-source
+          workspace: shared-source
+
+    # Waits for BOTH parallel tasks before running.
+    - name: summarize
+      taskRef:
+        name: build-summary
+      runAfter: ["lint", "test"]

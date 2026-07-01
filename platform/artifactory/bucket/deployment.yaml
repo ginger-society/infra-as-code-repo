@@ -1,0 +1,86 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ginger-bucket
+  labels:
+    app: ginger-bucket
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ginger-bucket
+  template:
+    metadata:
+      annotations:
+        x-ginger-code-ejectable: "ginger-bucket-service"
+      labels:
+        app: ginger-bucket
+    spec:
+      containers:
+        - name: ginger-bucket-service
+          image: gingersociety/ginger-bucket-api-stage:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+          env:
+            - name: REDIS_URI
+              valueFrom:
+                secretKeyRef:
+                  name: hampi-redis-auth
+                  key: url
+            - name: AMPQ_URI
+              valueFrom:
+                secretKeyRef:
+                  name: chikkamagaluru-rabbitmq-auth
+                  key: amqp_url
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: s3-credentials
+                  key: AWS_ACCESS_KEY_ID
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: s3-credentials
+                  key: AWS_SECRET_ACCESS_KEY
+            - name: AWS_REGION
+              value: "ap-south-1"
+            - name: UPLOAD_MIRROR_BUCKETS
+              valueFrom:
+                configMapKeyRef:
+                  name: ginger-bucket-config
+                  key: UPLOAD_MIRROR_BUCKETS
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: platform-secrets
+                  key: JWT_SECRET
+            - name: RUST_LOG
+              value: "debug"
+
+            - name: ROCKET_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: bucket-service-api-secrets
+                  key: ROCKET_SECRET_KEY
+            - name: ROCKET_ADDRESS
+              value: "0.0.0.0"
+
+            - name: ROCKET_PORT
+              value: "8080"
+          volumeMounts:
+            - name: bucket-data
+              mountPath: /app/bucket-data
+
+      volumes:
+        - name: bucket-data
+          persistentVolumeClaim:
+            claimName: ginger-bucket-pvc
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ginger-bucket-config
+data:
+  UPLOAD_MIRROR_BUCKETS: "ginger-infra-binaries"

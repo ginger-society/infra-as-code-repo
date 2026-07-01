@@ -1,0 +1,40 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: backup-ginger-bucket-pvc-test
+  namespace: default
+spec:
+  backoffLimit: 0
+  ttlSecondsAfterFinished: 3600
+  template:
+    spec:
+      restartPolicy: Never
+      nodeSelector:
+        kubernetes.io/hostname: artifactory-control-plane
+      containers:
+        - name: restic-backup
+          image: restic/restic:latest
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              set -eu
+              if ! restic snapshots >/dev/null 2>&1; then
+                restic init
+              fi
+              restic backup /volumes-to-backup/ginger-bucket-pvc --tag ginger-bucket-pvc
+              restic snapshots
+          envFrom:
+            - secretRef:
+                name: s3-credentials
+          env:
+            - name: RESTIC_REPOSITORY
+              value: "s3:https://s3.amazonaws.com/ginger-infra-binaries/ginger-bucket-pvc"
+            - name: RESTIC_PASSWORD
+              value: "test-password-change-me"
+          volumeMounts:
+            - name: data
+              mountPath: /volumes-to-backup/ginger-bucket-pvc
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: ginger-bucket-pvc

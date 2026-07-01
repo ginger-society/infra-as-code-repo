@@ -42,6 +42,10 @@ spec:
               value: "false"
             - name: RUST_LOG
               value: "ginger_auth_proxy=debug"
+            - name: PUBLIC_PATH_PREFIX
+              value: "/dashboard"
+            - name: EXCLUDED_PATHS
+              value: "/favicon.ico"
 
 ---
 # ─────────────────────────────────────────────────────────────────────────────

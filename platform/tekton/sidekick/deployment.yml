@@ -1,0 +1,127 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: tekton-sidekick-sa
+  namespace: tekton-pipelines
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: tekton-sidekick-role
+rules:
+  - apiGroups: ["tekton.dev"]
+    resources: ["pipelineruns", "taskruns"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: [""]
+    resources: ["pods", "pods/log"]
+    verbs: ["get", "list", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: tekton-sidekick-rolebinding
+subjects:
+  - kind: ServiceAccount
+    name: tekton-sidekick-sa
+    namespace: tekton-pipelines   # ← updated to match the SA's new namespace
+roleRef:
+  kind: ClusterRole
+  name: tekton-sidekick-role
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tekton-sidekick-service
+  namespace: tekton-pipelines
+  labels:
+    app: tekton-sidekick-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tekton-sidekick-service
+  template:
+    metadata:
+      annotations:
+        x-ginger-code-ejectable: "tekton-sidekick-service"
+      labels:
+        app: tekton-sidekick-service
+    spec:
+      serviceAccountName: tekton-sidekick-sa
+      # Required by tekton-pipelines' PodSecurity "restricted" admission
+      # policy — runAsNonRoot + seccompProfile at the pod level (covers all
+      # containers in this pod without repeating on each one).
+      #
+      # runAsUser IS required here, despite the earlier assumption: the
+      # image actually defaults to root (confirmed by kubelet directly —
+      # "container has runAsNonRoot and image will run as root" — when
+      # this was left unset). 1000 is just a normal unprivileged UID with
+      # no special meaning to this image; since the app doesn't rely on
+      # any pre-existing file ownership inside the container, any non-zero
+      # UID works here. If the Dockerfile later adds its own non-root
+      # `USER`, this can be removed in favor of letting the image decide
+      # — but until then, this is required for the pod to start at all.
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: tekton-sidekick-service
+          image: gingersociety/tekton-sidekick-api-stage:latest
+          ports:
+            - containerPort: 8080
+          # Container-level requirements the restricted profile checks
+          # independently of the pod-level settings above.
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+          env:
+            - name: REDIS_URI
+              valueFrom:
+                secretKeyRef:
+                  name: wayanad-redis-auth
+                  key: url
+            - name: ISC_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: tekton-sidekick-service-api-secrets
+                  key: ISC_SECRET
+            - name: ROCKET_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: tekton-sidekick-service-api-secrets
+                  key: ROCKET_SECRET_KEY
+            # ── Removed: TEKTON_RESULTS_PG_PASSWORD from tekton-sidekick-service-api-secrets ──
+            # That key was a duplicate of POSTGRES_PASSWORD already maintained in the
+            # `tekton-results-postgres` secret (see bootstrap script: kubectl create
+            # secret generic tekton-results-postgres --namespace=tekton-pipelines
+            # --from-literal=POSTGRES_PASSWORD=...). Reading it from there directly
+            # removes the duplication at the source — there is now exactly one place
+            # this password is set, and rotating it only requires updating one secret.
+            - name: TEKTON_RESULTS_PG_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: tekton-results-postgres
+                  key: POSTGRES_PASSWORD
+            # Explicit now that the secret is right here — previously this
+            # was unset and silently relied on create_pg_pool()'s Rust-side
+            # default of "tekton", which only happened to match.
+            - name: TEKTON_RESULTS_PG_USER
+              valueFrom:
+                secretKeyRef:
+                  name: tekton-results-postgres
+                  key: POSTGRES_USER
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: platform-secrets
+                  key: JWT_SECRET
+            - name: TEKTON_RESULTS_PG_HOST
+              value: "tekton-results-postgres-service.tekton-pipelines.svc.cluster.local"
+            - name: ROCKET_ADDRESS
+              value: "0.0.0.0"
+            - name: ROCKET_PORT
+              value: "8000"

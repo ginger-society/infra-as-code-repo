@@ -12,8 +12,14 @@
     "DB_URL": "shell(echo postgresql://postgres:$(kubectl get secret metadata-postgresql -o jsonpath='{.data.postgres-password}' | base64 -d)@metadata-postgresql:5432/metadata-db)",
     "ISC_SECRET": "verysecure"
   },
+  "BUCKET": {
+    "RESTIC_PASSWORD": "vault(BUCKET_RESTIC_PASSWORD)"
+  },
   "PRESENCE": {
     "ISC_SECRET": "vault(PRESENCE_ISC_TOKEN)"
+  },
+  "TEKTON_SIDEKICK" : {
+    "ISC_SECRET": "verysecure"
   },
   "EXECUTOR": {
     "ISC_SECRET": "verysecure"

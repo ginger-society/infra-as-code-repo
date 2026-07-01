@@ -215,3 +215,11 @@ Then apply:
 kubectl apply -f manifests/loki/loki.yaml
 kubectl rollout restart statefulset/loki -n logging
 ```
+
+
+ginger-infra install-tekton-crd \
+  --image gingersociety/remote-task-controller:latest \
+  --executor-url https://api.gingersociety.org/external-executor/run-job \
+  --runner-image gingersociety/external-executor-runner:latest
+
+

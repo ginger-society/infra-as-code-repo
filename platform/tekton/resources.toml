@@ -1,0 +1,9 @@
+# platform/tekton/resources.toml
+
+
+[[resource]]
+type    = "local_chart"
+release = "wayanad"
+chart   = "../../charts/redis"       
+timeout = "5m"
+namespace = "tekton-pipelines"

@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ include "redis.fullname" . }}
+  namespace: {{ .Release.Namespace }}
 spec:
   replicas: 1
   selector:
@@ -12,6 +13,15 @@ spec:
       labels:
         app: {{ include "redis.name" . }}
     spec:
+      # Pod-level securityContext required by the PodSecurity "restricted"
+      # admission policy enforced on tekton-pipelines — runAsNonRoot and a
+      # seccompProfile must be set at the pod level (or repeated on every
+      # container; setting once here covers both containers below).
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 999
+        seccompProfile:
+          type: RuntimeDefault
       containers:
         - name: redis
           image: {{ .Values.redis.image }}
@@ -26,6 +36,14 @@ spec:
                 secretKeyRef:
                   name: {{ include "redis.fullname" . }}-auth
                   key: password
+          # Container-level requirements the restricted profile checks
+          # independently of the pod-level settings above:
+          # allowPrivilegeEscalation must be false, and all capabilities
+          # must be dropped.
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
 
         - name: redis-exporter
           image: oliver006/redis_exporter:latest
@@ -37,3 +55,7 @@ spec:
                 secretKeyRef:
                   name: {{ include "redis.fullname" . }}-auth
                   key: exporter_url
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]

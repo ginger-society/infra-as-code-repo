@@ -1,0 +1,189 @@
+# =============================================================
+# tekton-cleanup-cronjob.yaml
+#
+# Nightly cleanup of PipelineRuns (and their pods/PVCs) older
+# than 24h. Runs at 03:15 every day. Metadata/logs are assumed
+# to already be archived elsewhere (Postgres/Loki per
+# teardown.sh's design) — this only deletes live cluster objects.
+#
+# Apply with:
+#   kubectl apply -f tekton-cleanup-cronjob.yaml
+#
+# Test it on demand without waiting for the schedule:
+#   kubectl create job --from=cronjob/tekton-pipelinerun-cleanup \
+#     tekton-pipelinerun-cleanup-manual -n default
+# =============================================================
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: tekton-cleanup
+  namespace: default
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: tekton-cleanup
+  namespace: default
+rules:
+  - apiGroups: ["tekton.dev"]
+    resources: ["pipelineruns", "taskruns"]
+    verbs: ["get", "list", "delete"]
+  - apiGroups: [""]
+    resources: ["pods", "persistentvolumeclaims"]
+    verbs: ["get", "list", "delete"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: tekton-cleanup
+  namespace: default
+subjects:
+  - kind: ServiceAccount
+    name: tekton-cleanup
+    namespace: default
+roleRef:
+  kind: Role
+  name: tekton-cleanup
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: tekton-cleanup-script
+  namespace: default
+data:
+  teardown-old-runs.sh: |
+    #!/usr/bin/env bash
+    set -euo pipefail
+
+    MAX_AGE_HOURS="${MAX_AGE_HOURS:-24}"
+    NAMESPACE="${NAMESPACE:-default}"
+    DRY_RUN="${DRY_RUN:-false}"
+
+    echo ""
+    echo "  Sweeping PipelineRuns in namespace '${NAMESPACE}' older than ${MAX_AGE_HOURS}h"
+    [[ "$DRY_RUN" == "true" ]] && echo "  (dry-run — nothing will actually be deleted)"
+    echo ""
+
+    NOW_EPOCH=$(date -u +%s)
+    CUTOFF_EPOCH=$((NOW_EPOCH - MAX_AGE_HOURS * 3600))
+
+    RUNS_JSON=$(kubectl get pipelinerun -n "$NAMESPACE" -o json 2>/dev/null || echo '{"items":[]}')
+    RUN_COUNT=$(echo "$RUNS_JSON" | jq '.items | length')
+
+    if [[ "$RUN_COUNT" -eq 0 ]]; then
+      echo "  No PipelineRuns found in '${NAMESPACE}'."
+      exit 0
+    fi
+
+    DELETED=0
+    SKIPPED=0
+    FAILED=0
+
+    while IFS=$'\t' read -r run_name ref_epoch; do
+      [[ -z "$run_name" ]] && continue
+
+      if [[ -z "$ref_epoch" || "$ref_epoch" == "null" ]]; then
+        echo "  — ${run_name}: could not parse timestamp, skipping"
+        SKIPPED=$((SKIPPED + 1))
+        continue
+      fi
+
+      if [[ "$ref_epoch" -gt "$CUTOFF_EPOCH" ]]; then
+        SKIPPED=$((SKIPPED + 1))
+        continue
+      fi
+
+      age_hours=$(( (NOW_EPOCH - ref_epoch) / 3600 ))
+      echo "  → ${run_name} (age: ${age_hours}h) — tearing down"
+
+      if [[ "$DRY_RUN" == "true" ]]; then
+        echo "      [dry-run] would delete pipelinerun/pods/pvcs for ${run_name}"
+        continue
+      fi
+
+      if kubectl get pipelinerun "$run_name" -n "$NAMESPACE" &>/dev/null; then
+        if kubectl delete pipelinerun "$run_name" -n "$NAMESPACE" --ignore-not-found; then
+          echo "      ✓ deleted PipelineRun/${run_name}"
+        else
+          echo "      ✗ failed to delete PipelineRun/${run_name}"
+          FAILED=$((FAILED + 1))
+          continue
+        fi
+      fi
+
+      if kubectl get pods -n "$NAMESPACE" -l "tekton.dev/pipelineRun=${run_name}" \
+          --no-headers 2>/dev/null | grep -q .; then
+        kubectl delete pods -n "$NAMESPACE" \
+          -l "tekton.dev/pipelineRun=${run_name}" --ignore-not-found
+        echo "      ✓ deleted pods for ${run_name}"
+      fi
+
+      if kubectl get pvc -n "$NAMESPACE" -l "tekton.dev/pipelineRun=${run_name}" \
+          --no-headers 2>/dev/null | grep -q .; then
+        kubectl delete pvc -n "$NAMESPACE" \
+          -l "tekton.dev/pipelineRun=${run_name}" --ignore-not-found
+        echo "      ✓ deleted PVCs for ${run_name}"
+      fi
+
+      DELETED=$((DELETED + 1))
+    done < <(echo "$RUNS_JSON" | jq -r '
+      .items[] |
+      [
+        .metadata.name,
+        (
+          (.status.completionTime // .metadata.creationTimestamp // "") as $t |
+          if $t == "" then ""
+          else
+            try ($t | fromdateiso8601 | tostring)
+            catch ""
+          end
+        )
+      ] | @tsv
+    ')
+
+    echo ""
+    echo "  Sweep complete: ${DELETED} deleted, ${SKIPPED} skipped (too recent), ${FAILED} failed"
+    echo ""
+
+    [[ "$FAILED" -eq 0 ]]
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: tekton-pipelinerun-cleanup
+  namespace: default
+spec:
+  # 03:15 every day — adjust to taste. Cluster-local time of the
+  # kube-controller-manager, which is normally UTC.
+  schedule: "15 3 * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 5
+  jobTemplate:
+    spec:
+      backoffLimit: 1
+      activeDeadlineSeconds: 900
+      template:
+        spec:
+          serviceAccountName: tekton-cleanup
+          restartPolicy: Never
+          containers:
+            - name: cleanup
+              image: alpine/k8s:1.30.12
+              command: ["/bin/bash", "/scripts/teardown-old-runs.sh"]
+              env:
+                - name: MAX_AGE_HOURS
+                  value: "24"
+                - name: NAMESPACE
+                  value: "default"
+                - name: DRY_RUN
+                  value: "false"
+              volumeMounts:
+                - name: script
+                  mountPath: /scripts
+          volumes:
+            - name: script
+              configMap:
+                name: tekton-cleanup-script
+                defaultMode: 0755

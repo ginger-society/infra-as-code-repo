@@ -1,0 +1,16 @@
+[[resource]]
+type    = "local_chart"
+release = "chikkamagaluru"
+chart   = "../../charts/rabitmq"       # relative to this resources.toml
+timeout = "5m"
+
+[resource.set]
+"rabbitmq.auth.username" = "{{shared.RABBITMQ_DEFAULT_USER}}"
+"rabbitmq.auth.password" = "{{shared.RABBITMQ_DEFAULT_PASS}}"   # from vault.json at install time
+
+
+[[resource]]
+type    = "local_chart"
+release = "hampi"
+chart   = "../../charts/redis"       # relative to this resources.toml
+timeout = "5m"

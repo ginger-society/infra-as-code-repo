@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: tekton-sidekick-service
+  namespace: tekton-pipelines
+  labels:
+    app: tekton-sidekick-service
+spec:
+  selector:
+    app: tekton-sidekick-service
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 8000

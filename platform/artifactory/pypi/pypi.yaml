@@ -1,6 +1,9 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
+  annotations:
+    snapshot.gingersociety.org/enabled: "true"
+    volume.kubernetes.io/selected-node: "artifactory-control-plane"
   name: pypi-pvc
 spec:
   accessModes:

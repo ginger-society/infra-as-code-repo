@@ -294,3 +294,169 @@ kubectl create secret docker-registry regcred \
   -n default
 
   
+
+sudo sysctl -w fs.inotify.max_user_watches=1048576
+sudo sysctl -w fs.inotify.max_user_instances=1024
+
+
+
+
+sh <(curl -fsSL https://raw.githubusercontent.com/ginger-society/infra-as-code-repo/refs/heads/main/rust-helpers/upload.sh)
+
+
+ curl -X 'POST' \
+  'https://source.gingersociety.org/repo/run-pipeline' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/json' \
+  -d "{
+  \"branch\": \"main\",
+  \"params\": [
+    {
+      \"key\": \"target_env\",
+      \"val\": \"string\"
+    },
+    {
+      \"key\": \"dry_run\",
+      \"val\": \"string\"
+    },
+    {
+      \"key\": \"HOSTING_FQDN\",
+      \"val\": \"your.domain.com\"
+    },
+    {
+      \"key\": \"vault\",
+      \"val\": $(cat vault.json | jq -c . | jq -Rs .)
+    },
+    {
+      \"key\": \"values\",
+      \"val\": $(cat values.json | jq -c . | jq -Rs .)
+    }
+  ],
+  \"pipeline_name\": \"debug.yml\",
+  \"repo\": \"ginger-society-iac\",
+  \"triggered_by\": \"alice\"
+}"
+
+
+
+sudo bash -c 'cat > /etc/letsencrypt/godaddy.ini << EOF
+dns_godaddy_secret = YOUR_API_SECRET
+dns_godaddy_key = YOUR_API_KEY
+EOF'
+
+sudo chmod 600 /etc/letsencrypt/godaddy.ini
+
+
+
+ginger-infra install-tekton-crd \
+  --image gingersociety/remote-task-controller:latest \
+  --sidekick-url https://api.gingersociety.org/external-executor/run-job \
+  --runner-image gingersociety/external-executor-runner:latest
+
+  
+
+  kubectl create secret generic ginger-society-auth \
+  --from-literal=auth.json='{"API_TOKEN":""}' \
+  -n default
+
+
+  # Example 1 — via RemoteTask CRD (standalone, no pipeline)
+# The controller watches for this and creates a TaskRun automatically.
+#
+#   kubectl apply -f this-file.yaml
+#   kubectl get taskrun example-remote-task -n default
+#   kubectl logs -l remotetask=example-remote-task -n default --follow
+#
+# Prerequisite: auth secret must exist in the same namespace:
+#   kubectl create secret generic ginger-society-auth \
+#     --from-literal=auth.json='{"API_TOKEN":"<your-token>"}' \
+#     -n default
+---
+apiVersion: gingersociety.org/v1alpha1
+kind: RemoteTask
+metadata:
+  name: example-remote-task
+  namespace: default
+spec:
+  capability: "unix"
+  script: |
+    #!/bin/bash
+    echo "Starting test remote task..."
+    echo "Hello from the remote environment! Current user: $TEST_USER"
+    echo "Executing critical operations..."
+    sleep 2
+    echo "Task complete!"
+  cleanup: |
+    #!/bin/bash
+    echo "Running cleanup steps..."
+  env:
+    - name: TEST_USER
+      value: "ginger-tester"
+
+---
+# Example 2 — via Tekton Pipeline using taskRef kind: RemoteTask
+# Tekton creates a CustomRun; the controller translates it into a TaskRun.
+#
+# This gives you native pipeline view + logs in the Tekton dashboard.
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  generateName: example-remote-task-run-
+  namespace: default
+spec:
+  pipelineSpec:
+    tasks:
+      - name: run-on-device
+        taskRef:
+          apiVersion: gingersociety.org/v1alpha1
+          kind: RemoteTask
+        params:
+          - name: capability
+            value: "unix"
+          - name: script
+            value: |
+              #!/bin/bash
+              echo "Starting test remote task..."
+              echo "Hello from the remote environment! Current user: $TEST_USER"
+              echo "Executing critical operations..."
+              sleep 2
+              echo "Task complete!"
+          - name: cleanup
+            value: |
+              #!/bin/bash
+              echo "Running cleanup steps..."
+          - name: env
+            value: |
+              - name: TEST_USER
+                value: "ginger-tester"
+
+---
+# Example 3 — via the reusable Tekton Task (installed by install-tekton-crd)
+# Bypasses the CRD/controller entirely. Simplest option for pipeline authors.
+apiVersion: tekton.dev/v1
+kind: PipelineRun
+metadata:
+  generateName: example-remote-task-run-
+  namespace: default
+spec:
+  pipelineSpec:
+    tasks:
+      - name: run-on-device
+        taskRef:
+          name: remote-task
+          kind: Task
+        params:
+          - name: capability
+            value: "unix"
+          - name: script
+            value: |
+              #!/bin/bash
+              export TEST_USER="ginger-tester"
+              echo "Starting test remote task..."
+              echo "Hello from the remote environment! Current user: $TEST_USER"
+              sleep 2
+              echo "Task complete!"
+          - name: cleanup
+            value: |
+              #!/bin/bash
+              echo "Running cleanup steps..."
