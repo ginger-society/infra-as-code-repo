@@ -136,3 +136,13 @@ spec:
                 name: dev-portal-service
                 port:
                   number: 80
+    - host: prometheus.{{HOSTING_FQDN}}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: prometheus-service
+                port:
+                  number: 80

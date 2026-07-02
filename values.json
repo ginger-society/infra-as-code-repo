@@ -62,5 +62,8 @@
   },
   "NPM": {
     "SYNC_TOKEN": "vault(NPM_SYNC_TOKEN)"
+  },
+  "PROMETHEUS": {
+    "CLOUD_PROVIDER_FQDN": "vault(CLOUD_PROVIDER_FQDN)"
   }
 }
