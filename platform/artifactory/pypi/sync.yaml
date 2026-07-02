@@ -1,0 +1,63 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: pypi-public-token
+type: Opaque
+stringData:
+  token: "{{PIP.TOKEN}}"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pypi-public-sync
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pypi-public-sync
+  template:
+    metadata:
+      labels:
+        app: pypi-public-sync
+    spec:
+      # Must land on the same node as the pypi-pvc volume (RWO + node-pinned).
+      nodeSelector:
+        kubernetes.io/hostname: artifactory-control-plane
+      tolerations:
+        - key: "node-role.kubernetes.io/control-plane"
+          operator: "Exists"
+          effect: "NoSchedule"
+      containers:
+        - name: sync
+          image: gingersociety/pypi-sync:latest
+          env:
+            - name: SYNC_PACKAGES
+              value: "ginger_dj_framework"
+            - name: PACKAGES_DIR
+              value: "/data/packages"
+            - name: SLEEP_SECONDS
+              value: "3600"
+            - name: DRY_RUN
+              value: "false"
+            - name: TWINE_USERNAME
+              value: "__token__"
+            - name: TWINE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: pypi-public-token
+                  key: token
+          volumeMounts:
+            - mountPath: /data/packages
+              name: pypi-storage
+              readOnly: true
+          resources:
+            requests:
+              cpu: 10m
+              memory: 32Mi
+            limits:
+              cpu: 250m
+              memory: 128Mi
+      volumes:
+        - name: pypi-storage
+          persistentVolumeClaim:
+            claimName: pypi-pvc

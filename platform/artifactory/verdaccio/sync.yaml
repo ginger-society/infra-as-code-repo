@@ -1,0 +1,61 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: npm-public-token
+type: Opaque
+stringData:
+  token: "{{NPM.SYNC_TOKEN}}"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: npm-public-sync
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: npm-public-sync
+  template:
+    metadata:
+      labels:
+        app: npm-public-sync
+    spec:
+      # Must land on the same node as verdaccio-pvc (RWO + node-pinned).
+      nodeSelector:
+        kubernetes.io/hostname: artifactory-control-plane
+      tolerations:
+        - key: "node-role.kubernetes.io/control-plane"
+          operator: "Exists"
+          effect: "NoSchedule"
+      containers:
+        - name: sync
+          image: gingersociety/npm-public-sync:latest
+          env:
+            - name: SYNC_PACKAGES
+              value: "@gingersociety/ginger-ui"
+            - name: STORAGE_DIR
+              value: "/verdaccio/storage"
+            - name: SLEEP_SECONDS
+              value: "3600"
+            - name: DRY_RUN
+              value: "false"
+            - name: NPM_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: npm-public-token
+                  key: token
+          volumeMounts:
+            - mountPath: /verdaccio/storage
+              name: verdaccio-storage
+              readOnly: true
+          resources:
+            requests:
+              cpu: 10m
+              memory: 64Mi
+            limits:
+              cpu: 250m
+              memory: 256Mi
+      volumes:
+        - name: verdaccio-storage
+          persistentVolumeClaim:
+            claimName: verdaccio-pvc
