@@ -1,0 +1,9 @@
+apiVersion: gingersociety.org/v1
+kind: ResticBackupPolicy
+metadata:
+  name: postgres-backup
+  namespace: default
+spec:
+  pvcNames:
+    - data-iam-postgresql-0
+    - data-metadata-postgresql-0

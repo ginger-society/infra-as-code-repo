@@ -63,8 +63,16 @@ spec:
         buildah copy --storage-driver=vfs --root=$CONTAINERS_STORAGE "$ctr" \
           migrations /app/src/migrations
 
-        buildah copy --storage-driver=vfs --root=$CONTAINERS_STORAGE "$ctr" \
-          additional_templates /app/src/additional_templates
+        # additional_templates is optional — only copy it if this DB folder
+        # actually has one. We're already cd'd into
+        # /workspace/source/repo/$(params.db_name), so a relative check is enough.
+        if [ -d "additional_templates" ]; then
+          echo "Found additional_templates/, copying it in"
+          buildah copy --storage-driver=vfs --root=$CONTAINERS_STORAGE "$ctr" \
+            additional_templates /app/src/additional_templates
+        else
+          echo "No additional_templates/ directory for $(params.db_name), skipping"
+        fi
 
         buildah commit --storage-driver=vfs --root=$CONTAINERS_STORAGE "$ctr" \
           "$FINAL_IMAGE"
