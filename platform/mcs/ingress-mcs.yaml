@@ -104,17 +104,6 @@ spec:
                 port:
                   number: 80
 
-    - host: k8-prod-dashboard.{{HOSTING_FQDN}}
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: dashboard-auth-proxy
-                port:
-                  number: 80
-
     - host: db-compose-test-env.{{HOSTING_FQDN}}
       http:
         paths:

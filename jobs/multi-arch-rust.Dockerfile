@@ -14,7 +14,8 @@ RUN apt update && apt install -y \
     libgtk-3-dev libglib2.0-dev libcairo2-dev libpango1.0-dev \
     libatk1.0-dev libgdk-pixbuf2.0-dev \
     libxdo-dev libpq-dev \
-    musl-tools musl-dev
+    musl-tools musl-dev \
+    git openssh-client
 
 # ── musl include symlink workaround (arch-aware) ─────────────────────────
 # musl-dev doesn't ship the linux kernel headers (asm, asm-generic) that

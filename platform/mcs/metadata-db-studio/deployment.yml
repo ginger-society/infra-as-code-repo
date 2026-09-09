@@ -31,7 +31,7 @@ spec:
 
       containers:
         - name: metadata-db-runtime
-          image: docker.gingersociety.org/ginger-society/metadata-db-runtime:main
+          image: docker.gingersociety.org/ginger-society/metadata-db-runtime:latest
           imagePullPolicy: Always
           command: ["/bin/sh", "-c", "/app/migrate.sh && /app/run.sh"]
           ports:
