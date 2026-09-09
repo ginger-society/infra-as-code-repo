@@ -3,7 +3,7 @@ FROM rust:1-slim-bullseye
 
 ARG TARGETARCH
 
-RUN apt update && apt install -y \
+RUN apt-get update -o Acquire::Check-Valid-Until=false && apt install -y \
     pkg-config \
     libssl-dev \
     curl \
