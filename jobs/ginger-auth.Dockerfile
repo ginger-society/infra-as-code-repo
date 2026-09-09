@@ -1,6 +1,6 @@
 FROM debian:bullseye-slim
 
-RUN apt-get update && apt-get install -y \
+RUN apt-get update -o Acquire::Check-Valid-Until=false && apt-get install -y \
     libssl1.1 \
     libpq5 \
     libgcc1 \
