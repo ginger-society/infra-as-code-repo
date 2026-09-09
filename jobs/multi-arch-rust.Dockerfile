@@ -3,19 +3,23 @@ FROM rust:1-slim-bullseye
 
 ARG TARGETARCH
 
-RUN apt-get update -o Acquire::Check-Valid-Until=false && apt install -y \
-    pkg-config \
-    libssl-dev \
-    curl \
-    gcc-mingw-w64-x86-64 \
-    gcc-aarch64-linux-gnu \
-    perl \
-    make \
-    libgtk-3-dev libglib2.0-dev libcairo2-dev libpango1.0-dev \
-    libatk1.0-dev libgdk-pixbuf2.0-dev \
-    libxdo-dev libpq-dev \
-    musl-tools musl-dev \
-    git openssh-client
+RUN apt-get update -o Acquire::Check-Valid-Until=false && \
+    for i in 1 2 3 4 5; do \
+      apt-get install -y --fix-missing \
+        pkg-config \
+        libssl-dev \
+        curl \
+        gcc-mingw-w64-x86-64 \
+        gcc-aarch64-linux-gnu \
+        perl \
+        make \
+        libgtk-3-dev libglib2.0-dev libcairo2-dev libpango1.0-dev \
+        libatk1.0-dev libgdk-pixbuf2.0-dev \
+        libxdo-dev libpq-dev \
+        musl-tools musl-dev \
+        git openssh-client \
+      && break || { echo "apt install failed, retrying ($i/5)..."; apt-get update -o Acquire::Check-Valid-Until=false; sleep 10; }; \
+    done
 
 # ── musl include symlink workaround (arch-aware) ─────────────────────────
 # musl-dev doesn't ship the linux kernel headers (asm, asm-generic) that

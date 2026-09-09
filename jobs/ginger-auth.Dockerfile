@@ -1,6 +1,7 @@
 FROM debian:bullseye-slim
 
-RUN apt-get update -o Acquire::Check-Valid-Until=false && apt-get install -y \
+RUN echo "deb http://snapshot.debian.org/archive/debian-security/20250901T000000Z bullseye-security main" > /etc/apt/sources.list.d/security-snapshot.list \
+    && apt-get update -o Acquire::Check-Valid-Until=false && apt-get install -y \
     libssl1.1 \
     libpq5 \
     libgcc1 \
