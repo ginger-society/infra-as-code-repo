@@ -1,7 +1,7 @@
 FROM debian:bullseye-slim
 
 RUN sed -i '/bullseye-security/d' /etc/apt/sources.list \
-    && echo "deb http://snapshot.debian.org/archive/debian-security/20250901T000000Z bullseye-security main" > /etc/apt/sources.list.d/security-snapshot.list \
+    && echo "deb http://snapshot.debian.org/archive/debian-security/20260908T000000Z bullseye-security main" > /etc/apt/sources.list.d/security-snapshot.list \
     && apt-get update -o Acquire::Check-Valid-Until=false \
     && apt-get install -y \
        libssl1.1 \
