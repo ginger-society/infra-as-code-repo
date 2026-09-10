@@ -45,6 +45,8 @@ spec:
 
         cat ~/.ssh/config
 
+        ssh source
+
         # Tell cargo to shell out to system git/ssh (which now has creds + config)
         cat > "$CARGO_HOME/config.toml" <<'EOF'
         [net]
