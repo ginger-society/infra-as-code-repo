@@ -35,11 +35,18 @@ RUN set -eux; \
     fi
 
 # ── musl-gcc wrapper symlink so cc-rs finds the triple-prefixed name ────
+# On bookworm, musl-tools already registers musl-gcc as an alternative for
+# the triple-prefixed name on the native arch, so /usr/bin/musl-gcc and
+# /usr/bin/<triple>-musl-gcc can already be the same file. `ln -sf` onto
+# itself now errors, so skip the symlink when it's already in place.
 RUN set -eux; \
-    if [ "$TARGETARCH" = "amd64" ]; then \
-      ln -sf /usr/bin/musl-gcc /usr/bin/x86_64-linux-musl-gcc ; \
-    elif [ "$TARGETARCH" = "arm64" ]; then \
-      ln -sf /usr/bin/musl-gcc /usr/bin/aarch64-linux-musl-gcc ; \
+    case "$TARGETARCH" in \
+      amd64) target=/usr/bin/x86_64-linux-musl-gcc ;; \
+      arm64) target=/usr/bin/aarch64-linux-musl-gcc ;; \
+      *) echo "Unknown TARGETARCH: $TARGETARCH" && exit 1 ;; \
+    esac; \
+    if [ "$(readlink -f /usr/bin/musl-gcc)" != "$(readlink -f "$target" 2>/dev/null || true)" ]; then \
+      ln -sf /usr/bin/musl-gcc "$target" ; \
     fi
 
 RUN rustup target add x86_64-pc-windows-gnu
