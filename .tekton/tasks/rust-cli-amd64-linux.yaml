@@ -42,7 +42,9 @@ spec:
         export CARGO_HOME=/workspace/general-purpose-cache/cargo
 
         /usr/local/bin/mount-git-credentials.sh
-        
+
+        cat ~/.ssh/config
+
         # Tell cargo to shell out to system git/ssh (which now has creds + config)
         cat > "$CARGO_HOME/config.toml" <<'EOF'
         [net]
