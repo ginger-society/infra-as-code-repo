@@ -136,7 +136,6 @@ spec:
     # ─────────────────────────── wrap-up ───────────────────────────
     - name: notify-version-update
       runAfter:
-        - build-push-rust-rocket-builder
         - build-push-rust-rocket-runner
         - build-push-vite-react-builder
         - build-push-devcontainer-node
