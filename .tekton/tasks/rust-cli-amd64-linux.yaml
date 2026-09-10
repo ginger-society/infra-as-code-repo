@@ -43,7 +43,15 @@ spec:
 
         /usr/local/bin/mount-git-credentials.sh
 
+        cat ~/.ssh/config
+
         ssh source
+
+        # Tell cargo to shell out to system git/ssh (which now has creds + config)
+        cat > "$CARGO_HOME/config.toml" <<'EOF'
+        [net]
+        git-fetch-with-cli = true
+        EOF
 
         # Must be per-target so parallel gnu/musl/arm64 builds don't collide
         export CARGO_TARGET_DIR="/workspace/general-purpose-cache/target-${TARGET}"
