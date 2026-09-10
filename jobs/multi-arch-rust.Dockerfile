@@ -1,9 +1,9 @@
 # multi-arch-rust.Dockerfile
-FROM rust:1-slim-bullseye
+FROM rust:1-slim-bookworm
 
 ARG TARGETARCH
 
-RUN apt-get update -o Acquire::Check-Valid-Until=false && apt install -y \
+RUN apt-get update && apt install -y \
     pkg-config \
     libssl-dev \
     curl \
