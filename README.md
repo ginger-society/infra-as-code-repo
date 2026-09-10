@@ -464,3 +464,7 @@ spec:
 
 
 sudo chmod +a "rpc-runner allow read,write" ~/.docker/run/docker.sock
+
+
+git symbolic-ref HEAD refs/heads/main
+cat HEAD
