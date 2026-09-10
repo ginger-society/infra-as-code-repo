@@ -23,6 +23,9 @@ spec:
     - name: registry
       type: string
       default: "docker.gingersociety.org"
+    - name: use_cache
+      type: string
+      default: "true"
   steps:
     - name: build-and-push
       image: docker.gingersociety.org/ginger-society/tekton-task-buildah:latest
@@ -50,12 +53,19 @@ spec:
           BUILD_ARGS_FLAGS="$BUILD_ARGS_FLAGS --build-arg $arg"
         done
 
+        CACHE_FLAGS=""
+        if [ "$(params.use_cache)" = "false" ]; then
+          echo "use_cache=false — forcing fresh base image pull and ignoring build cache"
+          CACHE_FLAGS="--pull-always --no-cache"
+        fi
+
         buildah bud \
           --storage-driver=vfs \
           --root=$CONTAINERS_STORAGE \
           -f "$(params.dockerfile_path)" \
           -t "$FINAL_IMAGE" \
           $BUILD_ARGS_FLAGS \
+          $CACHE_FLAGS \
           "$(params.build_context)"
 
         buildah push \

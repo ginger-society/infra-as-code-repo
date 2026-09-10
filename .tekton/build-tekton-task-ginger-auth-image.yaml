@@ -34,3 +34,5 @@ spec:
           value: "jobs"
         - name: org_id
           value: "$(params.org_id)"
+        - name: use_cache
+          value: "false"
