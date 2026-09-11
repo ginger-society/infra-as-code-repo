@@ -29,6 +29,10 @@ spec:
         mkdir -p /workspace/general-purpose-cache/target-windows
         mkdir -p /workspace/general-purpose-cache/cargo-windows
 
+        /usr/local/bin/mount-git-credentials.sh
+
+        ssh source
+
         TARGET="x86_64-pc-windows-gnu"
 
         # ── derive name + version dynamically from Cargo.toml ──────────────
