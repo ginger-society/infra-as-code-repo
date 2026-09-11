@@ -27,6 +27,8 @@ spec:
     rm -rf "$CLONE_DIR"
     git clone "$REPO_URL" "$CLONE_DIR"
 
+    less "$HOME/.ssh/config"
+
     cd "$CLONE_DIR"
     echo "Cloned repo, current commit:"
     git log -1 --oneline
