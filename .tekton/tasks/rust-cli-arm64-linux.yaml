@@ -138,11 +138,12 @@ spec:
       -v "$(pwd):/workspace" \
       -v "${CARGO_TARGET_DIR_HOST}:/cargo-target" \
       -v "${CARGO_HOME_HOST}:/cargo-home" \
-      -v "${HOME}/.ssh:/root/.ssh:ro" \
+      -v "$HOME/.ssh:$HOME/.ssh:ro" \
+      -e "HOME=$HOME" \
+      -e "GIT_SSH_COMMAND=$GIT_SSH_COMMAND" \
+      -e "CARGO_NET_GIT_FETCH_WITH_CLI=true" \
       -e "CARGO_TARGET_DIR=/cargo-target" \
       -e "CARGO_HOME=/cargo-home" \
-      -e "CARGO_NET_GIT_FETCH_WITH_CLI=true" \
-      -e "GIT_SSH_COMMAND=ssh -p 3333 -o HostName=source.gingersociety.org -o User=git -i /root/.ssh/id_ed25519 -o IdentitiesOnly=yes -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=accept-new" \
       -w /workspace \
       docker.gingersociety.org/ginger-society/multi-arch-rust \
       bash -c "cargo build --release --target ${target}${bin_flags} && mkdir -p ./bin/${target} && for b in ${BINARIES[*]}; do cp /cargo-target/${target}/release/\$b ./bin/${target}/; done"
