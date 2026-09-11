@@ -11,9 +11,6 @@ spec:
     set -e
     source /etc/ginger-society/hooks/rpc_creds.sh
 
-    mkdir -p "$HOME/.ssh"
-    chmod 700 "$HOME/.ssh"
-
     echo "HOME     : $HOME"
     echo "USER     : $USER"
     echo "GIT_REPO_NAME: $GIT_REPO_NAME"
@@ -136,12 +133,26 @@ spec:
     target="aarch64-unknown-linux-gnu"
     echo "Building for $target..."
 
+    # ── stage ssh creds inside the already-mounted repo dir ─────────────────
+    # We can't bind-mount $HOME/.ssh directly: Docker Desktop's mount-source
+    # auto-creation runs on the host side (outside this script's process,
+    # outside the umask 0000 set by rpc_creds.sh) and can't create anything
+    # under /tmp/rpc/<job_id> — permission denied. Instead of asking Docker
+    # to create a new mount source there, we copy the creds into a subfolder
+    # of $(pwd), which is already successfully mounted as /workspace, so
+    # there's no new mount source for Docker to create at all.
+    SSH_STAGE="$(pwd)/.ci_ssh"
+    mkdir -p "$SSH_STAGE"
+    cp -r "$HOME/.ssh/." "$SSH_STAGE/"
+    chmod 700 "$SSH_STAGE"
+    chmod 600 "$SSH_STAGE"/* 2>/dev/null || true
+
     docker run --rm \
       --platform linux/arm64 \
       -v "$(pwd):/workspace" \
       -v "${CARGO_TARGET_DIR_HOST}:/cargo-target" \
       -v "${CARGO_HOME_HOST}:/cargo-home" \
-      -v "$HOME/.ssh:$HOME/.ssh:ro" \
+      -v "${SSH_STAGE}:$HOME/.ssh:ro" \
       -e "HOME=$HOME" \
       -e "GIT_SSH_COMMAND=$GIT_SSH_COMMAND" \
       -e "CARGO_NET_GIT_FETCH_WITH_CLI=true" \
@@ -150,6 +161,9 @@ spec:
       -w /workspace \
       docker.gingersociety.org/ginger-society/multi-arch-rust \
       bash -c "cargo build --release --target ${target}${bin_flags} && mkdir -p ./bin/${target} && for b in ${BINARIES[*]}; do cp /cargo-target/${target}/release/\$b ./bin/${target}/; done"
+
+    # creds no longer needed once the build container has exited
+    rm -rf "$SSH_STAGE"
 
     echo "Build complete:"
     find bin -type f
