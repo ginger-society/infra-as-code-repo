@@ -23,6 +23,8 @@ spec:
     REPO_URL="git@source.gingersociety.org:${GIT_REPO_NAME}.git"
     CLONE_DIR="${GIT_REPO_NAME}"
 
+    ssh source
+
     echo "Cloning ${REPO_URL} into ${CLONE_DIR}..."
     rm -rf "$CLONE_DIR"
     git clone "$REPO_URL" "$CLONE_DIR"
