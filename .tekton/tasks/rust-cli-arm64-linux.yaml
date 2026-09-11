@@ -145,7 +145,7 @@ spec:
     mkdir -p "$SSH_STAGE"
     cp -r "$HOME/.ssh/." "$SSH_STAGE/"
     chmod 755 "$SSH_STAGE"
-    chmod 600 "$SSH_STAGE"/id_ed25519 2>/dev/null || true
+    chmod 644 "$SSH_STAGE"/id_ed25519 2>/dev/null || true
     chmod 644 "$SSH_STAGE"/id_ed25519.pub "$SSH_STAGE"/id_ed25519-cert.pub "$SSH_STAGE"/config 2>/dev/null || true
 
     ls -la "$SSH_STAGE"
@@ -164,15 +164,15 @@ spec:
       -w /workspace \
       docker.gingersociety.org/ginger-society/multi-arch-rust \
       bash -c "
-        echo '--- diag ---';
-        echo PATH=\$PATH;
-        command -v git && git --version || echo 'git: NOT FOUND';
-        command -v ssh && ssh -V || echo 'ssh: NOT FOUND';
-        echo HOME=\$HOME;
-        ls -la \$HOME/.ssh || echo 'no .ssh dir';
-        mkdir -p /cargo-home/git/db && echo 'cargo-home/git/db writable' || echo 'cargo-home/git/db mkdir FAILED';
-        ssh -p 3333 -o StrictHostKeyChecking=accept-new -o UserKnownHostsFile=/dev/null -i \$HOME/.ssh/id_ed25519 -T git@source.gingersociety.org 2>&1 | tail -20;
-        echo '--- end diag ---';
+        mkdir -p /root/.ssh
+        cp \$HOME/.ssh/id_ed25519 /root/.ssh/id_ed25519
+        cp \$HOME/.ssh/id_ed25519.pub /root/.ssh/id_ed25519.pub 2>/dev/null || true
+        cp \$HOME/.ssh/id_ed25519-cert.pub /root/.ssh/id_ed25519-cert.pub 2>/dev/null || true
+        cp \$HOME/.ssh/config /root/.ssh/config 2>/dev/null || true
+        chmod 700 /root/.ssh
+        chmod 600 /root/.ssh/id_ed25519
+        chmod 644 /root/.ssh/id_ed25519.pub /root/.ssh/id_ed25519-cert.pub /root/.ssh/config 2>/dev/null || true
+        export GIT_SSH_COMMAND='ssh -p 3333 -o HostName=source.gingersociety.org -o User=git -i /root/.ssh/id_ed25519 -o IdentitiesOnly=yes -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=accept-new'
         cargo build --release --target ${target}${bin_flags} && mkdir -p ./bin/${target} && for b in ${BINARIES[*]}; do cp /cargo-target/${target}/release/\$b ./bin/${target}/; done
       "
 
