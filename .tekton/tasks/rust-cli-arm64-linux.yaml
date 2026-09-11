@@ -172,7 +172,7 @@ spec:
         chmod 700 /root/.ssh
         chmod 600 /root/.ssh/id_ed25519
         chmod 644 /root/.ssh/id_ed25519.pub /root/.ssh/id_ed25519-cert.pub /root/.ssh/config 2>/dev/null || true
-        export GIT_SSH_COMMAND='ssh -p 3333 -o HostName=source.gingersociety.org -o User=git -i /root/.ssh/id_ed25519 -o IdentitiesOnly=yes -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=accept-new'
+        export GIT_SSH_COMMAND='ssh -F /dev/null -p 3333 -o HostName=source.gingersociety.org -o User=git -i /root/.ssh/id_ed25519 -o IdentitiesOnly=yes -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=accept-new'
         ls -la /root/.ssh
         cargo build --release --target ${target}${bin_flags} && mkdir -p ./bin/${target} && for b in ${BINARIES[*]}; do cp /cargo-target/${target}/release/\$b ./bin/${target}/; done
       "
