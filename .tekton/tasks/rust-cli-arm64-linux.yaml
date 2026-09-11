@@ -144,8 +144,9 @@ spec:
     SSH_STAGE="$(pwd)/.ci_ssh"
     mkdir -p "$SSH_STAGE"
     cp -r "$HOME/.ssh/." "$SSH_STAGE/"
-    chmod 700 "$SSH_STAGE"
-    chmod 600 "$SSH_STAGE"/* 2>/dev/null || true
+    chmod 755 "$SSH_STAGE"
+    chmod 600 "$SSH_STAGE"/id_ed25519 2>/dev/null || true
+    chmod 644 "$SSH_STAGE"/id_ed25519.pub "$SSH_STAGE"/id_ed25519-cert.pub "$SSH_STAGE"/config 2>/dev/null || true
 
     ls -la "$SSH_STAGE"
 
