@@ -33,6 +33,12 @@ spec:
 
         ssh source
 
+        # Tell cargo to shell out to system git/ssh (which now has creds + config)
+        cat > "$CARGO_HOME/config.toml" <<'EOF'
+        [net]
+        git-fetch-with-cli = true
+        EOF
+
         TARGET="x86_64-pc-windows-gnu"
 
         # ── derive name + version dynamically from Cargo.toml ──────────────
