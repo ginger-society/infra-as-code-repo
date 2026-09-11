@@ -11,6 +11,9 @@ spec:
     set -e
     source /etc/ginger-society/hooks/rpc_creds.sh
 
+    mkdir -p "$HOME/.ssh"
+    chmod 700 "$HOME/.ssh"
+
     echo "HOME     : $HOME"
     echo "USER     : $USER"
     echo "GIT_REPO_NAME: $GIT_REPO_NAME"
