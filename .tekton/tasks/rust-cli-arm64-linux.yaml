@@ -133,20 +133,6 @@ spec:
     target="aarch64-unknown-linux-gnu"
     echo "Building for $target..."
 
-    # ── stage ssh creds inside the already-mounted repo dir ─────────────────
-    # We can't bind-mount $HOME/.ssh directly: Docker Desktop's mount-source
-    # auto-creation runs on the host side (outside this script's process,
-    # outside the umask 0000 set by rpc_creds.sh) and can't create anything
-    # under /tmp/rpc/<job_id> — permission denied. Instead of asking Docker
-    # to create a new mount source there, we copy the creds into a subfolder
-    # of $(pwd), which is already successfully mounted as /workspace, so
-    # there's no new mount source for Docker to create at all.
-    SSH_STAGE="$(pwd)/.ci_ssh"
-    mkdir -p "$SSH_STAGE"
-    cp -r "$HOME/.ssh/." "$SSH_STAGE/"
-    chmod 700 "$SSH_STAGE"
-    chmod 600 "$SSH_STAGE"/* 2>/dev/null || true
-
     docker run --rm \
       --platform linux/arm64 \
       -v "$(pwd):/workspace" \
