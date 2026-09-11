@@ -152,7 +152,6 @@ spec:
       -v "$(pwd):/workspace" \
       -v "${CARGO_TARGET_DIR_HOST}:/cargo-target" \
       -v "${CARGO_HOME_HOST}:/cargo-home" \
-      -v "${SSH_STAGE}:$HOME/.ssh" \
       -e "HOME=$HOME" \
       -e "GIT_SSH_COMMAND=$GIT_SSH_COMMAND" \
       -e "CARGO_NET_GIT_FETCH_WITH_CLI=true" \
