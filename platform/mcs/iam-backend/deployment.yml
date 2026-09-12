@@ -3,7 +3,14 @@ kind: Deployment
 metadata:
   name: iamservice
 spec:
-  replicas: 1
+  replicas: 2
+  revisionHistoryLimit: 5
+  progressDeadlineSeconds: 120
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
   selector:
     matchLabels:
       app: iamservice
@@ -97,8 +104,45 @@ spec:
                 secretKeyRef:
                   name: iam-service-api-secrets
                   key: DOCKER_TOKEN_ISSUER
+
+          startupProbe:
+            httpGet:
+              path: /iam/
+              port: 8000
+            failureThreshold: 30
+            periodSeconds: 2
+
+          readinessProbe:
+            httpGet:
+              path: /iam/
+              port: 8000
+            initialDelaySeconds: 0
+            periodSeconds: 5
+            timeoutSeconds: 2
+            failureThreshold: 3
+
+          livenessProbe:
+            httpGet:
+              path: /iam/
+              port: 8000
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 2
+            failureThreshold: 3
+
       volumes:
         - name: ssh-ca-key
           secret:
             secretName: iam-git-ssh-ca-secret
             defaultMode: 0440   # owner+group read
+
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: iamservice-pdb
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: iamservice

@@ -6,6 +6,13 @@ metadata:
     app: metadataservice
 spec:
   replicas: 1
+  revisionHistoryLimit: 5
+  progressDeadlineSeconds: 120
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
   selector:
     matchLabels:
       app: metadataservice
@@ -23,7 +30,7 @@ spec:
             - sh
             - -c
             - |
-              until pg_isready -h metadata-postgresql -p 5432 -U postgres; do 
+              until pg_isready -h metadata-postgresql -p 5432 -U postgres; do
                 echo "Waiting for DB..."
                 sleep 5
               done
@@ -75,3 +82,36 @@ spec:
 
             - name: ROCKET_PORT
               value: "8000"
+
+          # Protects slow-starting pods (DB/Redis connection setup) from
+          # being killed by the liveness probe before they're actually up.
+          # Once this succeeds, readiness/liveness take over.
+          startupProbe:
+            httpGet:
+              path: /metadata/
+              port: 8000
+            failureThreshold: 30
+            periodSeconds: 2
+
+          # Gates the rollout: a new pod that fails this never becomes
+          # Ready, so combined with maxUnavailable: 0 above, Kubernetes
+          # will never kill the old working pod for a broken new one.
+          readinessProbe:
+            httpGet:
+              path: /metadata/
+              port: 8000
+            initialDelaySeconds: 0
+            periodSeconds: 5
+            timeoutSeconds: 2
+            failureThreshold: 3
+
+          # Steady-state health check: restarts the container if it's up
+          # but wedged (hung connection pool, deadlock, etc.).
+          livenessProbe:
+            httpGet:
+              path: /metadata/
+              port: 8000
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 2
+            failureThreshold: 3

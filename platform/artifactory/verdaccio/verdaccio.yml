@@ -65,8 +65,8 @@ spec:
             - name: JWT_SECRET
               valueFrom:
                 secretKeyRef:
-                  name: verdaccio-secrets
-                  key: JWT_SECRET_KEY
+                  name: platform-secrets
+                  key: JWT_SECRET
             - name: RABBITMQ_URI
               valueFrom:
                 secretKeyRef:
