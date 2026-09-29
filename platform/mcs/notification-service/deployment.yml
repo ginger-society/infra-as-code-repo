@@ -21,6 +21,11 @@ spec:
             - containerPort: 3030
 
           env:
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: platform-secrets
+                  key: JWT_SECRET
             # ✅ AMQP from RabbitMQ Helm secret
             - name: AMPQ_URI
               valueFrom:
