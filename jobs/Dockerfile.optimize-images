@@ -1,0 +1,15 @@
+FROM debian:bookworm-slim
+
+# Same tools the script checks for
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends \
+      bash imagemagick webp pngquant optipng findutils gawk sed coreutils ca-certificates \
+ && rm -rf /var/lib/apt/lists/*
+
+COPY optimize-images.sh /usr/local/bin/optimize-images
+RUN chmod +x /usr/local/bin/optimize-images
+
+# Your project gets mounted here, so public/ -> public-dist/ resolve relative to it
+WORKDIR /work
+ENTRYPOINT ["optimize-images"]
+CMD []

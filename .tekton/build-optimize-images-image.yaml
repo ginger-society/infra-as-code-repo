@@ -1,0 +1,36 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: build-optimize-images-image
+  annotations:
+    x-gitter-enabled: "true"
+spec:
+  params:
+    - name: image_tag
+      type: string
+    - name: org_id
+      type: string
+  tasks:
+    - name: build-push-optimize-images
+      runAfter:
+        - clone
+      taskRef:
+        resolver: cluster
+        params:
+          - name: kind
+            value: task
+          - name: name
+            value: build-and-push-dockerfile-image
+          - name: namespace
+            value: default
+      params:
+        - name: image_repo
+          value: "optimize-images-for-seo"
+        - name: image_tag
+          value: "latest"
+        - name: dockerfile_path
+          value: "jobs/Dockerfile.optimize-images"
+        - name: build_context
+          value: "jobs"
+        - name: org_id
+          value: "$(params.org_id)"
