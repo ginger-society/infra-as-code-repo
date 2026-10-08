@@ -88,6 +88,8 @@ spec:
           --root=$CONTAINERS_STORAGE \
           "$container" "$FINAL_IMAGE_LATEST"
 
+        cat ~/.docker/config.json
+        
         buildah push \
           --storage-driver=vfs \
           --root=$CONTAINERS_STORAGE \
