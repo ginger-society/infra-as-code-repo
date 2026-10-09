@@ -9,10 +9,11 @@
 #   anything else     copied untouched (ico, gif, txt ...) so public-dist is a drop-in for public
 #
 # Outputs per raster image (folder structure mirrored)
-#   {name}.{ext}      display / zoom version   max width 1600 px (default)
-#   {name}-t.{ext}    thumbnail                max width  400 px (default)
+#   {name}.{ext}      display / zoom version   max width  800 px (default)
+#   {name}-t.{ext}    thumbnail                max width  480 px (default)
+#   Thumbnails of jpg/jpeg sources are always webp.
 #
-# 1600 px = ~5 inch wide image on a 13-14" MacBook (254 ppi needs ~1270 px) + ~25% hover-zoom headroom.
+# 800 px is a hard ceiling: no image on the site is shown wider than this.
 #
 # Requires: ImageMagick (convert|magick + identify), webp (cwebp), pngquant, optipng (or oxipng), awk, sed, xargs
 #   Debian/Ubuntu : apt-get install -y imagemagick webp pngquant optipng
@@ -21,8 +22,8 @@
 # Usage: ./optimize-images.sh [options]
 #   --src DIR            source folder              (default: public)
 #   --dist DIR           output folder              (default: public-dist)
-#   --display-width PX   display max width          (default: 1600)
-#   --thumb-width PX     thumbnail max width        (default: 400)
+#   --display-width PX   display max width          (default: 800)
+#   --thumb-width PX     thumbnail max width        (default: 480)
 #   --quality N          webp / jpeg quality        (default: 82)
 #   --png-lossless       skip pngquant (no colour reduction, smaller savings)
 #   --rewrite-md DIR     rewrite .jpg/.jpeg image paths to .webp in .md files under DIR
@@ -32,7 +33,7 @@
 
 set -euo pipefail
 
-SRC=public; DIST=public-dist; DISPLAY_W=1600; THUMB_W=400; QUALITY=82
+SRC=public; DIST=public-dist; DISPLAY_W=800; THUMB_W=480; QUALITY=82
 PNG_LOSSY=1; CLEAN=0; REWRITE_MD=""; REPORT_DIR=.image-report
 JOBS=$( (nproc 2>/dev/null || sysctl -n hw.ncpu 2>/dev/null || echo 4) | head -1)
 
@@ -48,7 +49,7 @@ while [ $# -gt 0 ]; do
     --clean) CLEAN=1; shift;;
     --jobs) JOBS=$2; shift 2;;
     --report-dir) REPORT_DIR=$2; shift 2;;
-    -h|--help) sed -n '2,32p' "$0"; exit 0;;
+    -h|--help) sed -n '2,/^$/{/^$/!p}' "$0"; exit 0;;
     *) echo "Unknown option: $1" >&2; exit 1;;
   esac
 done
@@ -74,7 +75,9 @@ SRC=${SRC%/}; DIST=${DIST%/}
 if [ "$CLEAN" = 1 ] && [ -d "$DIST" ]; then rm -rf "$DIST"; fi
 mkdir -p "$DIST" "$REPORT_DIR"
 
-TMP=$(mktemp -d); trap 'rm -rf "$TMP"' EXIT
+TMP=$(mktemp -d)
+HB=""
+trap '[ -n "$HB" ] && kill "$HB" 2>/dev/null; rm -rf "$TMP"' EXIT
 RESULTS="$TMP/results.tsv"; : > "$RESULTS"
 export SRC DIST DISPLAY_W THUMB_W QUALITY PNG_LOSSY IM ID PNGOPT TMP RESULTS
 
@@ -124,7 +127,7 @@ make_as() {        # in out maxwidth ext
 record() { printf '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' "$@" >> "$RESULTS"; }
 
 process_one() {
-  local src=$1 rel ext dir stem out_ext fin_ext dest thumb sw os ds ts note="" fmt dim
+  local src=$1 rel ext dir stem out_ext fin_ext dest thumb sw os ds ts note="" fmt dim tx
   rel=${src#"$SRC"/}
   ext=$(printf '%s' "${src##*.}" | tr '[:upper:]' '[:lower:]')
   dir=$(dirname "$rel"); stem=$(basename "${rel%.*}")
@@ -154,11 +157,18 @@ process_one() {
   fi
   rm -rf "$tmpd"
 
-  thumb="$DIST/$dir/$stem-t.$fin_ext"
-  make_as "$src" "$thumb" "$THUMB_W" "$fin_ext" || return 1
+  # Thumbnail format is chosen on its own: jpg sources always get a webp thumb
+  # (falling back to the display format if cwebp fails).
+  tx=$fin_ext
+  case "$fin_ext" in jpg|jpeg) tx=webp;; esac
+  thumb="$DIST/$dir/$stem-t.$tx"
+  if ! make_as "$src" "$thumb" "$THUMB_W" "$tx"; then
+    rm -f "$thumb"; tx=$fin_ext; thumb="$DIST/$dir/$stem-t.$tx"
+    make_as "$src" "$thumb" "$THUMB_W" "$tx" || return 1
+  fi
   ts=$(size "$thumb")
   dim=$($ID -format '%wx%h' "$DIST/$dir/$stem.$fin_ext[0]" 2>/dev/null || echo "-")
-  record image "$fmt" "$os" "$ds" "$ts" "/$rel" "/$dir/$stem.$fin_ext" "/$dir/$stem-t.$fin_ext" "$dim" "$note"
+  record image "$fmt" "$os" "$ds" "$ts" "/$rel" "/$dir/$stem.$fin_ext" "/$dir/$stem-t.$tx" "$dim" "$note"
 }
 
 run_one() {        # never lose an image: on failure copy the original and log it
@@ -172,7 +182,26 @@ export -f size width optimize_png make_png make_webp make_jpg make_as record pro
 
 # --------------------------------------------------------------------------- run
 echo "src=$SRC dist=$DIST | display ${DISPLAY_W}px, thumb ${THUMB_W}px, q$QUALITY, png: $([ "$PNG_LOSSY" = 1 ] && echo pngquant+$PNGOPT || echo lossless-$PNGOPT), jobs=$JOBS"
+
+TOTAL=$(find "$SRC" -type f | wc -l | tr -d ' ')
+echo "found $TOTAL files"
+
+# Heartbeat: one line every 10s so CI log streams never go idle
+(
+  start=$SECONDS
+  while sleep 10; do
+    n=$(wc -l < "$RESULTS" | tr -d ' ')
+    pct=$(( TOTAL > 0 ? n * 100 / TOTAL : 100 ))
+    printf 'progress: %s/%s files (%s%%), %ss elapsed\n' "$n" "$TOTAL" "$pct" "$((SECONDS - start))"
+  done
+) &
+HB=$!
+
 find "$SRC" -type f -print0 | xargs -0 -n1 -P "$JOBS" bash -c 'run_one "$0"'
+
+kill "$HB" 2>/dev/null || true
+HB=""
+echo "progress: $TOTAL/$TOTAL files done"
 
 # ------------------------------------------------------------------------ report
 sort -t$'\t' -k6,6 "$RESULTS" > "$TMP/sorted.tsv"
@@ -198,7 +227,8 @@ awk -F'\t' '
 
 echo; echo "Top 10 savings (KB, %)"
 awk -F'\t' '$1=="image"{printf "%10.1f  %5.1f%%  %s\n",($3-$4)/1024,($3==0?0:($3-$4)/$3*100),$6}' "$TMP/sorted.tsv" \
-  | sort -rn | head -10 | sed 's/^/  /'
+  | sort -rn > "$TMP/top.txt"
+head -10 "$TMP/top.txt" | sed 's/^/  /'
 
 if awk -F'\t' '$1=="failed"{f=1} END{exit !f}' "$TMP/sorted.tsv"; then
   echo; echo "FAILED (copied as-is):"; awk -F'\t' '$1=="failed"{print "  - "$6}' "$TMP/sorted.tsv"
