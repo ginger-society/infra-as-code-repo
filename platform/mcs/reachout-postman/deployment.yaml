@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: reachout-service
+  labels:
+    app: reachout-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: reachout-service
+  template:
+    metadata:
+      annotations:
+        x-ginger-code-ejectable: "reachout-service"
+      labels:
+        app: reachout-service
+    spec:
+      containers:
+        - name: reachout-service
+          image: docker.gingersociety.org/ginger-society/reachout-postman-service:latest
+          ports:
+            - containerPort: 8080
+
+          env:
+            - name: REDIS_URI
+              valueFrom:
+                secretKeyRef:
+                  name: estonia-redis-auth
+                  key: url
+
+            # ✅ App secrets from same secret
+            - name: ISC_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: reachout-service-api-secrets
+                  key: ISC_SECRET
+
+            - name: PUBLIC_JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: reachout-service-api-secrets
+                  key: PUBLIC_JWT_SECRET
+
+            - name: ROCKET_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: reachout-service-api-secrets
+                  key: ROCKET_SECRET_KEY
+
+            # ✅ Global secret
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: platform-secrets
+                  key: JWT_SECRET

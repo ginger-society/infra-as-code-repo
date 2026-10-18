@@ -38,6 +38,14 @@ spec:
                 name: presence-service
                 port:
                   number: 80
+          
+          - path: /reachout-postman
+            pathType: Prefix
+            backend:
+              service:
+                name: reachout-service
+                port:
+                  number: 80
 
           - path: /metadata
             pathType: Prefix

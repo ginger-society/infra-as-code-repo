@@ -20,6 +20,10 @@
    "PRESENCE": {
     "ISC_SECRET": "vault(PRESENCE_ISC_TOKEN)"
   },
+  "REACHOUT": {
+    "ISC_SECRET": "vault(REACHOUT_ISC_TOKEN)",
+    "PUBLIC_JWT_SECRET": "vault(PUBLIC_JWT_SECRET)"
+  },
   "TEKTON_SIDEKICK" : {
     "ISC_SECRET": "verysecure"
   },
