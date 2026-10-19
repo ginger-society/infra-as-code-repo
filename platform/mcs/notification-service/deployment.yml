@@ -21,6 +21,11 @@ spec:
             - containerPort: 3030
 
           env:
+            - name: PUBLIC_JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: platform-secrets
+                  key: PUBLIC_JWT_SECRET
             - name: JWT_SECRET
               valueFrom:
                 secretKeyRef:

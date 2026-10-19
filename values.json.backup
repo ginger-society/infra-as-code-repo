@@ -21,8 +21,7 @@
     "ISC_SECRET": "vault(PRESENCE_ISC_TOKEN)"
   },
   "REACHOUT": {
-    "ISC_SECRET": "vault(REACHOUT_ISC_TOKEN)",
-    "PUBLIC_JWT_SECRET": "vault(PUBLIC_JWT_SECRET)"
+    "ISC_SECRET": "vault(REACHOUT_ISC_TOKEN)"
   },
   "TEKTON_SIDEKICK" : {
     "ISC_SECRET": "verysecure"
@@ -61,7 +60,8 @@
     "JWT_SECRET_KEY": "vault(JWT_SECRET_KEY)",
     "ROCKET_SECRET_KEY": "onceshell(openssl rand -base64 64 | tr -d '\\n')",
     "RABBITMQ_DEFAULT_USER": "username",
-    "RABBITMQ_DEFAULT_PASS": "vault(RABBITMQ_DEFAULT_PASS)"
+    "RABBITMQ_DEFAULT_PASS": "vault(RABBITMQ_DEFAULT_PASS)",
+    "PUBLIC_JWT_SECRET_KEY": "vault(PUBLIC_JWT_SECRET)"
   },
   "PIP": {
     "TOKEN": "vault(PYPI_SYNC_TOKEN)" 
