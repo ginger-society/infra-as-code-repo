@@ -17,7 +17,7 @@ spec:
         set -eu
 
         BUCKET_PATH="$(params.bucket-path)"
-        URL="https://bucket.gingersociety.org/invalidate-cache/${BUCKET_PATH}/ginger-live-support.js"
+        URL="https://bucket.gingersociety.org/invalidate-cache/${BUCKET_PATH}/"
 
         echo "Invalidating cache: ${URL}"
 
