@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: reachout-fe-deployment
+  labels:
+    app: reachout-fe-deployment
+spec:
+  selector:
+    matchLabels:
+      app: reachout-fe-deployment
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: reachout-fe-deployment
+    spec:
+      containers:
+      - name: reachout-fe-deployment
+        image: docker.gingersociety.org/ginger-society/reachout-fe:latest  # Use Apache2 image
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 80  # Apache defaults to port 80
+
+        volumeMounts:
+        - name: config
+          mountPath: /usr/share/nginx/html/config.json
+          subPath: config.json
+      volumes:
+      - name: config
+        configMap:
+          name: reachout-fe-config
