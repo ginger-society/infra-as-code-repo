@@ -1,7 +1,7 @@
 apiVersion: tekton.dev/v1
 kind: Task
 metadata:
-  name: invalidate-widget-cache
+  name: invalidate-bucket-cache
   namespace: default
 spec:
   params:
