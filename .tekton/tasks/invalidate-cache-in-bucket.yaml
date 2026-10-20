@@ -1,0 +1,26 @@
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: invalidate-widget-cache
+  namespace: default
+spec:
+  params:
+    - name: widget-path
+      type: string
+      description: Widget directory or package name
+
+  steps:
+    - name: invalidate-cache
+      image: curlimages/curl:latest
+      script: |
+        #!/bin/sh
+        set -eu
+
+        WIDGET_PATH="$(params.widget-path)"
+        URL="https://bucket.gingersociety.org/invalidate-cache/${WIDGET_PATH}/ginger-live-support.js"
+
+        echo "Invalidating cache: ${URL}"
+
+        curl --fail-with-body --show-error --silent \
+          --request POST \
+          "${URL}"
