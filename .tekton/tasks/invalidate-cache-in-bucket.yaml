@@ -5,9 +5,9 @@ metadata:
   namespace: default
 spec:
   params:
-    - name: widget-path
+    - name: bucket-path
       type: string
-      description: Widget directory or package name
+      description: Bucket directory or package name
 
   steps:
     - name: invalidate-cache
@@ -16,8 +16,8 @@ spec:
         #!/bin/sh
         set -eu
 
-        WIDGET_PATH="$(params.widget-path)"
-        URL="https://bucket.gingersociety.org/invalidate-cache/${WIDGET_PATH}/ginger-live-support.js"
+        BUCKET_PATH="$(params.bucket-path)"
+        URL="https://bucket.gingersociety.org/invalidate-cache/${BUCKET_PATH}/ginger-live-support.js"
 
         echo "Invalidating cache: ${URL}"
 
