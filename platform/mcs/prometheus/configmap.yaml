@@ -56,7 +56,7 @@ data:
           - targets: ['dc0102.{{PROMETHEUS.CLOUD_PROVIDER_FQDN}}']
             labels:
               host: dc0102
-            
+
       # ginger-infra devices — one shared host, device identity is in the
       # path rather than the target. Each device registered via the
       # heartbeat/presence service (with the "metrics" capability enabled)
@@ -70,7 +70,7 @@ data:
             labels:
               host: air
               device_channel: air.ginger_infra_43c6ba1f-a17f-4eb3-b4d8-7a3e565abc8d
-      
+
       - job_name: 'ginger-infra-dc0102'
         scheme: https
         metrics_path: /presence/device-metrics/dc0102.ginger_infra_43c6ba1f-a17f-4eb3-b4d8-7a3e565abc8d
@@ -79,3 +79,15 @@ data:
             labels:
               host: dc0102
               device_channel: dc0102.ginger_infra_43c6ba1f-a17f-4eb3-b4d8-7a3e565abc8d
+
+      # Live chat + analytics metrics of reachout-postman, scraped in-cluster
+      # (postman_* custom metrics plus rocket_http_requests_* from rocket_prometheus).
+      - job_name: 'reachout-postman'
+        scheme: http
+        metrics_path: /reachout-postman/metrics
+        scrape_interval: 15s   # matches the service's gauge sampler (SAMPLER_INTERVAL_SECS)
+        scrape_timeout: 10s
+        static_configs:
+          - targets: ['reachout-service:80']
+            labels:
+              service: reachout-postman
